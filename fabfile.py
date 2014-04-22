@@ -13,6 +13,11 @@ def deps_list_centos(package):
     # @TODO fpm seems to fail while building a rpm from python packages which has dependencies
     # (see: https://github.com/jordansissel/fpm/issues/571), however - command for listing rpm
     # dependencies: `rpm -qp --requires package.rpm`
+
+    # @TODO CentOS 6.5 also comes with Python2.6 which needs also python-setuptools, and python-argparse
+    # as dependencies, PATH and PYTHONPATH have to be adapted too. We can add dependencies while building
+    # rpm from deb packages:
+    # `fpm -s deb -t rpm -d python-argparse -d python-setuptools python-zalando-cmdb-client_0.9.3_all.deb`
     pass
 
 
