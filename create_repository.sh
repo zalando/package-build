@@ -61,3 +61,20 @@ echo generating ${repository}
    ln ${basedir}/dists/${repository}/Release dists/${repository}/zalando/binary-i386/Release
 done
 
+## create RPM repo
+basedir=/data/zalando/iftp.zalando.net/htdocs/repo/centos/
+
+releases=( 6.5 )
+sections=( os updates extras centosplus contrib )
+archs=( i386 x86_64 )
+for release in ${releases[@]}
+do
+    for section in ${sections[@]}
+    do
+        for arch in ${archs[@]}
+        do
+            mkdir -p $basedir/${release}/${section}/${arch}/
+            createrepo $basedir/${release}/${section}/${arch}/
+        done
+    done
+done
