@@ -11,5 +11,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       c.vm.provision :shell, :path => "provision-#{boxname}.sh"
   end
 
+  config.vm.define "centos6.5" do |c|
+      boxname = "centos6.5"
+      c.vm.box = boxname
+      c.vm.provision :shell, :path => "provision-#{boxname}.sh"
+  end
+
   
 end
