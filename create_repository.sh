@@ -64,9 +64,10 @@ done
 ## create RPM repo
 basedir=/data/zalando/iftp.zalando.net/htdocs/repo/centos/
 
-releases=( 6.5 )
-sections=( os updates extras centosplus contrib )
+releases=( 6 )
+sections=( base updates extras )
 archs=( i386 x86_64 )
+
 for release in ${releases[@]}
 do
     for section in ${sections[@]}
