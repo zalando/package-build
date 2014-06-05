@@ -1,6 +1,10 @@
 #!/bin/bash
 
 apt-get update
+
+apt-get install -y ruby ruby-devel ruby-ri ruby-rdoc rubygems
+gem install --no-rdoc --no-ri fpm
+
 apt-get install -y vim
 
 update-alternatives --set editor /usr/bin/vim.basic
