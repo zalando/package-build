@@ -79,3 +79,16 @@ do
         done
     done
 done
+
+# create a file /etc/yum.repos.d/zalando.repo with following content (section names must be uniqe):
+# [zalando-base]
+# name=Zalando-$releasever - Base
+# baseurl=http://iftp.zalando.net/repo/centos/$releasever/base/$basearch/
+#
+# [zalando-updates]
+# name=Zalando-$releasever - Updates
+# baseurl=http://iftp.zalando.net/repo/centos/$releasever/updates/$basearch/
+#
+# [zalando-extras]
+# name=Zalando-$releasever - Extras
+# baseurl=http://iftp.zalando.net/repo/centos/$releasever/extras/$basearch/
