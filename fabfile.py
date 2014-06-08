@@ -4,8 +4,34 @@
 from __future__ import with_statement
 import os
 
-from fabric.api import local, hide, execute
-from fabric.decorators import task
+from fabric.api import local, hide, execute, sudo, put, with_settings, run
+from fabric.decorators import task, hosts
+from fabric.util import abort
+from fabric.state import env
+
+env.build_host = ''
+env.repo_host = 'iftp.zalando.net'
+env.repo_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt'
+
+# some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
+
+@hosts(env.repo_host)
+@task
+def repo_list(dist='precise'):
+    sudo('reprepro -b {0} list {1}'.format(env.repo_root, dist))
+
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def repo_add(package, dist='precise'):
+    put('./{0}'.format(package), '{0}/import/'.format(env.repo_root))
+    run('reprepro -b {0} includedeb {1} {0}/import/{2}'.format(env.repo_root, dist, package))
+
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def repo_del(package, dist='precise'):
+    run('reprepro -b {0} remove {1} {2}'.format(env.repo_root, dist, package))
 
 
 @task
