@@ -6,7 +6,7 @@ import os
 
 from fabric.api import local, hide, execute, sudo, put, with_settings, run
 from fabric.decorators import task, hosts
-from fabric.util import abort
+from fabric.utils import abort
 from fabric.state import env
 
 env.build_host = ''
