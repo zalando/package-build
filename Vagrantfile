@@ -9,7 +9,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         boxname.chomp!
         config.vm.define boxname do |c|
             c.vm.box = boxname
-            c.vm.provision :shell, :path => "provision-#{boxname}.sh"
+            provision_script = "provision.sh"
+            if File.file?("provision-#{boxname}.sh")
+                provision_script = "provision-#{boxname}.sh"
+            end
+            c.vm.provision :shell, :path => provision_script
         end
     end
   
