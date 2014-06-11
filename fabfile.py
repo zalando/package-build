@@ -8,10 +8,14 @@ from fabric.api import local, hide, execute, sudo, put, with_settings, run
 from fabric.decorators import task, hosts
 from fabric.utils import abort
 from fabric.state import env
+from git import Repo
+from git.remote import Remote
 
 env.build_host = ''
 env.repo_host = 'iftp.zalando.net'
 env.repo_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt'
+
+### repo commands
 
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
 
@@ -33,6 +37,8 @@ def repo_add(package, dist='precise'):
 def repo_del(package, dist='precise'):
     run('reprepro -b {0} remove {1} {2}'.format(env.repo_root, dist, package))
 
+
+### helper commands
 
 @task
 def deps_list_centos(package):
@@ -91,4 +97,22 @@ def pypi_build(package_name):
             package_dependency = (package_dependency.replace('python-', '') if package_dependency.startswith('python-'
                                   ) else package_dependency)
             execute('pypi_build', package_dependency)
+
+### git commands
+
+@task
+def git_checkout(url):
+    path = url.split('/')[-1].replace('.git', '')
+
+    if not os.path.isdir(path):
+        repo = Repo.clone_from(url, path)
+    else:
+        repo = Repo(path)
+        # ensure that the remote "origin" is set to the correct url
+        if 'origin' in [remote.name for remote in  repo.remotes]:
+            Remote.remove(repo, 'origin')
+        Remote.add(repo, 'origin', url)
+
+    repo.remote().pull()
+
 
