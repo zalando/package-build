@@ -3,8 +3,10 @@
 
 from __future__ import with_statement
 import os
+import glob
+from shutil import copy
 
-from fabric.api import local, hide, execute, sudo, put, with_settings, run
+from fabric.api import local, hide, execute, sudo, put, with_settings, run, lcd
 from fabric.decorators import task, hosts
 from fabric.utils import abort
 from fabric.state import env
@@ -14,6 +16,7 @@ from git.remote import Remote
 env.build_host = ''
 env.repo_host = 'iftp.zalando.net'
 env.repo_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt'
+env.pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple'
 
 ### repo commands
 
@@ -68,7 +71,7 @@ def deps_list_debian(package):
 
 
 @task
-def pypi_build(package_name):
+def build_package(package_name):
 
     package = None
 
@@ -96,13 +99,35 @@ def pypi_build(package_name):
             # We have to build the dependencies also from pypi, so remove the prefix here:
             package_dependency = (package_dependency.replace('python-', '') if package_dependency.startswith('python-'
                                   ) else package_dependency)
-            execute('pypi_build', package_dependency)
+            execute('build_package', package_dependency)
+
+@task
+def prepare_builddir(url):
+    path = path_from_repo(url)
+    execute(git_checkout, url)
+
+    copy('Vagrantfile', path)
+    copy('boxes', path)
+    for file in glob.glob('provision*sh'):
+        copy(file, path)
+
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def build_pypi(url):
+    path = path_from_repo(url)
+    with lcd(path):
+        local('python setup.py -q sdist')
+        put('dist/*.tar.gz', '{0}/{1}'.format(env.pypi_root, path))
+
+def path_from_repo(url):
+    return url.split('/')[-1].replace('.git', '')
 
 ### git commands
 
 @task
 def git_checkout(url):
-    path = url.split('/')[-1].replace('.git', '')
+    path = path_from_repo(url)
 
     if not os.path.isdir(path):
         repo = Repo.clone_from(url, path)
