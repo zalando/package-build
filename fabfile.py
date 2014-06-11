@@ -12,11 +12,13 @@ from fabric.utils import abort
 from fabric.state import env
 from git import Repo
 from git.remote import Remote
+import vagrant
 
 env.build_host = ''
 env.repo_host = 'iftp.zalando.net'
 env.repo_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt'
 env.pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple'
+
 
 ### repo commands
 
@@ -27,12 +29,14 @@ env.pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple'
 def repo_list(dist='precise'):
     sudo('reprepro -b {0} list {1}'.format(env.repo_root, dist))
 
+
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
 def repo_add(package, dist='precise'):
     put('./{0}'.format(package), '{0}/import/'.format(env.repo_root))
     run('reprepro -b {0} includedeb {1} {0}/import/{2}'.format(env.repo_root, dist, package))
+
 
 @hosts(env.repo_host)
 @with_settings(user='root')
@@ -71,7 +75,7 @@ def deps_list_debian(package):
 
 
 @task
-def build_package(package_name):
+def build_package_deb(package_name):
 
     package = None
 
@@ -86,7 +90,7 @@ def build_package(package_name):
             package = message.split(':path=>')[1].replace('"', '').replace('}', '')
 
     if package is not None:
-        package_dependencies = execute('deps_list_debian', package)
+        package_dependencies = execute(deps_list_debian, package)
         # execute returns a dict, when Fabric env has no host_list (e.g. runs only locally)
         # therefore, unwrap it
         package_dependencies = package_dependencies['<local-only>']
@@ -99,7 +103,26 @@ def build_package(package_name):
             # We have to build the dependencies also from pypi, so remove the prefix here:
             package_dependency = (package_dependency.replace('python-', '') if package_dependency.startswith('python-'
                                   ) else package_dependency)
-            execute('build_package', package_dependency)
+            execute(build_package, package_dependency)
+
+
+@task
+def build_package(url):
+
+    print 'build_pypi %s' % url
+    execute(build_pypi, url)
+    print 'prepare_builddir %s' % url
+    execute(prepare_builddir, url)
+
+    path = path_from_repo(url)
+    print 'creating vagrant object with root dir %s' % path
+    v = vagrant.Vagrant(root=path)
+    print 'running vagrant up...'
+    v.up(vm_name='ubuntu12.04')
+
+    env.hosts = [v.user_hostname_port(vm_name='ubuntu12.04')]
+    sudo('fpm -s python --python-pypi {0} -t deb --force "{1}"'.format(env.repo_host + '/simple/' + path, path))
+
 
 @task
 def prepare_builddir(url):
@@ -111,17 +134,22 @@ def prepare_builddir(url):
     for file in glob.glob('provision*sh'):
         copy(file, path)
 
+
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
 def build_pypi(url):
     path = path_from_repo(url)
+    execute(git_checkout, url)
+
     with lcd(path):
         local('python setup.py -q sdist')
         put('dist/*.tar.gz', '{0}/{1}'.format(env.pypi_root, path))
 
+
 def path_from_repo(url):
     return url.split('/')[-1].replace('.git', '')
+
 
 ### git commands
 
@@ -134,10 +162,9 @@ def git_checkout(url):
     else:
         repo = Repo(path)
         # ensure that the remote "origin" is set to the correct url
-        if 'origin' in [remote.name for remote in  repo.remotes]:
+        if 'origin' in [remote.name for remote in repo.remotes]:
             Remote.remove(repo, 'origin')
         Remote.add(repo, 'origin', url)
 
     repo.remote().pull()
-
 
