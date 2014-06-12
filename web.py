@@ -49,7 +49,7 @@ def queuefunc(f):
     return f
 
 
-@cron.interval_schedule(seconds=10)
+@cron.interval_schedule(seconds=60)
 def queue_consumer():
     item = queue.popleft()
     func, key, args, kwargs = item
