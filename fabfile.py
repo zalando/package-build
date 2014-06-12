@@ -6,8 +6,9 @@ import os
 import glob
 from shutil import copy
 
-from fabric.api import local, hide, execute, sudo, put, with_settings, run, lcd
-from fabric.decorators import task, hosts
+from fabric.api import local, run, sudo, execute, put
+from fabric.context_managers import settings, cd, lcd, hide
+from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
 from git import Repo
