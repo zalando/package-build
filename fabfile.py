@@ -110,26 +110,34 @@ def build_package_deb(package_name):
 @task
 def build_package(url):
 
-    machine_name = 'ubuntu12.04'
-
-    print 'build_pypi %s' % url
     execute(build_pypi, url)
-    print 'prepare_builddir %s' % url
     execute(prepare_builddir, url)
 
-    path = package_name(url)
-    print 'creating vagrant object with root dir %s' % path
-    v = vagrant.Vagrant(root=path)
-    print 'running vagrant up...'
-    v.up(vm_name=machine_name)
+    # @TODO: iterate over all the targets in a target's project.json
+    # @TODO: get dependencies from project's project.json
+    for machine_name, package_format in {'centos6.5': 'rpm', 'ubuntu12.04': 'deb'}.items():
+        name = package_name(url)
+        print 'creating vagrant object with root dir ./%s' % name
+        v = vagrant.Vagrant(root=name)
+        print 'running vagrant up for machine %s' % machine_name
+        v.up(vm_name=machine_name)
 
-    package_uri = 'http://{0}/simple/{1}'.format(env.repo_host, path)
+        package_uri = 'http://{0}/simple/'.format(env.repo_host)
 
-    with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=machine_name),
-                  key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
-        print 'executing sudo command on %s' % v.user_hostname_port(vm_name=machine_name)
-        sudo('fpm -s python --python-pypi {0} -t deb --force "{1}"'.format(package_uri, path))
+        with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=machine_name),
+                      key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
+            print 'executing sudo command on %s (%s)' % (v.user_hostname_port(vm_name=machine_name), machine_name)
+            messages = sudo('fpm -s python --python-pypi {0} -t {2} --force --name {1} "{1}"'.format(package_uri, name,
+                            package_format))
 
+            for message in messages.split('\n'):
+                if 'Created package' in message:
+                    package = message.split(':path=>')[1].replace('"', '').replace('}', '')
+            print 'created package "{0}"'.format(package)
+
+
+        # @TODO: missing part - upload to repository
+        # @TODO: clean build dirs afterwards
 
 @task
 def prepare_builddir(url):
@@ -156,6 +164,7 @@ def build_pypi(url):
 
 def package_name(url):
     ''' get the package name from a git repo url '''
+
     return url.split('/')[-1].replace('.git', '')
 
 
