@@ -110,6 +110,8 @@ def build_package_deb(package_name):
 @task
 def build_package(url):
 
+    machine_name = 'ubuntu12.04'
+
     print 'build_pypi %s' % url
     execute(build_pypi, url)
     print 'prepare_builddir %s' % url
@@ -119,10 +121,14 @@ def build_package(url):
     print 'creating vagrant object with root dir %s' % path
     v = vagrant.Vagrant(root=path)
     print 'running vagrant up...'
-    v.up(vm_name='ubuntu12.04')
+    v.up(vm_name=machine_name)
 
-    env.hosts = [v.user_hostname_port(vm_name='ubuntu12.04')]
-    sudo('fpm -s python --python-pypi {0} -t deb --force "{1}"'.format(env.repo_host + '/simple/' + path, path))
+    package_uri = 'http://{0}/simple/{1}'.format(env.repo_host, path)
+
+    with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=machine_name),
+                  key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
+        print 'executing sudo command on %s' % v.user_hostname_port(vm_name=machine_name)
+        sudo('fpm -s python --python-pypi {0} -t deb --force "{1}"'.format(package_uri, path))
 
 
 @task
