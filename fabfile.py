@@ -199,15 +199,17 @@ def build_package(url):
 
         # @TODO detect the correct distribution for uploading into the repos
         if package:
+            v.halt(vm_name=machine_name)
             if package_format == 'rpm':
                 execute(repo_rpm_add, '{0}/{1}'.format(path, package))
             elif package_format == 'deb':
                 execute(repo_deb_add, '{0}/{1}'.format(path, package))
             else:
                 print 'no method to add package "{0}" to a repository'.format(package)
+        else:
+            print 'no package has been created, you may want to inspect the state in the machine:'
+            print 'cd {0}/ && vagrant ssh {1}'.format(path, machine_name)
 
-
-        # @TODO: clean build dirs afterwards
 
 @task
 def prepare_builddir(url):
