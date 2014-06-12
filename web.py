@@ -40,7 +40,7 @@ class DelayedResult(object):
 def queuefunc(f):
 
     def delay(*args, **kwargs):
-        key = '%s:result:%s' % ('my_name', str(uuid4()))
+        key = '%s:%s' % (f.__name__, str(uuid4()))
         item = f, key, args, kwargs
         queue.append(item)
         return DelayedResult(key)
