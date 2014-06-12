@@ -117,7 +117,7 @@ def build_package(url):
     print 'prepare_builddir %s' % url
     execute(prepare_builddir, url)
 
-    path = path_from_repo(url)
+    path = package_name(url)
     print 'creating vagrant object with root dir %s' % path
     v = vagrant.Vagrant(root=path)
     print 'running vagrant up...'
@@ -133,7 +133,7 @@ def build_package(url):
 
 @task
 def prepare_builddir(url):
-    path = path_from_repo(url)
+    path = package_name(url)
     execute(git_checkout, url)
 
     copy('Vagrantfile', path)
@@ -146,7 +146,7 @@ def prepare_builddir(url):
 @with_settings(user='root')
 @task
 def build_pypi(url):
-    path = path_from_repo(url)
+    path = package_name(url)
     execute(git_checkout, url)
 
     with lcd(path):
@@ -154,7 +154,8 @@ def build_pypi(url):
         put('dist/*.tar.gz', '{0}/{1}'.format(env.pypi_root, path))
 
 
-def path_from_repo(url):
+def package_name(url):
+    ''' get the package name from a git repo url '''
     return url.split('/')[-1].replace('.git', '')
 
 
@@ -162,7 +163,7 @@ def path_from_repo(url):
 
 @task
 def git_checkout(url):
-    path = path_from_repo(url)
+    path = package_name(url)
 
     if not os.path.isdir(path):
         repo = Repo.clone_from(url, path)
