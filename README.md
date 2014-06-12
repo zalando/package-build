@@ -25,9 +25,15 @@ Needed in the shared folder of a vagrant node:
 
 ## Considered Solutions for the Job Scheduling Framework
 
- - [buildbot](http://buildbot.net/): build framework with master/slave architecture, a lot to much
- - [dovetail](http://www.aviser.asia/dovetail/): defines build tasks, like `make`, no scheduler
- - [elita](https://elita.io/): HTTP API-focused continuous deployment framework
- - [taskpy](https://github.com/jakecoffman/taskpy): draft Jenkins rewrite in Python
- - [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
+- [buildbot](http://buildbot.net/): build framework with master/slave architecture, a lot to much
+- [dovetail](http://www.aviser.asia/dovetail/): defines build tasks, like `make`, no scheduler
+- [elita](https://elita.io/): HTTP API-focused continuous deployment framework
+- [taskpy](https://github.com/jakecoffman/taskpy): draft Jenkins rewrite in Python
+- [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
 
+## Todo
+
+- use vagrant's KVM provider via plugin https://github.com/adrahon/vagrant-kvm, which might be more performant
+- create base images for build hosts, which are already provisioned with `fpm`
+- set correct versions for resulting packages (currently it defaults to 0.1)
+- maybe add mode to generete "uber"-packages with all requirements built-in
