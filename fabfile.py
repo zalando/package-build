@@ -11,14 +11,19 @@ from fabric.context_managers import settings, cd, lcd, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
+from cuisine import package_ensure, dir_ensure
 from git import Repo
 from git.remote import Remote
 import vagrant
 
-env.build_host = ''
 env.repo_host = 'iftp.zalando.net'
-env.repo_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt'
-env.pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple'
+env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
+env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/centos/'
+env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
+
+RPM_RELEASES = ['6']
+RPM_COMPONENTS = ['base', 'updates', 'extras']
+RPM_ARCHS = ['i386', 'x86_64']
 
 
 ### repo commands
@@ -26,24 +31,80 @@ env.pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple'
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
 
 @hosts(env.repo_host)
+@with_settings(user='root')
 @task
-def repo_list(dist='precise'):
-    sudo('reprepro -b {0} list {1}'.format(env.repo_root, dist))
+def repo_rpm_init():
+    package_ensure('createrepo')
+    ensure_dir('{0}/archive/'.format(env.repo_rpm_root))
+
+    for release in RPM_RELEASES:
+        for component in RPM_COMPONENTS:
+            for arch in RPM_ARCHS:
+                path = '/'.join[env.repo_rpm_root, release, component, arch]
+                dir_ensure(path, recursive=True)
+                run('createrepo {0}'.format(path))
+
+
+@hosts(env.repo_host)
+@task
+def repo_rpm_list(dist='6'):
+    path = '/'.join([env.repo_rpm_root, dist])
+    output = run('cd {0} && find . -type f -name "*rpm"'.format(path))
+    print output.replace('/', '|')
 
 
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_add(package, dist='precise'):
-    put('./{0}'.format(package), '{0}/import/'.format(env.repo_root))
-    run('reprepro -b {0} includedeb {1} {0}/import/{2}'.format(env.repo_root, dist, package))
+def repo_rpm_add(package, dist='6', component='base'):
+
+    arch = 'x86_64'
+    if any(map(lambda arch: arch in package, ['i386, i586, i686'])):
+        arch = 'i386'
+
+    put(package, '{0}/archive/'.format(env.repo_rpm_root))
+    package = package.split('/')[-1]
+    path = '/'.join([env.repo_rpm_root, dist, component, arch])
+    run('cp {0}/archive/{1} {2}'.format(env.repo_rpm_root, package, path))
+    run('createrepo {0}'.format(path))
 
 
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_del(package, dist='precise'):
-    run('reprepro -b {0} remove {1} {2}'.format(env.repo_root, dist, package))
+def repo_rpm_del(package, dist='6', component='base'):
+    path = '/'.join([env.repo_rpm_root, dist, component])
+    run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, package, env.repo_rpm_root))
+    run('createrepo {0}'.format(path))
+
+
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def repo_deb_init():
+    pass
+
+
+@hosts(env.repo_host)
+@task
+def repo_deb_list(dist='precise'):
+    sudo('reprepro -b {0} list {1}'.format(env.repo_deb_root, dist))
+
+
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def repo_deb_add(package, dist='precise'):
+    put(package, '{0}/import/'.format(env.repo_deb_root))
+    package = package.split('/')[-1]
+    run('reprepro -b {0} includedeb {1} {0}/import/{2}'.format(env.repo_deb_root, dist, package))
+
+
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def repo_deb_del(package, dist='precise'):
+    run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, package))
 
 
 ### helper commands
@@ -116,27 +177,36 @@ def build_package(url):
     # @TODO: iterate over all the targets in a target's project.json
     # @TODO: get dependencies from project's project.json
     for machine_name, package_format in {'centos6.5': 'rpm', 'ubuntu12.04': 'deb'}.items():
-        name = package_name(url)
-        print 'creating vagrant object with root dir ./%s' % name
-        v = vagrant.Vagrant(root=name)
+        path = package_name(url)
+        package = None
+        pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
+
+        print 'creating vagrant object with root dir ./%s' % path
+        v = vagrant.Vagrant(root=path)
         print 'running vagrant up for machine %s' % machine_name
         v.up(vm_name=machine_name)
-
-        package_uri = 'http://{0}/simple/'.format(env.repo_host)
 
         with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=machine_name),
                       key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
             print 'executing sudo command on %s (%s)' % (v.user_hostname_port(vm_name=machine_name), machine_name)
-            messages = sudo('fpm -s python --python-pypi {0} -t {2} --force --name {1} "{1}"'.format(package_uri, name,
+            messages = sudo('fpm -s python --python-pypi {0} -t {2} --force --name {1} "{1}"'.format(pypi_uri, path,
                             package_format))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
                     package = message.split(':path=>')[1].replace('"', '').replace('}', '')
-            print 'created package "{0}"'.format(package)
+                    print 'created package "{0}"'.format(package)
+
+        # @TODO detect the correct distribution for uploading into the repos
+        if package:
+            if package_format == 'rpm':
+                execute(repo_rpm_add, '{0}/{1}'.format(path, package))
+            elif package_format == 'deb':
+                execute(repo_deb_add, '{0}/{1}'.format(path, package))
+            else:
+                print 'no method to add package "{0}" to a repository'.format(package)
 
 
-        # @TODO: missing part - upload to repository
         # @TODO: clean build dirs afterwards
 
 @task
@@ -159,7 +229,7 @@ def build_pypi(url):
 
     with lcd(path):
         local('python setup.py -q sdist')
-        put('dist/*.tar.gz', '{0}/{1}'.format(env.pypi_root, path))
+        put('dist/*.tar.gz', '{0}/{1}'.format(env.repo_pypi_root, path))
 
 
 def package_name(url):
