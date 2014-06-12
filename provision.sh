@@ -2,7 +2,7 @@
 
 apt-get update
 
-apt-get install -y ruby ruby-dev
+apt-get install -y ruby ruby-dev python-setuptools
 gem install --no-rdoc --no-ri fpm
 
 apt-get install -y vim
