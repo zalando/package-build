@@ -39,7 +39,7 @@ DEB_RELEASES = ['precise', 'trusty']
 @task
 def repo_rpm_init():
     package_ensure('createrepo')
-    ensure_dir('{0}/archive/'.format(env.repo_rpm_root))
+    dir_ensure('{0}/archive/'.format(env.repo_rpm_root), recursive=True)
 
     for release in RPM_RELEASES:
         for component in RPM_COMPONENTS:
@@ -113,9 +113,9 @@ def repo_deb_list(dist='precise'):
 @with_settings(user='root')
 @task
 def repo_deb_add(package, dist='precise'):
-    put(package, '{0}/import/'.format(env.repo_deb_root))
+    put(package, '{0}/archive/'.format(env.repo_deb_root))
     package = package.split('/')[-1]
-    run('reprepro -b {0} includedeb {1} {0}/import/{2}'.format(env.repo_deb_root, dist, package))
+    run('reprepro -b {0} includedeb {1} {0}/archive/{2}'.format(env.repo_deb_root, dist, package))
 
 
 @hosts(env.repo_host)
@@ -208,7 +208,8 @@ def build_package(url):
                       key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
             # this is neccesarry because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
             file_link('/vagrant', '/vagrant/{0}'.format(path))
-            print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=machine_name), machine_name)
+            print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=machine_name),
+                                                      machine_name)
             messages = sudo('fpm -s python --python-pypi {0} -t {2} --force --name {1} "{1}"'.format(pypi_uri, path,
                             package_format))
 
