@@ -5,12 +5,14 @@ from __future__ import with_statement
 import os
 import glob
 from shutil import copy
+from string import Template
 
 from fabric.api import local, run, sudo, execute, put
 from fabric.context_managers import settings, cd, lcd, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
+from fabric.contrib.files import upload_template
 from cuisine import package_ensure, dir_ensure, file_link
 from git import Repo
 from git.remote import Remote
@@ -24,6 +26,8 @@ env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
 RPM_RELEASES = ['6']
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
+
+DEB_RELEASES = ['precise', 'trusty']
 
 
 ### repo commands
@@ -82,7 +86,19 @@ def repo_rpm_del(package, dist='6', component='base'):
 @with_settings(user='root')
 @task
 def repo_deb_init():
-    pass
+    package_ensure('reprepro')
+    dir_ensure('{0}/archive/'.format(env.repo_deb_root), recursive=True)
+    dir_ensure('{0}/conf/'.format(env.repo_deb_root), recursive=True)
+
+    filename = 'distributions'
+    with open('{0}.tmpl'.format(filename), 'r') as tf:
+        template = Template(tf.read())
+
+    with open(filename, 'w') as fh:
+        for release in DEB_RELEASES:
+            fh.write(template.safe_substitute(codename=release, codename_uppercase=release.title()))
+
+    put(filename, '{0}/conf/{1}'.format(env.repo_deb_root, filename))
 
 
 @hosts(env.repo_host)
