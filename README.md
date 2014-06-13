@@ -35,5 +35,4 @@ Needed in the shared folder of a vagrant node:
 
 - use vagrant's KVM provider via plugin https://github.com/adrahon/vagrant-kvm, which might be more performant
 - create base images for build hosts, which are already provisioned with `fpm`
-- set correct versions for resulting packages (currently it defaults to 0.1)
 - maybe add mode to generete "uber"-packages with all requirements built-in

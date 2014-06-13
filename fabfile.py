@@ -11,7 +11,7 @@ from fabric.context_managers import settings, cd, lcd, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
-from cuisine import package_ensure, dir_ensure
+from cuisine import package_ensure, dir_ensure, file_link
 from git import Repo
 from git.remote import Remote
 import vagrant
@@ -188,7 +188,9 @@ def build_package(url):
 
         with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=machine_name),
                       key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
-            print 'executing sudo command on %s (%s)' % (v.user_hostname_port(vm_name=machine_name), machine_name)
+            # this is neccesarry because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
+            file_link('/vagrant', '/vagrant/{0}'.format(path))
+            print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=machine_name), machine_name)
             messages = sudo('fpm -s python --python-pypi {0} -t {2} --force --name {1} "{1}"'.format(pypi_uri, path,
                             package_format))
 
