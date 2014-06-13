@@ -52,9 +52,11 @@ def repo_rpm_init():
 @hosts(env.repo_host)
 @task
 def repo_rpm_list(dist='6'):
-    path = '/'.join([env.repo_rpm_root, dist])
-    output = run('cd {0} && find . -type f -name "*rpm"'.format(path))
-    print output.replace('/', '|')
+    with hide('output'):
+        output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
+        for line in output.split('\n'):
+            dist, component, arch, package = line.split('/')
+            print '{0}: {1}'.format('|'.join([dist, component, arch]), package)
 
 
 @hosts(env.repo_host)
