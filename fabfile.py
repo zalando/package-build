@@ -6,13 +6,13 @@ import os
 import glob
 from shutil import copy
 from string import Template
+import json
 
 from fabric.api import local, run, sudo, execute, put
 from fabric.context_managers import settings, cd, lcd, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
-from fabric.contrib.files import upload_template
 from cuisine import package_ensure, dir_ensure, file_link
 from git import Repo
 from git.remote import Remote
@@ -28,6 +28,8 @@ RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
 
 DEB_RELEASES = ['precise', 'trusty']
+
+PACKAGE_FORMAT = { 'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb' }
 
 
 ### repo commands
@@ -192,26 +194,34 @@ def build_package(url):
     execute(build_pypi, url)
     execute(prepare_builddir, url)
 
-    # @TODO: iterate over all the targets in a target's project.json
-    # @TODO: get dependencies from project's project.json
-    for machine_name, package_format in {'centos6.5': 'rpm', 'ubuntu12.04': 'deb'}.items():
-        path = package_name(url)
+    path = package_name(url)
+
+    package_dependencies = []
+    if os.path.isfile('{0}/package.json'.format(path)):
+        with open('{0}/package.json'.format(path), 'r') as fh:
+            package_dependencies = json.load(fh).items()
+    else:
+        package_dependencies = [(t, []) for t in PACKAGE_FORMAT.keys()]
+
+    for target, dependencies in package_dependencies:
         package = None
+        package_format = PACKAGE_FORMAT.get(target, 'deb')
         pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
+        if dependencies:
+            dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
 
         print 'creating vagrant object with root dir ./%s' % path
         v = vagrant.Vagrant(root=path)
-        print 'running vagrant up for machine %s' % machine_name
-        v.up(vm_name=machine_name)
+        print 'running vagrant up for machine %s' % target
+        v.up(vm_name=target)
 
-        with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=machine_name),
-                      key_filename=v.keyfile(vm_name=machine_name), disable_known_hosts=True):
+        with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=target),
+                      key_filename=v.keyfile(vm_name=target), disable_known_hosts=True):
             # this is neccesarry because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
             file_link('/vagrant', '/vagrant/{0}'.format(path))
-            print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=machine_name),
-                                                      machine_name)
-            messages = sudo('fpm -s python --python-pypi {0} -t {2} --force --name {1} "{1}"'.format(pypi_uri, path,
-                            package_format))
+            print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=target),
+                                                      target)
+            messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --force --name {1} "{1}"'.format(pypi_uri, path, package_format, dependencies))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
@@ -220,7 +230,7 @@ def build_package(url):
 
         # @TODO detect the correct distribution for uploading into the repos
         if package:
-            v.halt(vm_name=machine_name)
+            v.halt(vm_name=target)
             if package_format == 'rpm':
                 execute(repo_rpm_add, '{0}/{1}'.format(path, package))
             elif package_format == 'deb':
@@ -229,7 +239,7 @@ def build_package(url):
                 print 'no method to add package "{0}" to a repository'.format(package)
         else:
             print 'no package has been created, you may want to inspect the state in the machine:'
-            print 'cd {0}/ && vagrant ssh {1}'.format(path, machine_name)
+            print 'cd {0}/ && vagrant ssh {1}'.format(path, target)
 
 
 @task

@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Friday, 13. June 2014*
+*created Wednesday, 11. June 2014 - updated Monday, 16. June 2014*
 
 ## Goal
 
@@ -33,6 +33,11 @@ Needed in the shared folder of a vagrant node:
 
 ## Todo
 
+/ implement mechanism for package.json
 - use vagrant's KVM provider via plugin https://github.com/adrahon/vagrant-kvm, which might be more performant
 - create base images for build hosts, which are already provisioned with `fpm`
 - maybe add mode to generete "uber"-packages with all requirements built-in
+- repo_*_refresh
+/ repo_deb_init
+- repo_deb_add (bugfixing)
+- recherche: .rpm arch for "noarch", .deb for "all" as separate pakages?
