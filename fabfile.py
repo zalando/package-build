@@ -29,7 +29,7 @@ RPM_ARCHS = ['i386', 'x86_64']
 
 DEB_RELEASES = ['precise', 'trusty']
 
-PACKAGE_FORMAT = { 'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb' }
+PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
 
 ### repo commands
@@ -130,19 +130,6 @@ def repo_deb_del(package, dist='precise'):
 ### helper commands
 
 @task
-def deps_list_centos(package):
-    # @TODO fpm seems to fail while building a rpm from python packages which has dependencies
-    # (see: https://github.com/jordansissel/fpm/issues/571), however - command for listing rpm
-    # dependencies: `rpm -qp --requires package.rpm`
-
-    # @TODO CentOS 6.5 also comes with Python2.6 which needs also python-setuptools, and python-argparse
-    # as dependencies, PATH and PYTHONPATH have to be adapted too. We can add dependencies while building
-    # rpm from deb packages:
-    # `fpm -s deb -t rpm -d python-argparse -d python-setuptools python-zalando-cmdb-client_0.9.3_all.deb`
-    pass
-
-
-@task
 def deps_list_debian(package):
     deps = []
     with hide('output', 'running'):
@@ -154,38 +141,6 @@ def deps_list_debian(package):
                 dependency = dependency.replace('=', '==')
             deps.append(dependency)
     return deps
-
-
-@task
-def build_package_deb(package_name):
-
-    package = None
-
-    pypi_uri = 'http://pypi.python.org/simple'
-    if package_name.startswith('zalando-'):
-        pypi_uri = 'http://iftp.zalando.net/simple'
-
-    messages = local('sudo fpm -s python --python-pypi {0} -t deb --force "{1}"'.format(pypi_uri, package_name),
-                     capture=True)
-    for message in messages.split('\n'):
-        if 'Created deb package' in message:
-            package = message.split(':path=>')[1].replace('"', '').replace('}', '')
-
-    if package is not None:
-        package_dependencies = execute(deps_list_debian, package)
-        # execute returns a dict, when Fabric env has no host_list (e.g. runs only locally)
-        # therefore, unwrap it
-        package_dependencies = package_dependencies['<local-only>']
-        if package_dependencies == ['']:
-            return
-        print package_dependencies
-        for package_dependency in package_dependencies:
-            # fpm prefixes packages and their dependencies with "python-" by default
-            # when they are build from pypi, what makes sense for the destination packages.
-            # We have to build the dependencies also from pypi, so remove the prefix here:
-            package_dependency = (package_dependency.replace('python-', '') if package_dependency.startswith('python-'
-                                  ) else package_dependency)
-            execute(build_package, package_dependency)
 
 
 @task
@@ -206,13 +161,17 @@ def build_package(url):
     for target, dependencies in package_dependencies:
         package = None
         package_format = PACKAGE_FORMAT.get(target, 'deb')
-        pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
+
+        pypi_uri = 'http://pypi.python.org/simple'
+        if package_name.startswith('zalando-'):
+            pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
+
         if dependencies:
             dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
 
-        print 'creating vagrant object with root dir ./%s' % path
+        print 'creating vagrant object with root dir ./{0}'.format(path)
         v = vagrant.Vagrant(root=path)
-        print 'running vagrant up for machine %s' % target
+        print 'running vagrant up for machine {0}'.format(target)
         v.up(vm_name=target)
 
         with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=target),
@@ -221,7 +180,8 @@ def build_package(url):
             file_link('/vagrant', '/vagrant/{0}'.format(path))
             print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=target),
                                                       target)
-            messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --force --name {1} "{1}"'.format(pypi_uri, path, package_format, dependencies))
+            messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --force --name {1} "{1}"'.format(pypi_uri,
+                            path, package_format, dependencies))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
