@@ -246,5 +246,6 @@ def git_checkout(url):
             Remote.remove(repo, 'origin')
         Remote.add(repo, 'origin', url)
 
-    repo.remote().pull()
+    repo.remote().pull(refspec='master')
+    print 'updated to SHA {0}'.format(repo.commit())
 
