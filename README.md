@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Monday, 16. June 2014*
+*created Wednesday, 11. June 2014 - updated Thursday, 19. June 2014*
 
 ## Goal
 
@@ -40,4 +40,5 @@ Needed in the shared folder of a vagrant node:
 - repo_*_refresh
 / repo_deb_init
 - repo_deb_add (bugfixing)
-- recherche: .rpm arch for "noarch", .deb for "all" as separate pakages?
+/ recherche: .rpm arch for "noarch", .deb for "all" as separate packages? -> "noarch" and "all" packages can be in any architecture sections
+
