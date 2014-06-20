@@ -212,17 +212,17 @@ def prepare_builddir(url):
     for file in glob.glob('provision*sh'):
         copy(file, path)
 
-
-@hosts(env.repo_host)
-@with_settings(user='root')
 @task
 def build_pypi(url):
     path = package_name(url)
-    execute(git_checkout, url)
+    sha = execute(git_checkout, url)
+    sha = sha['<local-only>']
 
     with lcd(path):
         local('python setup.py -q sdist')
-        put('dist/*.tar.gz', '{0}/{1}'.format(env.repo_pypi_root, path))
+        with settings(host_string=env.repo_host):
+            put('dist/*.tar.gz', '{0}/{1}'.format(env.repo_pypi_root, path), use_sudo=True)
+        local('find dist -name "*.tar.gz" -exec ln -sf {{}} {0}.tar.gz \;'.format(sha))
 
 
 def package_name(url):
@@ -247,5 +247,7 @@ def git_checkout(url):
         Remote.add(repo, 'origin', url)
 
     repo.remote().pull(refspec='master')
-    print 'updated to SHA {0}'.format(repo.commit())
+    commit = repo.commit()
+    print 'updated to SHA {0}'.format(commit.hexsha)
+    return commit.hexsha
 
