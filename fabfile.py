@@ -32,8 +32,6 @@ DEB_RELEASES = ['precise', 'trusty']
 PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
 
-### repo commands
-
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
 
 @hosts(env.repo_host)
@@ -127,8 +125,6 @@ def repo_deb_del(package, dist='precise'):
     run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, package))
 
 
-### helper commands
-
 @task
 def package_info(package):
     info = {
@@ -197,7 +193,7 @@ def build_package(url):
         package_format = PACKAGE_FORMAT.get(target, 'deb')
 
         pypi_uri = 'http://pypi.python.org/simple'
-        if package_name.startswith('zalando-'):
+        if path.startswith('zalando-'):
             pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
 
         if dependencies:
@@ -246,6 +242,7 @@ def prepare_builddir(url):
     for file in glob.glob('provision*sh'):
         copy(file, path)
 
+
 @task
 def build_pypi(url):
     path = package_name(url)
@@ -264,8 +261,6 @@ def package_name(url):
 
     return url.split('/')[-1].replace('.git', '')
 
-
-### git commands
 
 @task
 def git_checkout(url):
