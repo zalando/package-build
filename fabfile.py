@@ -130,17 +130,51 @@ def repo_deb_del(package, dist='precise'):
 ### helper commands
 
 @task
-def deps_list_debian(package):
-    deps = []
+def package_info(package):
+    info = {
+        'version': None,
+        'description': None,
+        'arch': None,
+        'dependencies': [],
+        'release': None,
+    }
     with hide('output', 'running'):
         os.path.isfile(package) or abort('{0} doesn\'t exist.'.format(package))
-        deps_string = local('dpkg --field {0} Depends'.format(package), capture=True)
-        for dependency in deps_string.split(','):
-            dependency = dependency.replace('(', '').replace(')', '').replace(' ', '')
-            if not ('>=' in dependency or '<=' in dependency) and dependency.count('=') == 1:
-                dependency = dependency.replace('=', '==')
-            deps.append(dependency)
-    return deps
+
+        if package.endswith('.deb'):
+            info['version'] = local('dpkg --field {0} Version'.format(package), capture=True)
+
+            info['description'] = local('dpkg --field {0} Description'.format(package), capture=True)
+
+            info['arch'] = local('dpkg --field {0} Architecture'.format(package), capture=True)
+
+            info['release'] = local('dpkg --field {0} Revision'.format(package), capture=True)
+
+            dependencies = local('dpkg --field {0} Depends'.format(package), capture=True)
+            for dependency in dependencies.split(','):
+                dependency = dependency.replace('(', '').replace(')', '').replace(' ', '')
+                if not ('>=' in dependency or '<=' in dependency) and dependency.count('=') == 1:
+                    dependency = dependency.replace('=', '==')
+                info['dependencies'].append(dependency)
+
+        if package.endswith('.rpm'):
+            info['version'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{VERSION}} {0}'.format(package),
+                                    capture=True)
+
+            info['description'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{SUMMARY}} {0}'.format(package),
+                                        capture=True)
+
+            info['arch'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{ARCH}} {0}'.format(package), capture=True)
+
+            info['release'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{RELEASE}} {0}'.format(package),
+                                    capture=True)
+
+            dependencies = local('rpm -qpR {0}'.format(package), capture=True)
+            for dependency in dependencies.split('\n'):
+                info['dependencies'].append(dependency.strip())
+
+    print info
+    return info
 
 
 @task
