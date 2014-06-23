@@ -169,7 +169,7 @@ def package_info(package):
             for dependency in dependencies.split('\n'):
                 info['dependencies'].append(dependency.strip())
 
-    print info
+    print json.dumps(info, indent=2)
     return info
 
 
