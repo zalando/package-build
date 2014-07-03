@@ -176,7 +176,8 @@ def package_info(package):
 @task
 def build_package(url):
 
-    execute(build_pypi, url)
+    sha = execute(build_pypi, url)
+    sha = sha['<local-only>']
     execute(prepare_builddir, url)
 
     path = package_name(url)
@@ -216,6 +217,7 @@ def build_package(url):
             for message in messages.split('\n'):
                 if 'Created package' in message:
                     package = message.split(':path=>')[1].replace('"', '').replace('}', '')
+                    file_link(package, '{0}.{1}'.format(sha, package_format))
                     print 'created package "{0}"'.format(package)
 
         # @TODO detect the correct distribution for uploading into the repos
