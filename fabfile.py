@@ -32,6 +32,22 @@ DEB_RELEASES = ['precise', 'trusty']
 PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
 
+class Package(object):
+
+    tgz = None
+    rpm = None
+    deb = None
+
+    def __init__(self, repo):
+        self.repo = repo
+
+    @property
+    def basename(self):
+        ''' get the package name from a git repo url '''
+
+        return self.repo.split('/')[-1].replace('.git', '')
+
+
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
 
 @hosts(env.repo_host)
@@ -174,121 +190,108 @@ def package_info(package):
 
 
 @task
-def build_package(url):
+def build_package(repo):
 
-    sha = execute(build_pypi, url)
-    sha = sha['<local-only>']
-    execute(prepare_builddir, url)
+    p = execute(build_pypi, repo)
+    p = p['<local-only>']
 
-    path = package_name(url)
+    # put all files for the build host in place
+    copy('Vagrantfile', p.basename)
+    copy('boxes', p.basename)
+    for file in glob.glob('provision*sh'):
+        copy(file, p.basename)
 
+    # detect specific dependencies for targets or fallback to autodetection
     package_dependencies = []
-    if os.path.isfile('{0}/package.json'.format(path)):
-        with open('{0}/package.json'.format(path), 'r') as fh:
+    if os.path.isfile('{0}/package.json'.format(p.basename)):
+        with open('{0}/package.json'.format(p.basename), 'r') as fh:
             package_dependencies = json.load(fh).items()
     else:
         package_dependencies = [(t, []) for t in PACKAGE_FORMAT.keys()]
 
     for target, dependencies in package_dependencies:
-        package = None
         package_format = PACKAGE_FORMAT.get(target, 'deb')
 
         pypi_uri = 'http://pypi.python.org/simple'
-        if path.startswith('zalando-'):
+        if p.basename.startswith('zalando-'):
             pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
 
         if dependencies:
             dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
 
-        print 'creating vagrant object with root dir ./{0}'.format(path)
-        v = vagrant.Vagrant(root=path)
+        print 'creating vagrant object with root dir ./{0}'.format(p.basename)
+        v = vagrant.Vagrant(root=p.basename)
         print 'running vagrant up for machine {0}'.format(target)
         v.up(vm_name=target)
 
         with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=target),
                       key_filename=v.keyfile(vm_name=target), disable_known_hosts=True):
             # this is necessary because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
-            file_link('/vagrant', '/vagrant/{0}'.format(path))
-            print 'build {0}.{1} on {2} ({3})'.format(path, package_format, v.user_hostname_port(vm_name=target),
+            file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
+            print 'build {0}.{1} on {2} ({3})'.format(p.basename, package_format, v.user_hostname_port(vm_name=target),
                                                       target)
             messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --force --name {1} "{1}"'.format(pypi_uri,
-                            path, package_format, dependencies))
+                            p.basename, package_format, dependencies))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
-                    package = message.split(':path=>')[1].replace('"', '').replace('}', '')
-                    file_link(package, '{0}.{1}'.format(sha, package_format))
-                    print 'created package "{0}"'.format(package)
+                    setattr(p, package_format, message.split(':path=>')[1].replace('"', '').replace('}', ''))
+                    file_link(getattr(p, package_format), '{0}.{1}'.format(p.sha, package_format))
+                    print 'created package "{0}"'.format(getattr(p, package_format))
 
         # @TODO detect the correct distribution for uploading into the repos
-        if package:
+        if getattr(p, package_format):
             v.halt(vm_name=target)
-            if package_format == 'rpm':
-                execute(repo_rpm_add, '{0}/{1}'.format(path, package))
-            elif package_format == 'deb':
-                execute(repo_deb_add, '{0}/{1}'.format(path, package))
-            else:
-                print 'no method to add package "{0}" to a repository'.format(package)
+            execute('repo_{0}_add'.format(package_format), '{0}/{1}'.format(p.basename, getattr(p, package_format)))
         else:
             print 'no package has been created, you may want to inspect the state in the machine:'
-            print 'cd {0}/ && vagrant ssh {1}'.format(path, target)
+            print 'cd {0}/ && vagrant ssh {1}'.format(p.basename, target)
 
 
 @task
-def prepare_builddir(url):
-    path = package_name(url)
-    execute(git_checkout, url)
+def build_pypi(repo):
+    p = execute(git_checkout, repo)
+    p = p['<local-only>']
 
-    copy('Vagrantfile', path)
-    copy('boxes', path)
-    for file in glob.glob('provision*sh'):
-        copy(file, path)
-
-
-@task
-def build_pypi(url):
-    path = package_name(url)
-    sha = execute(git_checkout, url)
-    sha = sha['<local-only>']
-
-    with lcd(path):
+    with lcd(p.basename):
         output = local('python setup.py sdist', capture=True)
-        package_name_tgz = None
         for line in output.split('\n'):
             if line.startswith('creating'):
-                package_name_tgz = line.split(' ')[1].strip()
+                p.tgz = line.split(' ')[1].strip() + '.tar.gz'
                 break
 
-        if not package_name_tgz:
+        if not p.tgz:
             abort('unable to parse name of package\'s tar.gz file')
 
         with settings(host_string=env.repo_host):
-            put('dist/{0}.tar.gz'.format(package_name_tgz), '{0}/{1}'.format(env.repo_pypi_root, path), use_sudo=True)
-        local('ln -sf dist/{1}.tar.gz {0}.tar.gz'.format(sha, package_name_tgz))
-        return sha
-
-
-def package_name(url):
-    ''' get the package name from a git repo url '''
-
-    return url.split('/')[-1].replace('.git', '')
+            put('dist/{0}'.format(p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename), use_sudo=True)
+        local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.sha))
+        return p
 
 
 @task
-def git_checkout(url):
-    path = package_name(url)
+def git_checkout(repo=None, package=None):
 
-    if not os.path.isdir(path):
-        repo = Repo.clone_from(url, path)
+    if package is None and repo is None:
+        abort('you have to pass either "package" or "repo"')
+
+    if repo:
+        p = Package(repo)
     else:
-        repo = Repo(path)
+        p = package
+
+    if not os.path.isdir(p.basename):
+        repo = Repo.clone_from(p.repo, p.basename)
+    else:
+        repo = Repo(p.basename)
         # ensure that the remote "origin" is set to the correct url
         if 'origin' in [remote.name for remote in repo.remotes]:
             Remote.remove(repo, 'origin')
-        Remote.add(repo, 'origin', url)
+        Remote.add(repo, 'origin', p.repo)
 
     repo.remote().pull(refspec='master')
     commit = repo.commit()
-    print 'updated to SHA {0}'.format(commit.hexsha)
-    return commit.hexsha
+    p.sha = commit.hexsha[:7]
+    print 'updated repo for "{0}" to commit {1}'.format(p.basename, p.sha)
+    return p
 
