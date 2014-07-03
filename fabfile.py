@@ -250,10 +250,20 @@ def build_pypi(url):
     sha = sha['<local-only>']
 
     with lcd(path):
-        local('python setup.py -q sdist')
+        output = local('python setup.py sdist', capture=True)
+        package_name_tgz = None
+        for line in output.split('\n'):
+            if line.startswith('creating'):
+                package_name_tgz = line.split(' ')[1].strip()
+                break
+
+        if not package_name_tgz:
+            abort('unable to parse name of package\'s tar.gz file')
+
         with settings(host_string=env.repo_host):
-            put('dist/*.tar.gz', '{0}/{1}'.format(env.repo_pypi_root, path), use_sudo=True)
-        local('find dist -name "*.tar.gz" -exec ln -sf {{}} {0}.tar.gz \;'.format(sha))
+            put('dist/{0}.tar.gz'.format(package_name_tgz), '{0}/{1}'.format(env.repo_pypi_root, path), use_sudo=True)
+        local('ln -sf dist/{1}.tar.gz {0}.tar.gz'.format(sha, package_name_tgz))
+        return sha
 
 
 def package_name(url):
