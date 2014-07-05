@@ -138,7 +138,9 @@ def repo_deb_add(package, dist='precise'):
 @with_settings(user='root')
 @task
 def repo_deb_del(package, dist='precise'):
-    run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, package))
+    with hide('output'):
+        package_name = local('dpkg --field {0} Package'.format(package), capture=True)
+        run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, package_name))
 
 
 @task
