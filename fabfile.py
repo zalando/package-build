@@ -60,7 +60,7 @@ def repo_rpm_init():
     for release in RPM_RELEASES:
         for component in RPM_COMPONENTS:
             for arch in RPM_ARCHS:
-                path = '/'.join[env.repo_rpm_root, release, component, arch]
+                path = '/'.join([env.repo_rpm_root, release, component, arch])
                 dir_ensure(path, recursive=True)
                 run('createrepo {0}'.format(path))
 
