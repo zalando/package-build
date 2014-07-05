@@ -230,8 +230,8 @@ def build_package(repo):
             file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
             print 'build {0}.{1} on {2} ({3})'.format(p.basename, package_format, v.user_hostname_port(vm_name=target),
                                                       target)
-            messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --force --name {1} "{1}"'.format(pypi_uri,
-                            p.basename, package_format, dependencies))
+            messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --iteration {4} --force --name {1} "{1}"'.format(pypi_uri,
+                            p.basename, package_format, dependencies, p.sha))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:

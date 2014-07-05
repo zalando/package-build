@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Thursday, 03. July 2014*
+*created Wednesday, 11. June 2014 - updated Saturday, 05. July 2014*
 
 ## Goal
 
@@ -37,10 +37,10 @@ Needed in the shared folder of a vagrant node:
 - create base images for build hosts, which are already provisioned with `fpm`
 - maybe add mode to generete "uber"-packages with all requirements built-in
 - repo_*_refresh
-- repo_deb_add (bugfixing), use fpm's `--iteration` flag to add the short SHA for differentiate package nano releases
 
 ## Done
 
 - implement mechanism for package.json
 - repo_deb_init
 - recherche: .rpm arch for "noarch", .deb for "all" as separate packages? -> "noarch" and "all" packages can be in any architecture sections
+- repo_deb_add (bugfixing), use fpm's `--iteration` flag to add the short SHA for differentiate package nano releases
