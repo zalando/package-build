@@ -209,7 +209,7 @@ def build_package(repo):
         with open('{0}/package.json'.format(p.basename), 'r') as fh:
             package_dependencies = json.load(fh).items()
     else:
-        package_dependencies = [(t, []) for t in PACKAGE_FORMAT.keys()]
+        package_dependencies = [(t, '') for t in PACKAGE_FORMAT.keys()]
 
     for target, dependencies in package_dependencies:
         package_format = PACKAGE_FORMAT.get(target, 'deb')
