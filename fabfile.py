@@ -242,14 +242,18 @@ def build_package(repo, name=None):
             file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
             print 'build {0}.{1} on {2} ({3})'.format(p.basename, package_format, v.user_hostname_port(vm_name=target),
                                                       target)
-            messages = \
-                sudo('fpm -s python --python-pypi http://{0}/simple/ -t {2} {3} --iteration {4} --force --name {1} "{1}"'.format(env.repo_host,
-                     p.basename, package_format, dependencies, p.sha))
+            messages = sudo('fpm -s python --python-pypi http://{0}/simple/ -t {2} {3} --iteration {4}.{5} --force --name {1} "{1}"'.format(
+                    env.repo_host,
+                    p.basename,
+                    package_format,
+                    dependencies,
+                    p.sha,
+                    target))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
                     setattr(p, package_format, message.split(':path=>')[1].replace('"', '').replace('}', ''))
-                    file_link(getattr(p, package_format), '{0}.{1}'.format(p.sha, package_format))
+                    file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.sha, target, package_format))
                     print 'created package "{0}"'.format(getattr(p, package_format))
 
         if getattr(p, package_format):
