@@ -7,6 +7,7 @@ import glob
 from shutil import copy
 from string import Template
 import json
+import time
 
 from fabric.api import local, run, sudo, execute, put
 from fabric.context_managers import settings, cd, lcd, hide
@@ -248,6 +249,7 @@ def build_package(repo):
         else:
             print 'no package has been created, you may want to inspect the state in the machine:'
             print 'cd {0}/ && vagrant ssh {1}'.format(p.basename, target)
+    print 'task ran {0} seconds'.format(time.time() - start_time)
 
 
 @task
