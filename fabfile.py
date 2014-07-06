@@ -35,16 +35,21 @@ PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'
 
 class Package(object):
 
+    name = None
     tgz = None
     rpm = None
     deb = None
 
-    def __init__(self, repo):
+    def __init__(self, repo, name=None):
         self.repo = repo
+        self.name = name
 
     @property
     def basename(self):
         ''' get the package name from a git repo url '''
+
+        if self.name:
+            return self.name
 
         return self.repo.split('/')[-1].replace('.git', '')
 
@@ -193,9 +198,10 @@ def package_info(package):
 
 
 @task
-def build_package(repo):
+def build_package(repo, name=None):
+    start_time = time.time()
 
-    p = execute(build_pypi, repo)
+    p = execute(build_pypi, repo, name)
     p = p['<local-only>']
 
     # put all files for the build host in place
@@ -233,8 +239,9 @@ def build_package(repo):
             file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
             print 'build {0}.{1} on {2} ({3})'.format(p.basename, package_format, v.user_hostname_port(vm_name=target),
                                                       target)
-            messages = sudo('fpm -s python --python-pypi {0} -t {2} {3} --iteration {4} --force --name {1} "{1}"'.format(pypi_uri,
-                            p.basename, package_format, dependencies, p.sha))
+            messages = \
+                sudo('fpm -s python --python-pypi {0} -t {2} {3} --iteration {4} --force --name {1} "{1}"'.format(pypi_uri,
+                     p.basename, package_format, dependencies, p.sha))
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
@@ -253,8 +260,8 @@ def build_package(repo):
 
 
 @task
-def build_pypi(repo):
-    p = execute(git_checkout, repo)
+def build_pypi(repo, name=None):
+    p = execute(git_checkout, repo, name)
     p = p['<local-only>']
 
     with lcd(p.basename):
@@ -274,15 +281,9 @@ def build_pypi(repo):
 
 
 @task
-def git_checkout(repo=None, package=None):
+def git_checkout(repo, name=None):
 
-    if package is None and repo is None:
-        abort('you have to pass either "package" or "repo"')
-
-    if repo:
-        p = Package(repo)
-    else:
-        p = package
+    p = Package(repo, name=name)
 
     if not os.path.isdir(p.basename):
         repo = Repo.clone_from(p.repo, p.basename)
