@@ -253,8 +253,12 @@ def build_package(repo, name=None):
             for message in messages.split('\n'):
                 if 'Created package' in message:
                     setattr(p, package_format, message.split(':path=>')[1].replace('"', '').replace('}', ''))
-                    file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.sha, target, package_format))
-                    print 'created package "{0}"'.format(getattr(p, package_format))
+                    break
+
+            if not getattr(p, package_format):
+                print 'error while creating {0} package'.fomat(package_format)
+                continue
+            file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.sha, target, package_format))
 
         if getattr(p, package_format):
             v.halt(vm_name=target)
@@ -279,13 +283,14 @@ def build_pypi(repo, name=None):
                 break
 
         if not p.tgz:
-            abort('unable to parse name of package\'s tar.gz file')
+            abort('error while creating tar.gz package')
+        local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.sha))
 
         with settings(host_string=env.repo_host, user='root'):
             dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data',
                        group='www-data')
             put('dist/{0}'.format(p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
-        local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.sha))
+
         return p
 
 
