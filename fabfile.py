@@ -24,11 +24,8 @@ env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
 env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/centos/'
 env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
 
-RPM_RELEASES = ['6']
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
-
-DEB_RELEASES = ['precise', 'trusty']
 
 PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
@@ -63,20 +60,21 @@ def repo_rpm_init():
     package_ensure('createrepo')
     dir_ensure('{0}/archive/'.format(env.repo_rpm_root), recursive=True)
 
-    for release in RPM_RELEASES:
-        for component in RPM_COMPONENTS:
-            for arch in RPM_ARCHS:
-                path = '/'.join([env.repo_rpm_root, release, component, arch])
-                dir_ensure(path, recursive=True)
-                run('createrepo {0}'.format(path))
+    for release, package_format in PACKAGE_FORMAT.items():
+        if package_format == 'rpm':
+            for component in RPM_COMPONENTS:
+                for arch in RPM_ARCHS:
+                    path = '/'.join([env.repo_rpm_root, release, component, arch])
+                    dir_ensure(path, recursive=True)
+                    run('createrepo {0}'.format(path))
 
 
 @hosts(env.repo_host)
 @task
-def repo_rpm_list(dist='6'):
-    with hide('output'):
-        output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
-        for line in output.split('\n'):
+def repo_rpm_list(dist='centos6.5'):
+    output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
+    for line in output.split('\n'):
+        if line:
             dist, component, arch, package = line.split('/')
             print '{0}: {1}'.format('|'.join([dist, component, arch]), package)
 
@@ -84,7 +82,7 @@ def repo_rpm_list(dist='6'):
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_rpm_add(package, dist='6', component='base'):
+def repo_rpm_add(package, dist='centos6.5', component='base'):
 
     arch = 'x86_64'
     if any(map(lambda arch: arch in package, ['i386, i586, i686'])):
@@ -100,7 +98,7 @@ def repo_rpm_add(package, dist='6', component='base'):
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_rpm_del(package, dist='6', component='base'):
+def repo_rpm_del(packagename, dist='centos6.5', component='base'):
     path = '/'.join([env.repo_rpm_root, dist, component])
     run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, package, env.repo_rpm_root))
     run('createrepo {0}'.format(path))
@@ -245,10 +243,10 @@ def build_package(repo, name=None):
                     file_link(getattr(p, package_format), '{0}.{1}'.format(p.sha, package_format))
                     print 'created package "{0}"'.format(getattr(p, package_format))
 
-        # @TODO detect the correct distribution for uploading into the repos
         if getattr(p, package_format):
             v.halt(vm_name=target)
-            execute('repo_{0}_add'.format(package_format), '{0}/{1}'.format(p.basename, getattr(p, package_format)))
+            execute('repo_{0}_add'.format(package_format), '{0}/{1}'.format(p.basename, getattr(p, package_format)),
+                    target)
         else:
             print 'no package has been created, you may want to inspect the state in the machine:'
             print 'cd {0}/ && vagrant ssh {1}'.format(p.basename, target)
@@ -271,7 +269,8 @@ def build_pypi(repo, name=None):
             abort('unable to parse name of package\'s tar.gz file')
 
         with settings(host_string=env.repo_host, user='root'):
-            dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data', group='www-data')
+            dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data',
+                       group='www-data')
             put('dist/{0}'.format(p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
         local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.sha))
         return p
