@@ -270,8 +270,9 @@ def build_pypi(repo, name=None):
         if not p.tgz:
             abort('unable to parse name of package\'s tar.gz file')
 
-        with settings(host_string=env.repo_host):
-            put('dist/{0}'.format(p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename), use_sudo=True)
+        with settings(host_string=env.repo_host, user='root'):
+            dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data', group='www-data')
+            put('dist/{0}'.format(p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
         local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.sha))
         return p
 
