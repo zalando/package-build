@@ -8,6 +8,7 @@ from shutil import copy
 from string import Template
 import json
 import time
+import datetime
 
 from fabric.api import local, run, sudo, execute, put
 from fabric.context_managers import settings, cd, lcd, hide
@@ -247,7 +248,7 @@ def build_package(repo, name=None):
                     p.basename,
                     package_format,
                     dependencies,
-                    p.sha,
+                    p.date,
                     target))
 
             for message in messages.split('\n'):
@@ -258,7 +259,7 @@ def build_package(repo, name=None):
             if not getattr(p, package_format):
                 print 'error while creating {0} package'.fomat(package_format)
                 continue
-            file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.sha, target, package_format))
+            file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.date, target, package_format))
 
         if getattr(p, package_format):
             v.halt(vm_name=target)
@@ -284,7 +285,7 @@ def build_pypi(repo, name=None):
 
         if not p.tgz:
             abort('error while creating tar.gz package')
-        local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.sha))
+        local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.date))
 
         with settings(host_string=env.repo_host, user='root'):
             dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data',
@@ -311,6 +312,7 @@ def git_checkout(repo, name=None):
     repo.remote().pull(refspec='master')
     commit = repo.commit()
     p.sha = commit.hexsha[:7]
-    print 'updated repo for "{0}" to commit {1}'.format(p.basename, p.sha)
+    p.date =  datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
+    print 'updated repo for "{0}" to commit {1}, date {2}'.format(p.basename, p.sha, p.date)
     return p
 
