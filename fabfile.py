@@ -70,6 +70,7 @@ def repo_rpm_init():
 
 
 @hosts(env.repo_host)
+@with_settings(hide('commands'))
 @task
 def repo_rpm_list(dist='centos6.5'):
     output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
@@ -80,7 +81,7 @@ def repo_rpm_list(dist='centos6.5'):
 
 
 @hosts(env.repo_host)
-@with_settings(user='root')
+@with_settings(hide('commands'), user='root')
 @task
 def repo_rpm_add(package, dist='centos6.5', component='base'):
 
@@ -92,16 +93,20 @@ def repo_rpm_add(package, dist='centos6.5', component='base'):
     package = package.split('/')[-1]
     path = '/'.join([env.repo_rpm_root, dist, component, arch])
     run('cp {0}/archive/{1} {2}'.format(env.repo_rpm_root, package, path))
-    run('createrepo {0}'.format(path))
+    output = run('createrepo {0}'.format(path))
+    if output.succeeded:
+        print 'added %s to repo' % package
 
 
 @hosts(env.repo_host)
-@with_settings(user='root')
+@with_settings(hide('commands'), user='root')
 @task
 def repo_rpm_del(packagename, dist='centos6.5', component='base'):
     path = '/'.join([env.repo_rpm_root, dist, component])
-    run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, package, env.repo_rpm_root))
-    run('createrepo {0}'.format(path))
+    run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, packagename, env.repo_rpm_root))
+    output = run('createrepo {0}'.format(path))
+    if output.succeeded:
+        print 'deleted %s from repo' % packagename
 
 
 @hosts(env.repo_host)
@@ -117,37 +122,44 @@ def repo_deb_init():
         template = Template(tf.read())
 
     with open(filename, 'w') as fh:
-        for release in DEB_RELEASES:
-            fh.write(template.safe_substitute(codename=release, codename_uppercase=release.title()))
+        for release, package_format in PACKAGE_FORMAT.items():
+            if package_format == 'deb':
+                fh.write(template.safe_substitute(codename=release, codename_uppercase=release.title()))
 
     put(filename, '{0}/conf/{1}'.format(env.repo_deb_root, filename))
 
 
 @hosts(env.repo_host)
+@with_settings(hide('commands'))
 @task
-def repo_deb_list(dist='precise'):
-    sudo('reprepro -b {0} list {1}'.format(env.repo_deb_root, dist))
+def repo_deb_list(dist='ubuntu12.04'):
+    output = sudo('reprepro -b {0} list {1}'.format(env.repo_deb_root, dist))
+    for line in output.split('\n'):
+        print line
 
 
 @hosts(env.repo_host)
-@with_settings(user='root')
+@with_settings(hide('commands'), user='root')
 @task
-def repo_deb_add(package, dist='precise'):
+def repo_deb_add(package, dist='ubuntu12.04'):
     put(package, '{0}/archive/'.format(env.repo_deb_root))
     package = package.split('/')[-1]
-    run('reprepro -b {0} includedeb {1} {0}/archive/{2}'.format(env.repo_deb_root, dist, package))
+    output = run('reprepro -b {0} includedeb {1} {0}/archive/{2}'.format(env.repo_deb_root, dist, package))
+    if output.succeeded:
+        print 'added %s to repo' % package
 
 
 @hosts(env.repo_host)
-@with_settings(user='root')
+@with_settings(hide('commands'), user='root')
 @task
-def repo_deb_del(package, dist='precise'):
-    with hide('output'):
-        package_name = local('dpkg --field {0} Package'.format(package), capture=True)
-        run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, package_name))
+def repo_deb_del(packagename, dist='ubuntu12.04'):
+    output = run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, packagename))
+    if output.succeeded:
+        print 'deleted %s from repo' % packagename
 
 
 @task
+@with_settings(hide('commands'))
 def package_info(package):
     info = {
         'version': None,
@@ -156,40 +168,37 @@ def package_info(package):
         'dependencies': [],
         'release': None,
     }
-    with hide('output', 'running'):
-        os.path.isfile(package) or abort('{0} doesn\'t exist.'.format(package))
+    os.path.isfile(package) or abort('{0} doesn\'t exist.'.format(package))
 
-        if package.endswith('.deb'):
-            info['version'] = local('dpkg --field {0} Version'.format(package), capture=True)
+    if package.endswith('.deb'):
+        info['version'] = local('dpkg --field {0} Version'.format(package), capture=True)
 
-            info['description'] = local('dpkg --field {0} Description'.format(package), capture=True)
+        info['description'] = local('dpkg --field {0} Description'.format(package), capture=True)
 
-            info['arch'] = local('dpkg --field {0} Architecture'.format(package), capture=True)
+        info['arch'] = local('dpkg --field {0} Architecture'.format(package), capture=True)
 
-            info['release'] = local('dpkg --field {0} Revision'.format(package), capture=True)
+        info['release'] = local('dpkg --field {0} Revision'.format(package), capture=True)
 
-            dependencies = local('dpkg --field {0} Depends'.format(package), capture=True)
-            for dependency in dependencies.split(','):
-                dependency = dependency.replace('(', '').replace(')', '').replace(' ', '')
-                if not ('>=' in dependency or '<=' in dependency) and dependency.count('=') == 1:
-                    dependency = dependency.replace('=', '==')
-                info['dependencies'].append(dependency)
+        dependencies = local('dpkg --field {0} Depends'.format(package), capture=True)
+        for dependency in dependencies.split(','):
+            dependency = dependency.replace('(', '').replace(')', '').replace(' ', '')
+            if not ('>=' in dependency or '<=' in dependency) and dependency.count('=') == 1:
+                dependency = dependency.replace('=', '==')
+            info['dependencies'].append(dependency)
 
-        if package.endswith('.rpm'):
-            info['version'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{VERSION}} {0}'.format(package),
+    if package.endswith('.rpm'):
+        info['version'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{VERSION}} {0}'.format(package), capture=True)
+
+        info['description'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{SUMMARY}} {0}'.format(package),
                                     capture=True)
 
-            info['description'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{SUMMARY}} {0}'.format(package),
-                                        capture=True)
+        info['arch'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{ARCH}} {0}'.format(package), capture=True)
 
-            info['arch'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{ARCH}} {0}'.format(package), capture=True)
+        info['release'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{RELEASE}} {0}'.format(package), capture=True)
 
-            info['release'] = local('rpm -qp --dbpath=/tmp --queryformat=%{{RELEASE}} {0}'.format(package),
-                                    capture=True)
-
-            dependencies = local('rpm -qpR {0}'.format(package), capture=True)
-            for dependency in dependencies.split('\n'):
-                info['dependencies'].append(dependency.strip())
+        dependencies = local('rpm -qpR {0}'.format(package), capture=True)
+        for dependency in dependencies.split('\n'):
+            info['dependencies'].append(dependency.strip())
 
     print json.dumps(info, indent=2)
     return info
