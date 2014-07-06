@@ -221,10 +221,6 @@ def build_package(repo, name=None):
     for target, dependencies in package_dependencies:
         package_format = PACKAGE_FORMAT.get(target, 'deb')
 
-        pypi_uri = 'http://pypi.python.org/simple'
-        if p.basename.startswith('zalando-'):
-            pypi_uri = 'http://{0}/simple/'.format(env.repo_host)
-
         if dependencies:
             dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
 
@@ -240,7 +236,7 @@ def build_package(repo, name=None):
             print 'build {0}.{1} on {2} ({3})'.format(p.basename, package_format, v.user_hostname_port(vm_name=target),
                                                       target)
             messages = \
-                sudo('fpm -s python --python-pypi {0} -t {2} {3} --iteration {4} --force --name {1} "{1}"'.format(pypi_uri,
+                sudo('fpm -s python --python-pypi http://{0}/simple/ -t {2} {3} --iteration {4} --force --name {1} "{1}"'.format(env.repo_host,
                      p.basename, package_format, dependencies, p.sha))
 
             for message in messages.split('\n'):
