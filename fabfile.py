@@ -140,14 +140,15 @@ def repo_deb_list(dist='ubuntu12.04'):
 
 
 @hosts(env.repo_host)
-@with_settings(hide('commands'), user='root')
+@with_settings(user='root')
 @task
 def repo_deb_add(package, dist='ubuntu12.04'):
-    put(package, '{0}/archive/'.format(env.repo_deb_root))
-    package = package.split('/')[-1]
-    output = run('reprepro -b {0} includedeb {1} {0}/archive/{2}'.format(env.repo_deb_root, dist, package))
-    if output.succeeded:
-        print 'added %s to repo' % package
+    with hide('commands'):
+        put(package, '{0}/archive/'.format(env.repo_deb_root))
+        package = package.split('/')[-1]
+        output = run('reprepro -b {0} includedeb {1} {0}/archive/{2}'.format(env.repo_deb_root, dist, package))
+        if output.succeeded:
+            print 'added %s to repo' % package
 
 
 @hosts(env.repo_host)
