@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Saturday, 05. July 2014*
+*created Wednesday, 11. June 2014 - updated Sunday, 10. August 2014*
 
 ## Goal
 
@@ -37,6 +37,8 @@ Needed in the shared folder of a vagrant node:
 - create base images for build hosts, which are already provisioned with `fpm`
 - maybe add mode to generete "uber"-packages with all requirements built-in
 - repo_*_refresh
+- switch repo_deb_* commands from reprepro to use aptly:
+`aptly -config=/etc/aptly-ubuntu12.04.conf repo create -distribution="ubuntu12.04" ubuntu12.04` ...
 
 ## Done
 
