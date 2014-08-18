@@ -29,7 +29,7 @@ case "${1}" in
     if ! id ${REDIS_USER} > /dev/null 2>&1 ; then
         adduser --system --home /var/lib/redis --no-create-home \
         --ingroup "${REDIS_GROUP}" --disabled-password --shell /bin/false \
-        "${REDIS_USER}" -u 109 -g 112
+        "${REDIS_USER}" --uid 109 --gid 112
     fi
 
     # Set user permissions on /var/log/redis/redis-server.log
