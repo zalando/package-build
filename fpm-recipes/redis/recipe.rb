@@ -33,6 +33,6 @@ class Redis < FPM::Cookery::Recipe
     bin.install Dir["src/redis-*"].select{ |f| f =~ /redis-[^\.]+$/ }
 
     etc('redis').install %w(redis.conf sentinel.conf)
-    etc('init.d').install_p(workdir('redis-server.init.d'), 'redis-server')
+    etc('init.d').install_p(workdir('redis-server.init.d'), 'zalando-redis-server')
   end
 end
