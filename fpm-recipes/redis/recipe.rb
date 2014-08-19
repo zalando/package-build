@@ -4,7 +4,7 @@ class Redis < FPM::Cookery::Recipe
   description 'An advanced key-value store'
 
   v = '2.8.13'
-  name     'redis-server'
+  name     'zalando-redis-server'
   version  "2:#{v}"
   revision 0
   homepage 'http://redis.io/'
