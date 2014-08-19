@@ -6,12 +6,12 @@ class Redis < FPM::Cookery::Recipe
   v = '2.8.13'
   name     'zalando-redis-server'
   version  "2:#{v}"
-  revision 0
+  revision 1
   homepage 'http://redis.io/'
   source   'https://github.com/antirez/redis', :with => :git, :tag => v
 
   section      'database'
-  conflicts    'redis-server'
+  conflicts    'redis-server', 'redis-tools'
   config_files '/etc/redis/redis.conf'
 
   post_install   'postinst'

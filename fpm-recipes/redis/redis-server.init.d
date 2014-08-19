@@ -1,14 +1,14 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:		redis-server
-# Required-Start:	$syslog
-# Required-Stop:	$syslog
-# Should-Start:		$local_fs
-# Should-Stop:		$local_fs
-# Default-Start:	2 3 4 5
-# Default-Stop:		0 1 6
-# Short-Description:	redis-server - Persistent key-value db
-# Description:		redis-server - Persistent key-value db
+# Provides:     redis-server
+# Required-Start:   $syslog $remote_fs
+# Required-Stop:    $syslog $remote_fs
+# Should-Start:     $local_fs
+# Should-Stop:      $local_fs
+# Default-Start:    2 3 4 5
+# Default-Stop:     0 1 6
+# Short-Description:    redis-server - Persistent key-value db
+# Description:      redis-server - Persistent key-value db
 ### END INIT INFO
 
 
@@ -17,64 +17,74 @@ DAEMON=/usr/bin/redis-server
 DAEMON_ARGS=/etc/redis/redis.conf
 NAME=redis-server
 DESC=redis-server
-PIDFILE=/var/run/redis.pid
+
+RUNDIR=/var/run/redis
+PIDFILE=$RUNDIR/redis-server.pid
 
 test -x $DAEMON || exit 0
-test -x $DAEMONBOOTSTRAP || exit 0
 
 set -e
 
+if [ "$2" = "" ]; then
+    INSTANCES=$( cd /etc/redis; for f in redis.*.conf; do echo "$f" | sed -e 's/^redis\.//; s/\.conf//'; done )
+else
+    INSTANCES="$2"
+fi
+
 case "$1" in
   start)
-	echo -n "Starting $DESC: "
-	touch $PIDFILE
-	chown redis:redis $PIDFILE
-	chown redis:redis /var/log/redis
-	chown redis:redis /var/lib/redis
-	if start-stop-daemon --start --quiet --umask 007 --pidfile $PIDFILE --chuid redis:redis --exec $DAEMON -- $DAEMON_ARGS
-	then
-		echo "$NAME."
-	else
-		echo "failed"
-	fi
-	;;
+    echo -n "Starting $DESC: "
+    mkdir -p $RUNDIR
+    for inst in $INSTANCES; do
+        PIDFILE=$RUNDIR/redis-server.$inst.pid
+        CONF=/etc/redis/redis.$inst.conf
+        touch $PIDFILE
+        chown redis:redis $RUNDIR $PIDFILE
+        chmod 755 $RUNDIR
+        if start-stop-daemon --start --quiet --umask 007 --pidfile $PIDFILE --chuid redis:redis --exec $DAEMON -- $CONF
+        then
+            echo "$NAME."
+        else
+            echo "failed"
+        fi
+    done
+    ;;
   stop)
-	echo -n "Stopping $DESC: "
-	if start-stop-daemon --stop --retry 10 --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
-	then
-		echo "$NAME."
-	else
-		echo "failed"
-	fi
-	rm -f $PIDFILE
-	;;
+    echo -n "Stopping $DESC: "
+    for inst in  $INSTANCES; do
+        PIDFILE=$RUNDIR/redis-server.$inst.pid
+        if start-stop-daemon --stop --retry forever/QUIT/1 --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
+        then
+            echo "$NAME."
+        else
+            echo "failed"
+        fi
+        rm -f $PIDFILE
+    done
+    ;;
 
   restart|force-reload)
-	${0} stop
-	${0} start
-	;;
+    ${0} stop $INSTANCES
+    ${0} start $INSTANCES
+    ;;
+
   status)
-        if [ -f $PIDFILE ]
+    echo -n "$DESC is "
+    for inst in $INSTANCES; do
+        PIDFILE=$RUNDIR/redis-server.$inst.pid
+        if start-stop-daemon --stop --quiet --signal 0 --name ${NAME} --pidfile ${PIDFILE}
         then
-                PID=`cat $PIDFILE`
-                echo -n "Redis (pid: $PID): "
-                if ps aux | grep $PID > /dev/null
-                then
-                        echo "running"
-                        exit 0
-                else
-                        echo "failed"
-                        exit 3
-                fi
+            echo "running"
         else
-                echo "Redis not running"
-                exit 3
+            echo "not running"
         fi
-        ;;
+    done
+    ;;
+
   *)
-	echo "Usage: /etc/init.d/$NAME {start|stop|restart|force-reload}" >&2
-	exit 1
-	;;
+    echo "Usage: /etc/init.d/$NAME {start|stop|restart|force-reload} [INTANCES]" >&2
+    exit 1
+    ;;
 esac
 
 exit 0
