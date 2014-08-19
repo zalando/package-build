@@ -18,3 +18,7 @@
     sudo -i
     root@precise64:/vagrant# cd fpm-recipes/redis/
     root@precise64:/vagrant/fpm-recipes/redis# fpm-cook
+
+## Release package
+
+[Sysdocu](https://sysdocu.zalando.net/internal-repo/Howto)
