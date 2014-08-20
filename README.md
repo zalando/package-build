@@ -27,3 +27,7 @@ It has been created in order to make Debian packaging for Ubuntu much easier. It
 ## Release package
 
 [Sysdocu](https://sysdocu.zalando.net/internal-repo/Howto)
+
+## Info
+
+fpm-cookery automatically builds only a package for the distribution/OS where it's running on [source](https://github.com/bernd/fpm-cookery/blob/master/spec/facts_spec.rb#L72).
