@@ -35,6 +35,9 @@ fpm-cookery automatically builds only a package for the distribution/OS where it
 ## More recipe examples
 
 [https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
+
 [https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand](https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand)
+
 [https://github.com/gocardless/fpm-recipes](https://github.com/gocardless/fpm-recipes)
+
 [https://github.com/henchmanio/fpm-recipes](https://github.com/henchmanio/fpm-recipes)
