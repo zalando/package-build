@@ -31,3 +31,10 @@ It has been created in order to make Debian packaging for Ubuntu much easier. It
 ## Info
 
 fpm-cookery automatically builds only a package for the distribution/OS where it's running on [source](https://github.com/bernd/fpm-cookery/blob/master/spec/facts_spec.rb#L72).
+
+## More recipe examples
+
+[https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
+[https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand](https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand)
+[https://github.com/gocardless/fpm-recipes](https://github.com/gocardless/fpm-recipes)
+[https://github.com/henchmanio/fpm-recipes](https://github.com/henchmanio/fpm-recipes)
