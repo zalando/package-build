@@ -15,11 +15,11 @@ It has been created in order to make Debian packaging for Ubuntu much easier. It
 
     git clone ssh://git@stash.zalando.net:7999/system/vagrant-packagebuild.git
     vagrant-packagebuild
-    vagrant up
+    vagrant up {precise64,trusty64,centos65}
 
 ## How to use
 
-    vagrant ssh
+    vagrant ssh {precise64,trusty64,centos65}
     sudo -i
     root@precise64:/vagrant# cd fpm-recipes/redis/
     root@precise64:/vagrant/fpm-recipes/redis# fpm-cook
