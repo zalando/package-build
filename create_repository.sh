@@ -6,7 +6,7 @@
 # deb http://iftp.zalando.net/repo/debian   precise  zalando etc.
 
 basedir=/data/zalando/iftp.zalando.net/htdocs/repo/debian/
-repositories=( trusty precise squeeze lenny )
+repositories=( trusty precise wheezy squeeze lenny )
 
 for repository in ${repositories[@]}; do
    mkdir -p ${basedir}/pool/${repository}/zalando/binary-i386/
