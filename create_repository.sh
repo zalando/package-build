@@ -61,19 +61,19 @@ done
 ## create RPM repo
 # create a file /etc/yum.repos.d/zalando.repo with following content (section names must be uniqe):
 # [zalando-base]
-# name=Zalando-$releasever - Base
-# baseurl=http://iftp.zalando.net/repo/centos/$releasever/base/$basearch/
+# name=Zalando-centos6.5 - Base
+# baseurl=http://iftp.zalando.net/repo/centos/centos6.5/base/$basearch/
 #
 # [zalando-updates]
-# name=Zalando-$releasever - Updates
-# baseurl=http://iftp.zalando.net/repo/centos/$releasever/updates/$basearch/
+# name=Zalando-centos6.5 - Updates
+# baseurl=http://iftp.zalando.net/repo/centos/centos6.5/updates/$basearch/
 #
 # [zalando-extras]
-# name=Zalando-$releasever - Extras
-# baseurl=http://iftp.zalando.net/repo/centos/$releasever/extras/$basearch/
+# name=Zalando-centos6.5 - Extras
+# baseurl=http://iftp.zalando.net/repo/centos/centos6.5/extras/$basearch/
 
 basedir=/data/zalando/iftp.zalando.net/htdocs/repo/centos/
-releases=( 6 )
+releases=( centos6.5 )
 sections=( base updates extras )
 archs=( i386 x86_64 )
 
