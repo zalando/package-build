@@ -309,8 +309,10 @@ def git_checkout(repo, name=None):
         if 'origin' in [remote.name for remote in repo.remotes]:
             Remote.remove(repo, 'origin')
         Remote.add(repo, 'origin', p.repo)
-
-    repo.remote().pull(refspec='master')
+    try:
+        repo.remote().pull(refspec='master')
+    except ValueError:
+        pass
     commit = repo.commit()
     p.sha = commit.hexsha[:7]
     p.date =  datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
