@@ -267,6 +267,10 @@ def build_package(repo, name=None):
 
         print 'creating vagrant object with root dir ./{0}'.format(p.basename)
         v = vagrant.Vagrant(root=p.basename)
+
+        if v.status(vm_name=target)[0].state == v.RUNNING:
+            v.destroy(vm_name=target)
+
         print 'running vagrant up for machine {0}'.format(target)
         v.up(vm_name=target)
 
