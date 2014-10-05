@@ -15,7 +15,7 @@ from fabric.context_managers import settings, cd, lcd, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
-from cuisine import package_ensure, dir_ensure, file_link
+from cuisine import package_ensure, dir_ensure, file_link, file_write
 from git import Repo
 from git.remote import Remote
 import vagrant
@@ -114,27 +114,54 @@ def repo_rpm_del(packagename, dist='centos6.5', component='base'):
 @with_settings(user='root')
 @task
 def repo_deb_init():
-    package_ensure('reprepro')
+    file_write('/etc/apt/sources.list.d/aptly.list', 'deb http://repo.aptly.info/ squeeze main')
+    package_ensure('aptly')
     dir_ensure('{0}/archive/'.format(env.repo_deb_root), recursive=True)
-    dir_ensure('{0}/conf/'.format(env.repo_deb_root), recursive=True)
 
-    filename = 'distributions'
+    filename = 'aptly.conf'
     with open('{0}.tmpl'.format(filename), 'r') as tf:
         template = Template(tf.read())
 
-    with open(filename, 'w') as fh:
-        for release, package_format in PACKAGE_FORMAT.items():
+
+    for release, package_format in PACKAGE_FORMAT.items():
+        configfile = 'aptly-{0}.conf'.format(release)
+        with open(configfile, 'w') as fh:
             if package_format == 'deb':
-                fh.write(template.safe_substitute(codename=release, codename_uppercase=release.title()))
+                fh.write(template.safe_substitute(repo_root=env.repo_deb_root, release=release))
+                put(configfile, '/etc/{0}'.format(filename))
+            os.unlink(configfile)
 
-    put(filename, '{0}/conf/{1}'.format(env.repo_deb_root, filename))
+@hosts(env.repo_host)
+@with_settings(hide('commands'))
+def get_last_snapshot(dist='ubuntu12.04'):
+    output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot list -sort="time" -raw=true'.format(dist))
+    return output.split('\n').pop()
 
+
+@hosts(env.repo_host)
+@with_settings(hide('commands'))
+def republish(dist='ubuntu12.04'):
+    print 'drop current publication of repo, if existing'
+    run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
+
+    print 'drop snapshot from today, if existing'
+    run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
+
+    print 'create current snapshot'
+    if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
+        return False
+
+    print 'publish current snapshot'
+    if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
+        return False
+    return True
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
 @task
 def repo_deb_list(dist='ubuntu12.04'):
-    output = sudo('reprepro -b {0} list {1}'.format(env.repo_deb_root, dist))
+    last = get_last_snapshot(dist)
+    output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot show -with-packages {1}'.format(dist, last))
     for line in output.split('\n'):
         print line
 
@@ -143,21 +170,26 @@ def repo_deb_list(dist='ubuntu12.04'):
 @with_settings(user='root')
 @task
 def repo_deb_add(package, dist='ubuntu12.04'):
+    if not os.path.isfile(os.path.expanduser(package)):
+        abort('could not upload {0}: file not found'.format(package))
     with hide('commands'):
         put(package, '{0}/archive/'.format(env.repo_deb_root))
         package = package.split('/')[-1]
-        output = run('reprepro -b {0} includedeb {1} {0}/archive/{2}'.format(env.repo_deb_root, dist, package))
-        if output.succeeded:
-            print 'added %s to repo' % package
+        run('aptly -config=/etc/aptly-{0}.conf repo add {0} {1}/archive/{2}'.format(dist, env.repo_deb_root,  package))
+
+        if republish(dist):
+            print 'added {0} to repo {1}'.format(package, dist)
 
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'), user='root')
 @task
 def repo_deb_del(packagename, dist='ubuntu12.04'):
-    output = run('reprepro -b {0} remove {1} {2}'.format(env.repo_deb_root, dist, packagename))
-    if output.succeeded:
-        print 'deleted %s from repo' % packagename
+    with hide('commands'):
+        run('aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
+
+    if republish(dist):
+        print 'deleted {0} from repo {1}'.format(packagename, dist)
 
 
 @task
@@ -315,7 +347,7 @@ def git_checkout(repo, name=None):
         pass
     commit = repo.commit()
     p.sha = commit.hexsha[:7]
-    p.date =  datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
+    p.date = datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
     print 'updated repo for "{0}" to commit {1}, date {2}'.format(p.basename, p.sha, p.date)
     return p
 
