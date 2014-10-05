@@ -175,7 +175,7 @@ def repo_deb_add(package, dist='ubuntu12.04'):
     with hide('commands'):
         put(package, '{0}/archive/'.format(env.repo_deb_root))
         package = package.split('/')[-1]
-        run('aptly -config=/etc/aptly-{0}.conf repo add {0} {1}/archive/{2}'.format(dist, env.repo_deb_root,  package))
+        run('aptly -config=/etc/aptly-{0}.conf repo add -force-replace {0} {1}/archive/{2}'.format(dist, env.repo_deb_root,  package))
 
         if republish(dist):
             print 'added {0} to repo {1}'.format(package, dist)
