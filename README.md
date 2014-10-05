@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Sunday, 10. August 2014*
+*created Wednesday, 11. June 2014 - updated Sunday, 05. October 2014*
 
 ## Goal
 
@@ -33,12 +33,10 @@ Needed in the shared folder of a vagrant node:
 
 ## Todo
 
-- use vagrant's KVM provider via plugin https://github.com/adrahon/vagrant-kvm, which might be more performant (measure it!)
+- try other vagrant providers, which might be more performant than virtualbox
 - create base images for build hosts, which are already provisioned with `fpm`
 - maybe add mode to generete "uber"-packages with all requirements built-in
-- repo_*_refresh
-- switch repo_deb_* commands from reprepro to use aptly:
-`aptly -config=/etc/aptly-ubuntu12.04.conf repo create -distribution="ubuntu12.04" ubuntu12.04` ...
+- use symlinks with git commit timestamp to determine, whether package has already been build
 
 ## Done
 
@@ -46,3 +44,5 @@ Needed in the shared folder of a vagrant node:
 - repo_deb_init
 - recherche: .rpm arch for "noarch", .deb for "all" as separate packages? -> "noarch" and "all" packages can be in any architecture sections
 - repo_deb_add (bugfixing), use fpm's `--iteration` flag to add the short SHA for differentiate package nano releases
+- switch repo_deb_* commands from reprepro to use aptly:
+`aptly -config=/etc/aptly-ubuntu12.04.conf repo create -distribution="ubuntu12.04" ubuntu12.04` ...
