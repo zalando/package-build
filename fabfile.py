@@ -315,22 +315,27 @@ def build_pypi(repo, name=None):
     p = p['<local-only>']
 
     with lcd(p.basename):
-        output = local('python setup.py sdist', capture=True)
-        for line in output.split('\n'):
-            if line.startswith('creating'):
-                p.tgz = line.split(' ')[1].strip() + '.tar.gz'
-                break
+        local('python setup.py sdist', capture=True)
 
-        if not p.tgz:
-            abort('error while creating tar.gz package')
+    dirlisting = os.listdir('{0}/dist/'.format(p.basename))
+    dirlisting.sort(reverse=True)
+    for file in dirlisting:
+        if file.endswith('.tar.gz'):
+            p.tgz = file
+            break
+
+    if not p.tgz:
+        abort('error while creating tar.gz package')
+
+    with lcd(p.basename):
         local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.date))
 
-        with settings(host_string=env.repo_host, user='root'):
-            dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data',
-                       group='www-data')
-            put('dist/{0}'.format(p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
+    with settings(host_string=env.repo_host, user='root'):
+        dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data',
+                    group='www-data')
+        put('{0}/dist/{1}'.format(p.basename, p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
 
-        return p
+    return p
 
 
 @task
