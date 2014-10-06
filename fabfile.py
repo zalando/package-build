@@ -15,6 +15,7 @@ from fabric.context_managers import settings, cd, lcd, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
+from fabric.colors import blue, green, red
 from cuisine import package_ensure, dir_ensure, file_link, file_write
 from git import Repo
 from git.remote import Remote
@@ -96,7 +97,7 @@ def repo_rpm_add(package, dist='centos6.5', component='base'):
     run('cp {0}/archive/{1} {2}'.format(env.repo_rpm_root, package, path))
     output = run('createrepo {0}'.format(path))
     if output.succeeded:
-        print 'added %s to repo' % package
+        print green('added {0} to repo {1}'.format(package, dist))
 
 
 @hosts(env.repo_host)
@@ -107,7 +108,7 @@ def repo_rpm_del(packagename, dist='centos6.5', component='base'):
     run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, packagename, env.repo_rpm_root))
     output = run('createrepo {0}'.format(path))
     if output.succeeded:
-        print 'deleted %s from repo' % packagename
+        print red('deleted {0} from repo {1}'.format(packagename, dist))
 
 
 @hosts(env.repo_host)
@@ -139,22 +140,23 @@ def get_last_snapshot(dist='ubuntu12.04'):
 
 
 @hosts(env.repo_host)
-@with_settings(hide('commands'))
 def republish(dist='ubuntu12.04'):
-    print 'drop current publication of repo, if existing'
-    run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
+    with hide('commands'):
+        print 'drop current publication of repo {0}, if existing'.format(green(dist))
+        run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
 
-    print 'drop snapshot from today, if existing'
-    run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
+        print 'drop snapshot from today, if existing'
+        run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
 
-    print 'create current snapshot'
-    if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
-        return False
+        print 'create current snapshot'
+        if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
+            return False
 
-    print 'publish current snapshot'
-    if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
-        return False
+        print 'publish current snapshot'
+        if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
+            return False
     return True
+
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
@@ -172,24 +174,25 @@ def repo_deb_list(dist='ubuntu12.04'):
 def repo_deb_add(package, dist='ubuntu12.04'):
     if not os.path.isfile(os.path.expanduser(package)):
         abort('could not upload {0}: file not found'.format(package))
+
     with hide('commands'):
         put(package, '{0}/archive/'.format(env.repo_deb_root))
         package = package.split('/')[-1]
         run('aptly -config=/etc/aptly-{0}.conf repo add -force-replace {0} {1}/archive/{2}'.format(dist, env.repo_deb_root,  package))
 
-        if republish(dist):
-            print 'added {0} to repo {1}'.format(package, dist)
+    if republish(dist):
+        print green('added {0} to repo {1}'.format(package, dist))
 
 
 @hosts(env.repo_host)
-@with_settings(hide('commands'), user='root')
+@with_settings(user='root')
 @task
 def repo_deb_del(packagename, dist='ubuntu12.04'):
     with hide('commands'):
         run('aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
 
     if republish(dist):
-        print 'deleted {0} from repo {1}'.format(packagename, dist)
+        print red('deleted {0} from repo {1}'.format(packagename, dist))
 
 
 @task
@@ -265,21 +268,19 @@ def build_package(repo, name=None):
         if dependencies:
             dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
 
-        print 'creating vagrant object with root dir ./{0}'.format(p.basename)
         v = vagrant.Vagrant(root=p.basename)
 
         if v.status(vm_name=target)[0].state == v.RUNNING:
             v.destroy(vm_name=target)
 
-        print 'running vagrant up for machine {0}'.format(target)
+        print 'running "{0}" for machine {1} on root dir ./{2}'.format(blue('vagrant up'), green(target), p.basename)
         v.up(vm_name=target)
 
         with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=target),
                       key_filename=v.keyfile(vm_name=target), disable_known_hosts=True):
             # this is necessary because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
             file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
-            print 'build {0}.{1} on {2} ({3})'.format(p.basename, package_format, v.user_hostname_port(vm_name=target),
-                                                      target)
+            print 'build a {1} of {0} on {2} ({3})'.format(blue(p.basename), package_format, v.user_hostname_port(vm_name=target), green(target))
             messages = sudo('fpm -s python --python-pypi http://{0}/simple/ -t {2} {3} --iteration {4}.{5} --force --name {1} "{1}"'.format(
                     env.repo_host,
                     p.basename,
@@ -294,17 +295,17 @@ def build_package(repo, name=None):
                     break
 
             if not getattr(p, package_format):
-                print 'error while creating {0} package'.fomat(package_format)
+                print 'error while creating {0} package'.format(package_format)
                 continue
             file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.date, target, package_format))
 
         if getattr(p, package_format):
             v.halt(vm_name=target)
-            execute('repo_{0}_add'.format(package_format), '{0}/{1}'.format(p.basename, getattr(p, package_format)),
-                    target)
+            execute('repo_{0}_add'.format(package_format), '{0}/{1}'.format(p.basename, getattr(p, package_format)), target)
         else:
             print 'no package has been created, you may want to inspect the state in the machine:'
             print 'cd {0}/ && vagrant ssh {1}'.format(p.basename, target)
+        print
     print 'task ran {0} seconds'.format(time.time() - start_time)
 
 
@@ -352,6 +353,6 @@ def git_checkout(repo, name=None):
     commit = repo.commit()
     p.sha = commit.hexsha[:7]
     p.date = datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
-    print 'updated repo for "{0}" to commit {1}, date {2}'.format(p.basename, p.sha, p.date)
+    print 'updated repo for "{0}" to commit {1}, date {2}'.format(blue(p.basename), green(p.sha), green(p.date))
     return p
 
