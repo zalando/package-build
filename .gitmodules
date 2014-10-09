@@ -1,0 +1,4 @@
+[submodule "fpm-recipes/zalando-nagios-nrpe-plugin/tmp-build"]
+  path = fpm-recipes/zalando-nagios-nrpe-plugin/tmp-build
+  url = git://git.code.sf.net/p/nagios/nrpe
+

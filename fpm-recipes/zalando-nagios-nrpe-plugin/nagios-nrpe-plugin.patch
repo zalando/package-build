@@ -1,0 +1,537 @@
+diff --git a/include/common.h b/include/common.h
+index 42dcfa2..4e3d7ad 100644
+--- a/include/common.h
++++ b/include/common.h
+@@ -41,7 +41,7 @@
+ #define DEFAULT_SOCKET_TIMEOUT	10	/* timeout after 10 seconds */
+ #define DEFAULT_CONNECTION_TIMEOUT 300	/* timeout if daemon is waiting for connection more than this time */
+ 
+-#define MAX_INPUT_BUFFER	2048	/* max size of most buffers we use */
++#define MAX_INPUT_BUFFER	4096	/* max size of most buffers we use */
+ #define MAX_FILENAME_LENGTH     256
+ 
+ #define MAX_HOST_ADDRESS_LENGTH	256	/* max size of a host address */
+@@ -57,10 +57,10 @@
+ #define	RESPONSE_PACKET		2		/* id code for a packet containing a response */
+ 
+ #define NRPE_PACKET_VERSION_3   3               /* packet version identifier */
+-#define NRPE_PACKET_VERSION_2   2               
++#define NRPE_PACKET_VERSION_2   2
+ #define NRPE_PACKET_VERSION_1	1		/* older packet version identifiers (no longer supported) */
+ 
+-#define MAX_PACKETBUFFER_LENGTH	1024		/* max amount of data we'll send in one query/response */
++#define MAX_PACKETBUFFER_LENGTH	4096		/* max amount of data we'll send in one query/response */
+ 
+ typedef struct packet_struct{
+ 	int16_t   packet_version;
+diff --git a/include/dh.h b/include/dh.h
+index 1ad355a..5a93b4d 100644
+--- a/include/dh.h
++++ b/include/dh.h
+@@ -4,12 +4,12 @@
+ DH *get_dh512()
+ 	{
+ 	static unsigned char dh512_p[]={
+-		0xDA,0xD8,0xF0,0xA2,0x9A,0x64,0xC2,0x9F,0x22,0x9D,0x47,0xA1,
+-		0xB2,0xED,0xD6,0x89,0xB5,0x46,0x6D,0x4E,0x1F,0x14,0xF4,0xF4,
+-		0xEB,0xCA,0x4D,0x41,0x89,0x60,0x0D,0x1F,0xB3,0x50,0xC4,0x54,
+-		0xE1,0x60,0xB5,0xDD,0x57,0x0C,0xF9,0xF5,0x19,0x73,0x6C,0x0C,
+-		0x45,0x33,0xA9,0xC1,0xD7,0xF3,0x27,0x68,0xEE,0xDA,0x8C,0x4A,
+-		0x1C,0x52,0xA1,0x9B,
++		0xEA,0xDE,0xF3,0x28,0x03,0xED,0xFE,0x46,0xE3,0xFA,0x1B,0xCE,
++		0x27,0xB5,0x4C,0x9C,0x1B,0x88,0x37,0x5C,0xEA,0xC5,0x95,0x20,
++		0x40,0x9E,0x26,0x67,0x40,0x17,0x89,0xBA,0x32,0x25,0x84,0xA0,
++		0xA3,0x28,0xDF,0x32,0x93,0xFF,0x08,0xC5,0xD9,0x65,0x28,0x70,
++		0xB5,0xAC,0x78,0x68,0xFA,0x72,0xF9,0x92,0x63,0xC9,0xCF,0xEC,
++		0x9A,0xFD,0xEE,0xF3,
+ 		};
+ 	static unsigned char dh512_g[]={
+ 		0x02,
+diff --git a/src/check_nrpe.c b/src/check_nrpe.c
+index 51c8874..ae20d12 100644
+--- a/src/check_nrpe.c
++++ b/src/check_nrpe.c
+@@ -153,7 +153,7 @@ int main(int argc, char **argv){
+ 	alarm(socket_timeout);
+ 
+ 	/* try to connect to the host at the given port number */
+-	if((sd=my_connect(server_name, &hostaddr, server_port, address_family, 
++	if((sd=my_connect(server_name, &hostaddr, server_port, address_family,
+ 			bind_address)) < 0 ) {
+ 		exit (255);
+ 		}
+@@ -277,7 +277,7 @@ int main(int argc, char **argv){
+ 			return STATE_UNKNOWN;
+ 		        }
+ 
+-		
++
+ 		/***** DECRYPT RESPONSE *****/
+ 
+ 
+@@ -290,7 +290,7 @@ int main(int argc, char **argv){
+ 			close(sd);
+ 			return STATE_UNKNOWN;
+                         }
+-	
++
+ 		/* check packet version */
+ 		if(ntohs(receive_packet.packet_version)!=NRPE_PACKET_VERSION_2){
+ 			printf("CHECK_NRPE: Invalid packet version received from server.\n");
+@@ -463,7 +463,7 @@ int graceful_close(int sd, int timeout){
+         char buf[1000];
+ 
+ 	/* send FIN packet */
+-        shutdown(sd,SHUT_WR);  
++        shutdown(sd,SHUT_WR);
+         for(;;){
+ 
+                 FD_ZERO(&in);
+@@ -473,7 +473,7 @@ int graceful_close(int sd, int timeout){
+ 
+ 		/* timeout or error */
+                 if(1!=select(sd+1,&in,NULL,NULL,&tv))
+-			break;   
++			break;
+ 
+ 		/* no more data (FIN or RST) */
+                 if(0>=recv(sd,buf,sizeof(buf),0))
+diff --git a/src/nrpe.c b/src/nrpe.c
+index 4bc849b..54e640e 100644
+--- a/src/nrpe.c
++++ b/src/nrpe.c
+@@ -15,14 +15,14 @@
+  * plugin execution.  It is useful for running "local" plugins
+  * such as check_users, check_load, check_disk, etc. without
+  * having to use rsh or ssh.
+- * 
++ *
+  ******************************************************************************/
+ 
+ /*
+  * 08-10-2011 IPv4 subnetworks support added.
+  * Main change in nrpe.c is that is_an_allowed_host() moved to acl.c.
+  * now allowed_hosts is parsed by parse_allowed_hosts() from acl.c.
+- */ 
++ */
+ 
+ #include "config.h"
+ #include "common.h"
+@@ -168,11 +168,11 @@ int main(int argc, char **argv){
+ 		printf(" <config_file> = Name of config file to use\n");
+ 		printf(" -4            = use ipv4 only\n");
+ 		printf(" -6            = use ipv6 only\n");
+-		printf(" <mode>        = One of the following operating modes:\n");  
++		printf(" <mode>        = One of the following operating modes:\n");
+ 		printf("   -i          =    Run as a service under inetd or xinetd\n");
+ 		printf("   -d          =    Run as a standalone daemon\n");
+ 		/* Updates help section to indicate how to start under SRC on AIX */
+-		printf("   -d -s       =    Run as a subsystem under AIX\n");        
++		printf("   -d -s       =    Run as a subsystem under AIX\n");
+ 		printf("\n");
+ 		printf("Notes:\n");
+ 		printf("This program is designed to process requests from the check_nrpe\n");
+@@ -192,7 +192,7 @@ int main(int argc, char **argv){
+ 	/* open a connection to the syslog facility */
+ 	/* facility name may be overridden later */
+ 	get_log_facility(NRPE_LOG_FACILITY);
+-        openlog("nrpe",LOG_PID,log_facility); 
++        openlog("nrpe",LOG_PID,log_facility);
+ 
+ 	/* make sure the config file uses an absolute path */
+ 	if(config_file[0]!='/'){
+@@ -215,7 +215,7 @@ int main(int argc, char **argv){
+ 	        }
+ 
+ 	/* read the config file */
+-	result=read_config_file(config_file);	
++	result=read_config_file(config_file);
+ 
+ 	/* exit if there are errors... */
+ 	if(result==ERROR){
+@@ -294,7 +294,7 @@ int main(int argc, char **argv){
+ 		handle_connection(0);
+ 	        }
+ 
+-	/* if we're running under SRC... 
++	/* if we're running under SRC...
+ 	   we don't fork but does drop-privileges*/
+ 	else if (use_src==TRUE){
+ 
+@@ -340,11 +340,11 @@ int main(int argc, char **argv){
+ 
+ 			/* free all memory we allocated */
+ 			free_memory();
+-			
++
+ 			if(sigrestart==TRUE){
+ 
+ 				/* read the config file */
+-				result=read_config_file(config_file);	
++				result=read_config_file(config_file);
+ 
+ 				/* exit if there are errors... */
+ 				if(result==ERROR){
+@@ -359,12 +359,12 @@ int main(int argc, char **argv){
+ 		remove_pid_file();
+ 
+ 		syslog(LOG_NOTICE,"Daemon shutdown\n");
+-	        }            
++	        }
+ 
+ 
+ 	/* else daemonize and start listening for requests... */
+ 	else if(fork()==0){
+-		
++
+ 		/* we're a daemon - set up a new process group */
+ 		setsid();
+ 
+@@ -392,7 +392,7 @@ int main(int argc, char **argv){
+ 		/* write pid file */
+ 		if(write_pid_file()==ERROR)
+ 			return STATE_CRITICAL;
+-		
++
+ 		/* drop privileges */
+ 		drop_privileges(nrpe_user,nrpe_group);
+ 
+@@ -414,7 +414,7 @@ int main(int argc, char **argv){
+ 			if(sigrestart==TRUE){
+ 
+ 				/* read the config file */
+-				result=read_config_file(config_file);	
++				result=read_config_file(config_file);
+ 
+ 				/* exit if there are errors... */
+ 				if(result==ERROR){
+@@ -422,7 +422,7 @@ int main(int argc, char **argv){
+ 					return STATE_CRITICAL;
+ 				        }
+ 			        }
+-	
++
+ 			} while(sigrestart==TRUE && sigshutdown==FALSE);
+ 
+ 		/* remove pid file */
+@@ -562,7 +562,7 @@ int read_config_file(char *filename){
+ 			debug=atoi(varvalue);
+ 			if(debug>0)
+ 				debug=TRUE;
+-			else 
++			else
+ 				debug=FALSE;
+ 		        }
+ 
+@@ -571,7 +571,7 @@ int read_config_file(char *filename){
+ 
+                 else if(!strcmp(varname,"nrpe_group"))
+ 			nrpe_group=strdup(varvalue);
+-		
++
+ 		else if(!strcmp(varname,"dont_blame_nrpe"))
+ 			allow_arguments=(atoi(varvalue)==1)?TRUE:FALSE;
+ 
+@@ -612,7 +612,7 @@ int read_config_file(char *filename){
+ 			if((get_log_facility(varvalue))==OK){
+ 				/* re-open log using new facility */
+ 				closelog();
+-				openlog("nrpe",LOG_PID,log_facility); 
++				openlog("nrpe",LOG_PID,log_facility);
+ 				}
+ 			else
+ 				syslog(LOG_WARNING,"Invalid log_facility specified in config file '%s' - Line %d\n",filename,line);
+@@ -824,7 +824,7 @@ void create_listener(struct addrinfo *ai) {
+ 		exit(1);
+ 		}
+ 
+-	if((ret = getnameinfo(ai->ai_addr, ai->ai_addrlen, ntop, sizeof(ntop), 
++	if((ret = getnameinfo(ai->ai_addr, ai->ai_addrlen, ntop, sizeof(ntop),
+ 			strport, sizeof(strport), NI_NUMERICHOST|NI_NUMERICSERV)) != 0) {
+ 		syslog(LOG_ERR, "getnameinfo failed: %.100s", gai_strerror(ret));
+ 		return;
+@@ -841,9 +841,9 @@ void create_listener(struct addrinfo *ai) {
+ 	/* socket should be non-blocking */
+ 	fcntl(listen_sock,F_SETFL,O_NONBLOCK);
+ 
+-	/* set the reuse address flag so we don't get errors when 
++	/* set the reuse address flag so we don't get errors when
+ 		restarting */
+-	if(setsockopt(listen_sock, SOL_SOCKET,SO_REUSEADDR, &flag, 
++	if(setsockopt(listen_sock, SOL_SOCKET,SO_REUSEADDR, &flag,
+ 			sizeof(flag)) < 0) {
+ 		syslog(LOG_ERR, "setsockopt SO_REUSEADDR: %s", strerror(errno));
+ 		return;
+@@ -852,7 +852,7 @@ void create_listener(struct addrinfo *ai) {
+ #ifdef IPV6_V6ONLY
+ 	/* Only communicate in IPv6 over AF_INET6 sockets. */
+ 	if (ai->ai_family == AF_INET6) {
+-		if (setsockopt(listen_sock, IPPROTO_IPV6, IPV6_V6ONLY, &flag, 
++		if (setsockopt(listen_sock, IPPROTO_IPV6, IPV6_V6ONLY, &flag,
+ 				sizeof(flag)) == -1) {
+ 			fprintf(stderr, "setsockopt IPV6_V6ONLY: %s", strerror(errno));
+ 			}
+@@ -861,7 +861,7 @@ void create_listener(struct addrinfo *ai) {
+ 
+ 	/* Bind the socket to the desired port. */
+ 	if (bind(listen_sock, ai->ai_addr, ai->ai_addrlen) < 0) {
+-		syslog(LOG_ERR, "Bind to port %s on %s failed: %.200s.", strport, 
++		syslog(LOG_ERR, "Bind to port %s on %s failed: %.200s.", strport,
+ 				ntop, strerror(errno)); close(listen_sock);
+ 		return;
+ 		}
+@@ -870,7 +870,7 @@ void create_listener(struct addrinfo *ai) {
+ 
+ 	/* Start listening on the port. */
+ 	if (listen(listen_sock, listen_queue_size) < 0) {
+-		syslog(LOG_ERR, "listen on [%s]:%s: %.100s", ntop, strport, 
++		syslog(LOG_ERR, "listen on [%s]:%s: %.100s", ntop, strport,
+ 				strerror(errno));
+ 		exit(1);
+ 		}
+@@ -904,8 +904,8 @@ void wait_for_connections(void){
+ 	struct request_info req;
+ #endif
+ 
+-	add_listen_addr(&listen_addrs, address_family, 
+-			(strcmp(server_address, "") == 0) ? NULL : server_address, 
++	add_listen_addr(&listen_addrs, address_family,
++			(strcmp(server_address, "") == 0) ? NULL : server_address,
+ 			server_port);
+ 
+ 	for(ai = listen_addrs; ai; ai = ai->ai_next) {
+@@ -1007,7 +1007,7 @@ void wait_for_connections(void){
+ 
+ 						/* close socket prioer to exiting */
+ 						close(sock);
+-			
++
+ 						return;
+ 						}
+ 
+@@ -1026,7 +1026,7 @@ void wait_for_connections(void){
+ 					if(rc<0) {
+ 
+ 				        /* log error to syslog facility */
+-						syslog(LOG_ERR, "Error: Network server getpeername() failure (%d: %s)", 
++						syslog(LOG_ERR, "Error: Network server getpeername() failure (%d: %s)",
+ 								errno, strerror(errno));
+ 
+ 				        /* close socket prior to exiting */
+@@ -1044,7 +1044,7 @@ void wait_for_connections(void){
+ 							/* log info to syslog facility */
+ 							if(debug==TRUE) {
+ 								syslog(LOG_DEBUG, "Connection from %s port %d",
+-										inet_ntoa(nptr->sin_addr), 
++										inet_ntoa(nptr->sin_addr),
+ 										nptr->sin_port);
+ 								}
+ 							if(!is_an_allowed_host(AF_INET,
+@@ -1056,7 +1056,7 @@ void wait_for_connections(void){
+ 
+ 								/* log info to syslog facility */
+ 								if ( debug==TRUE ) {
+-									syslog(LOG_DEBUG, 
++									syslog(LOG_DEBUG,
+ 											"Connection from %s closed.",
+ 											inet_ntoa(nptr->sin_addr));
+ 									}
+@@ -1076,18 +1076,18 @@ void wait_for_connections(void){
+ 							break;
+ 						case AF_INET6:
+ 							nptr6 = (struct sockaddr_in6 *)&addr;
+-							if(inet_ntop(AF_INET6, 
+-									(const void *)&(nptr6->sin6_addr), ipstr, 
++							if(inet_ntop(AF_INET6,
++									(const void *)&(nptr6->sin6_addr), ipstr,
+ 									sizeof(ipstr)) == NULL) {
+ 								strncpy(ipstr, "Unknown", sizeof(ipstr));
+-								} 
++								}
+ 
+ 							/* log info to syslog facility */
+ 							if(debug==TRUE) {
+ 								syslog(LOG_DEBUG, "Connection from %s port %d",
+ 										ipstr, nptr6->sin6_port);
+ 								}
+-							if(!is_an_allowed_host(AF_INET6, 
++							if(!is_an_allowed_host(AF_INET6,
+ 									(void *)&(nptr6->sin6_addr))) {
+ 								/* log error to syslog facility */
+ 								syslog(LOG_ERR,
+@@ -1096,7 +1096,7 @@ void wait_for_connections(void){
+ 
+ 								/* log info to syslog facility */
+ 								if ( debug==TRUE ) {
+-									syslog(LOG_DEBUG, 
++									syslog(LOG_DEBUG,
+ 											"Connection from %s closed.",
+ 											ipstr);
+ 									}
+@@ -1159,12 +1159,12 @@ void wait_for_connections(void){
+ 					exit(STATE_OK);
+ 					}
+ 
+-				/* first child returns immediately, grandchild is inherited by 
++				/* first child returns immediately, grandchild is inherited by
+ 					INIT process -> no zombies... */
+ 				else
+ 					exit(STATE_OK);
+ 				}
+-		
++
+ 			/* parent ... */
+ 			else {
+ 				/* parent doesn't need the new connection */
+@@ -1425,8 +1425,9 @@ void handle_connection(int sock){
+ 	send_packet.packet_type=(int16_t)htons(RESPONSE_PACKET);
+ 	send_packet.result_code=(int16_t)htons(result);
+ 	strncpy(&send_packet.buffer[0],buffer,MAX_PACKETBUFFER_LENGTH);
++        syslog(LOG_ERR,"blah %d %d [%s]", MAX_PACKETBUFFER_LENGTH, strlen(buffer), buffer); // buffer hält Rückgabe komplett
+ 	send_packet.buffer[MAX_PACKETBUFFER_LENGTH-1]='\x0';
+-	
++
+ 	/* calculate the crc 32 value of the packet */
+ 	send_packet.crc32_value=(u_int32_t)0L;
+ 	calculated_crc32=calculate_crc32((char *)&send_packet,sizeof(send_packet));
+@@ -1465,7 +1466,7 @@ void handle_connection(int sock){
+ void free_memory(void){
+ 	command *this_command;
+ 	command *next_command;
+-	
++
+ 	/* free memory for the command list */
+ 	this_command=command_list;
+ 	while(this_command!=NULL){
+@@ -1533,8 +1534,8 @@ int my_system(char *command,int timeout,int *early_timeout,char *output,int outp
+ 		/* close both ends of the pipe */
+ 		close(fd[0]);
+ 		close(fd[1]);
+-		
+-	        return STATE_UNKNOWN;  
++
++	        return STATE_UNKNOWN;
+ 	        }
+ 
+ 	/* execute the command in the child process */
+@@ -1552,7 +1553,7 @@ int my_system(char *command,int timeout,int *early_timeout,char *output,int outp
+ 
+ 		/* run the command */
+ 		fp=popen(command,"r");
+-		
++
+ 		/* report an error if we couldn't run the command */
+ 		if(fp==NULL){
+ 
+@@ -1598,7 +1599,7 @@ int my_system(char *command,int timeout,int *early_timeout,char *output,int outp
+ 
+ 	/* parent waits for child to finish executing command */
+ 	else{
+-		
++
+ 		/* close pipe for writing */
+ 		close(fd[1]);
+ 
+@@ -1679,7 +1680,7 @@ int drop_privileges(char *user, char *group){
+ 
+ 	/* set effective group ID */
+ 	if(group!=NULL){
+-		
++
+ 		/* see if this is a group name */
+ 		if(strspn(group,"0123456789")<strlen(group)){
+ 			grp=(struct group *)getgrnam(group);
+@@ -1705,7 +1706,7 @@ int drop_privileges(char *user, char *group){
+ 
+ 	/* set effective user ID */
+ 	if(user!=NULL){
+-		
++
+ 		/* see if this is a user name */
+ 		if(strspn(user,"0123456789")<strlen(user)){
+ 			pw=(struct passwd *)getpwnam(user);
+@@ -1719,7 +1720,7 @@ int drop_privileges(char *user, char *group){
+ 		/* else we were passed the UID */
+ 		else
+ 			uid=(uid_t)atoi(user);
+-			
++
+ 		/* set effective user ID if other than current EUID */
+ 		if(uid!=geteuid()){
+ 
+@@ -1777,7 +1778,7 @@ int write_pid_file(void){
+ 				return ERROR;
+ 			        }
+ 		        }
+-	        } 
++	        }
+ 
+ 	/* write new pid file */
+ 	if((fd=open(pid_file,O_WRONLY | O_CREAT,0644))>=0){
+@@ -1817,12 +1818,12 @@ int remove_pid_file(void){
+ 
+ void complete_SSL_shutdown( SSL *ssl) {
+ 
+-	/*  
++	/*
+ 		Thanks to Jari Takkala (jtakkala@gmail.com) for the following information.
+ 
+-		We need to call SSL_shutdown() at least twice, otherwise we'll 
+-		be left with data in the socket receive buffer, and the 
+-		subsequent process termination will cause TCP RST's to be sent 
++		We need to call SSL_shutdown() at least twice, otherwise we'll
++		be left with data in the socket receive buffer, and the
++		subsequent process termination will cause TCP RST's to be sent
+ 		to the client.
+ 
+ 		See http://bugs.ruby-lang.org/projects/ruby-trunk/repository/revisions/32219/diff
+@@ -1899,7 +1900,7 @@ void child_sighandler(int sig){
+ 
+ 	/* terminate */
+ 	exit(0);
+-	
++
+ 	/* so the compiler doesn't complain... */
+ 	return;
+         }
+@@ -1967,7 +1968,7 @@ int validate_request(packet *pkt){
+ 	ptr=strtok(pkt->buffer,"!");
+ #else
+ 	ptr=pkt->buffer;
+-#endif	
++#endif
+ 	command_name=strdup(ptr);
+ 	if(command_name==NULL){
+ 		syslog(LOG_ERR,"Error: Memory allocation failed");
+@@ -2017,7 +2018,7 @@ int contains_nasty_metachars(char *str){
+ 
+ 	if(str==NULL)
+ 		return FALSE;
+-	
++
+ 	result=strcspn(str,NASTY_METACHARS);
+ 	if(result!=strlen(str))
+ 		return TRUE;
+@@ -2064,7 +2065,7 @@ int process_macros(char *input_buffer,char *output_buffer,int buffer_length){
+ 				else if(!strcmp(temp_buffer,"")){
+ 					strncat(output_buffer,"$",buffer_length-strlen(output_buffer)-1);
+ 				        }
+-				
++
+ 				/* a non-macro, just some user-defined string between two $s */
+ 				else{
+ 					strncat(output_buffer,"$",buffer_length-strlen(output_buffer)-1);
+@@ -2074,7 +2075,7 @@ int process_macros(char *input_buffer,char *output_buffer,int buffer_length){
+ 					strncat(output_buffer,"$",buffer_length-strlen(output_buffer)-1);
+ 				        }
+ 
+-				
++
+ 				/* insert macro */
+ 				if(selected_macro!=NULL)
+ 					strncat(output_buffer,(selected_macro==NULL)?"":selected_macro,buffer_length-strlen(output_buffer)-1);
+@@ -2178,4 +2179,3 @@ int process_arguments(int argc, char **argv){
+ 
+ 	return OK;
+         }
+-
