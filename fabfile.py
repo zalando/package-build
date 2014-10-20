@@ -21,10 +21,16 @@ from git import Repo
 from git.remote import Remote
 import vagrant
 
-env.repo_host = 'iftp.zalando.net'
-env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
-env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/rpm/'
-env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
+if hasattr(env, 'legacy'):
+    env.repo_host = 'iftp.zalando.net'
+    env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
+    env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/rpm/'
+    env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
+else:
+    env.repo_host = 'z-repo'
+    env.repo_deb_root = '/data/zalando/data/repo.zalando/apt/'
+    env.repo_rpm_root = '/data/zalando/data/repo.zalando/rpm/'
+    env.repo_pypi_root = '/data/zalando/data/repo.zalando/pypi/'
 
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
