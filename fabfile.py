@@ -121,22 +121,21 @@ def repo_rpm_del(packagename, dist='centos6.5', component='base'):
 @with_settings(user='root')
 @task
 def repo_deb_init():
-    file_write('/etc/apt/sources.list.d/aptly.list', 'deb http://repo.aptly.info/ squeeze main')
+    file_write('/etc/apt/sources.list.d/aptly-repo.list', 'deb http://repo.aptly.info/ squeeze main')
     package_ensure('aptly')
     dir_ensure('{0}/archive/'.format(env.repo_deb_root), recursive=True)
 
-    filename = 'aptly.conf'
-    with open('{0}.tmpl'.format(filename), 'r') as tf:
+    with open('aptly.conf.tmpl', 'r') as tf:
         template = Template(tf.read())
-
 
     for release, package_format in PACKAGE_FORMAT.items():
         configfile = 'aptly-{0}.conf'.format(release)
         with open(configfile, 'w') as fh:
             if package_format == 'deb':
-                fh.write(template.safe_substitute(repo_root=env.repo_deb_root, release=release))
-                put(configfile, '/etc/{0}'.format(filename))
-            os.unlink(configfile)
+                content = template.safe_substitute(repo_root=env.repo_deb_root, release=release)
+                fh.write(content)
+        put(configfile, '/etc/aptly-{0}.conf'.format(release))
+        os.unlink(configfile)
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
