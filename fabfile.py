@@ -23,7 +23,7 @@ import vagrant
 
 env.repo_host = 'iftp.zalando.net'
 env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
-env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/centos/'
+env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/rpm/'
 env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
 
 RPM_COMPONENTS = ['base', 'updates', 'extras']
