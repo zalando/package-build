@@ -136,6 +136,7 @@ def repo_deb_init():
                 fh.write(content)
         put(configfile, '/etc/aptly-{0}.conf'.format(release))
         os.unlink(configfile)
+        run('aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} || aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
@@ -160,6 +161,7 @@ def republish(dist='ubuntu12.04'):
         print 'publish current snapshot'
         if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
             return False
+
     return True
 
 
