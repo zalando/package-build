@@ -146,21 +146,26 @@ def get_last_snapshot(dist='ubuntu12.04'):
 
 
 @hosts(env.repo_host)
-def republish(dist='ubuntu12.04'):
+def republish(dist='ubuntu12.04', snapshot=False):
     with hide('commands'):
-        print 'drop current publication of repo {0}, if existing'.format(green(dist))
-        run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
+        if snapshot:
+            print 'drop current publication of repo {0}, if existing'.format(green(dist))
+            run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
 
-        print 'drop snapshot from today, if existing'
-        run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
+            print 'drop snapshot from today, if existing'
+            run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
 
-        print 'create current snapshot'
-        if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
-            return False
+            print 'create current snapshot'
+            if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
+                return False
 
-        print 'publish current snapshot'
-        if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
-            return False
+            print 'publish current snapshot'
+            if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
+                return False
+        else:
+            run('aptly -config=/etc/aptly-{0}.conf publish list -raw=true | grep -q {0} || aptly -config=/etc/aptly-{0}.conf publish repo -distribution={0} {0}'.format(dist), warn_only=True)
+            if run('aptly -config=/etc/aptly-{0}.conf publish update {0}'.format(dist), warn_only=True).failed:
+                return False
 
     return True
 
