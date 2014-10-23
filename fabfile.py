@@ -21,6 +21,8 @@ from git import Repo
 from git.remote import Remote
 import vagrant
 
+env.disable_known_hosts = True
+
 if hasattr(env, 'legacy'):
     env.repo_host = 'iftp.zalando.net'
     env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
