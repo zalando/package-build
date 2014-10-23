@@ -175,9 +175,12 @@ def republish(dist='ubuntu12.04', snapshot=False):
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
 @task
-def repo_deb_list(dist='ubuntu12.04'):
-    last = get_last_snapshot(dist)
-    output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot show -with-packages {1}'.format(dist, last))
+def repo_deb_list(dist='ubuntu12.04', snapshot=False):
+    if snapshot:
+        last = get_last_snapshot(dist)
+        output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot show -with-packages {1}'.format(dist, last))
+    else:
+        output = sudo('aptly -config=/etc/aptly-{0}.conf repo show -with-packages {0}'.format(dist))
     for line in output.split('\n'):
         print line
 
