@@ -67,6 +67,8 @@ class Package(object):
 @with_settings(user='root')
 @task
 def repo_rpm_init():
+    ''' initialize package repo '''
+
     package_ensure('createrepo')
     dir_ensure('{0}/archive/'.format(env.repo_rpm_root), recursive=True)
 
@@ -83,6 +85,8 @@ def repo_rpm_init():
 @with_settings(hide('commands'))
 @task
 def repo_rpm_list(dist='centos6.5'):
+    ''' list repo's packages '''
+
     output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
     for line in output.split('\n'):
         if line:
@@ -94,6 +98,7 @@ def repo_rpm_list(dist='centos6.5'):
 @with_settings(hide('commands'), user='root')
 @task
 def repo_rpm_add(package, dist='centos6.5', component='base'):
+    ''' upload and add a package file to the repo '''
 
     arch = 'x86_64'
     if any(map(lambda arch: arch in package, ['i386, i586, i686'])):
@@ -112,6 +117,8 @@ def repo_rpm_add(package, dist='centos6.5', component='base'):
 @with_settings(hide('commands'), user='root')
 @task
 def repo_rpm_del(packagename, dist='centos6.5', component='base'):
+    ''' delete "packagename" from repo '''
+
     path = '/'.join([env.repo_rpm_root, dist, component])
     run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, packagename, env.repo_rpm_root))
     output = run('createrepo {0}'.format(path))
@@ -123,6 +130,8 @@ def repo_rpm_del(packagename, dist='centos6.5', component='base'):
 @with_settings(user='root')
 @task
 def repo_deb_init():
+    ''' initialize package repo '''
+
     file_write('/etc/apt/sources.list.d/aptly-repo.list', 'deb http://repo.aptly.info/ squeeze main')
     package_ensure('aptly')
     dir_ensure('{0}/archive/'.format(env.repo_deb_root), recursive=True)
@@ -176,6 +185,8 @@ def republish(dist='ubuntu12.04', snapshot=False):
 @with_settings(hide('commands'))
 @task
 def repo_deb_list(dist='ubuntu12.04', snapshot=False):
+    ''' list repo's packages '''
+
     if snapshot:
         last = get_last_snapshot(dist)
         output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot show -with-packages {1}'.format(dist, last))
@@ -189,6 +200,8 @@ def repo_deb_list(dist='ubuntu12.04', snapshot=False):
 @with_settings(user='root')
 @task
 def repo_deb_add(package, dist='ubuntu12.04'):
+    ''' upload and add a package file to the repo '''
+
     if not os.path.isfile(os.path.expanduser(package)):
         abort('could not upload {0}: file not found'.format(package))
 
@@ -205,6 +218,8 @@ def repo_deb_add(package, dist='ubuntu12.04'):
 @with_settings(user='root')
 @task
 def repo_deb_del(packagename, dist='ubuntu12.04'):
+    ''' delete "packagename" from repo '''
+
     with hide('commands'):
         run('aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
 
@@ -215,6 +230,7 @@ def repo_deb_del(packagename, dist='ubuntu12.04'):
 @task
 @with_settings(hide('commands'))
 def package_info(package):
+    ''' display metadata info for package file'''
     info = {
         'version': None,
         'description': None,
@@ -253,6 +269,8 @@ def package_info(package):
 
 @task
 def build_package(repo, name=None):
+    ''' build DEB and RPM packages from repo URL '''
+
     start_time = time.time()
 
     p = execute(build_pypi, repo, name)
@@ -321,6 +339,7 @@ def build_package(repo, name=None):
 
 @task
 def build_pypi(repo, name=None):
+    ''' build pypi package from repo URL '''
     p = execute(git_checkout, repo, name)
     p = p['<local-only>']
 
@@ -350,6 +369,7 @@ def build_pypi(repo, name=None):
 
 @task
 def git_checkout(repo, name=None):
+    ''' clone / pull repo URL '''
 
     p = Package(repo, name=name)
 
@@ -361,6 +381,7 @@ def git_checkout(repo, name=None):
         if 'origin' in [remote.name for remote in repo.remotes]:
             Remote.remove(repo, 'origin')
         Remote.add(repo, 'origin', p.repo)
+
     try:
         repo.remote().pull(refspec='master')
     except ValueError:
