@@ -70,11 +70,11 @@ def repo_rpm_init():
     package_ensure('createrepo')
     dir_ensure('{0}/archive/'.format(env.repo_rpm_root), recursive=True)
 
-    for release, package_format in PACKAGE_FORMAT.items():
+    for dist, package_format in PACKAGE_FORMAT.items():
         if package_format == 'rpm':
             for component in RPM_COMPONENTS:
                 for arch in RPM_ARCHS:
-                    path = '/'.join([env.repo_rpm_root, release, component, arch])
+                    path = '/'.join([env.repo_rpm_root, dist, component, arch])
                     dir_ensure(path, recursive=True)
                     run('createrepo {0}'.format(path))
 
@@ -130,15 +130,15 @@ def repo_deb_init():
     with open('aptly.conf.tmpl', 'r') as tf:
         template = Template(tf.read())
 
-    for release, package_format in PACKAGE_FORMAT.items():
-        configfile = 'aptly-{0}.conf'.format(release)
-        with open(configfile, 'w') as fh:
-            if package_format == 'deb':
-                content = template.safe_substitute(repo_root=env.repo_deb_root, release=release)
-                fh.write(content)
-        put(configfile, '/etc/aptly-{0}.conf'.format(release))
-        os.unlink(configfile)
-        run('aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} || aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
+    for dist, package_format in PACKAGE_FORMAT.items():
+        if package_format == 'deb':
+            configfile = 'aptly-{0}.conf'.format(dist)
+            with open(configfile, 'w') as fh:
+                    content = template.safe_substitute(repo_root=env.repo_deb_root, release=dist)
+                    fh.write(content)
+            put(configfile, '/etc/aptly-{0}.conf'.format(dist))
+            os.unlink(configfile)
+            run('aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} || aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
