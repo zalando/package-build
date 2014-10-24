@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Ubuntu 12.04 amd64
   config.vm.define "centos_65" do |cfg|
-    cfg.vm.box = "centos_65"
+    cfg.vm.box = "glarizza/centos_65"
     cfg.vm.provision "shell", path: "setup/setup_centos65.sh"
   end
 end
