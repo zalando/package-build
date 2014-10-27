@@ -6,7 +6,7 @@ class Redis < FPM::Cookery::Recipe
   v = '2.8.13'
   name     'zalando-redis-server'
   version  "2:#{v}"
-  revision 1
+  revision 2
   homepage 'http://redis.io/'
   source   'https://github.com/antirez/redis', :with => :git, :tag => v
 

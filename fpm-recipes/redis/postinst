@@ -24,12 +24,12 @@ case "${1}" in
     [ -z "${REDIS_USER}" ] && REDIS_USER="redis"
     [ -z "${REDIS_GROUP}" ] && REDIS_GROUP="redis"
     if ! getent group "${REDIS_GROUP}" > /dev/null 2>&1 ; then
-        addgroup --system "${REDIS_GROUP}" --gid 112 --quiet
+        addgroup --system "${REDIS_GROUP}" --gid 909 --quiet
     fi
     if ! id ${REDIS_USER} > /dev/null 2>&1 ; then
         adduser --system --home /var/lib/redis --no-create-home \
         --ingroup "${REDIS_GROUP}" --disabled-password --shell /bin/false \
-        "${REDIS_USER}" --uid 109
+        "${REDIS_USER}" --uid 950
     fi
 
     # Set user permissions on /var/log/redis/redis-server.log
