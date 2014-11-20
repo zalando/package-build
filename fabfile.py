@@ -200,8 +200,11 @@ def repo_deb_list(dist='ubuntu12.04', snapshot=False):
 @with_settings(user='root')
 @task
 def repo_deb_add(package, dist='ubuntu12.04'):
-    ''' upload and add a package file to the repo '''
+    '''Upload and add package to an apt repo with given dist, defaults to ubuntu12.04
 
+    Example:
+    % fab repo_deb_add:dist=ubuntu14.04 myfoo.deb
+    '''
     if not os.path.isfile(os.path.expanduser(package)):
         abort('could not upload {0}: file not found'.format(package))
 
