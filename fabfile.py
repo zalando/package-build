@@ -203,7 +203,7 @@ def repo_deb_add(package, dist='ubuntu12.04'):
     '''Upload and add package to an apt repo with given dist, defaults to ubuntu12.04
 
     Example:
-    % fab repo_deb_add:dist=ubuntu14.04 myfoo.deb
+    % fab repo_deb_add:myfoo.deb,dist=ubuntu14.04
     '''
     if not os.path.isfile(os.path.expanduser(package)):
         abort('could not upload {0}: file not found'.format(package))
@@ -394,4 +394,3 @@ def git_checkout(repo, name=None):
     p.date = datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
     print 'updated repo for "{0}" to commit {1}, date {2}'.format(blue(p.basename), green(p.sha), green(p.date))
     return p
-
