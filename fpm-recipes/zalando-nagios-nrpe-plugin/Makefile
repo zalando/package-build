@@ -2,6 +2,9 @@
 SRC=tmp-build
 PKG=pkg
 
+patch:
+	echo "please apply patchfile to the source"
+
 # $ dpkg -L nagios-nrpe-plugin              /.
 # /usr
 # /usr/share

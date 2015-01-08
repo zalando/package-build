@@ -2,6 +2,9 @@
 SRC=tmp-build
 PKG=pkg
 
+patch:
+	echo "please apply patchfile to the source"
+
 # $ dpkg -L nagios-nrpe-server
 deb:
 	dpkg -l nagios3-common >/dev/null || sudo apt-get install -y --quiet nagios3-common
