@@ -1,0 +1,12 @@
+USAGE
+=====
+vagrant up precise64
+vagrant ssh precise64
+sudo -i
+cd /vagrant/fpm-recipes/zalando-nagios-nrpe-server
+cd tmp-build
+patch < ../zalando-nagios-nrpe.patch
+./configure --with-ssl=/usr/bin/openssl --with-ssl-lib=/usr/lib/x86_64-linux-gnu --enable-command-args
+cd ..
+make deb
+
