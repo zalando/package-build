@@ -1,3 +1,6 @@
+#!/bin/env ruby
+# encoding: utf-8
+
 class ZalandoTomcat < FPM::Cookery::Recipe
   description "Tomcat meta package for Zalando"
 
