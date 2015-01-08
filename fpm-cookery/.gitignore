@@ -1,0 +1,6 @@
+.vagrant/
+cache/
+*.bak/
+tmp-build/
+tmp-dest/
+pkg/
