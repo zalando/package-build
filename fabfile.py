@@ -134,13 +134,13 @@ def repo_deb_init():
 
     file_write('/etc/apt/sources.list.d/aptly-repo.list', 'deb http://repo.aptly.info/ squeeze main')
     package_ensure('aptly')
-    dir_ensure('{0}/archive/'.format(env.repo_deb_root), recursive=True)
 
     with open('aptly.conf.tmpl', 'r') as tf:
         template = Template(tf.read())
 
     for dist, package_format in PACKAGE_FORMAT.items():
         if package_format == 'deb':
+            dir_ensure('{0}/archive/{1}'.format(env.repo_deb_root, dist), recursive=True)
             configfile = 'aptly-{0}.conf'.format(dist)
             with open(configfile, 'w') as fh:
                     content = template.safe_substitute(repo_root=env.repo_deb_root, release=dist)
@@ -209,9 +209,9 @@ def repo_deb_add(package, dist='ubuntu12.04'):
         abort('could not upload {0}: file not found'.format(package))
 
     with hide('commands'):
-        put(package, '{0}/archive/'.format(env.repo_deb_root))
+        put(package, '{0}/archive/{1}'.format(env.repo_deb_root, dist))
         package = package.split('/')[-1]
-        run('aptly -config=/etc/aptly-{0}.conf repo add -force-replace {0} {1}/archive/{2}'.format(dist, env.repo_deb_root,  package))
+        run('aptly -config=/etc/aptly-{0}.conf repo add -force-replace {0} {1}/archive/{0}/{2}'.format(dist, env.repo_deb_root,  package))
 
     if republish(dist):
         print green('added {0} to repo {1}'.format(package, dist))
