@@ -229,6 +229,18 @@ def repo_deb_del(packagename, dist='ubuntu12.04'):
     if republish(dist):
         print red('deleted {0} from repo {1}'.format(packagename, dist))
 
+@hosts(env.repo_host)
+@with_settings(user='root')
+@task
+def repo_deb_rebuild(dist='ubuntu12.04'):
+    ''' rebuild repository and re-import all packages '''
+
+    run('rm -fr {0}/{1}/'.format(env.repo_deb_root, dist))
+    repo_deb_init()
+    run('find {0}/archive/{1}/ -name "*.deb" | sort -n | while read package; do dpkg -I $package >/dev/null && aptly -config=/etc/aptly-{1}.conf repo add -force-replace {1} $package; done'.format(env.repo_deb_root, dist))
+
+    if republish(dist):
+        print green('successfully rebuild repo for dist {0}'.format(dist))
 
 @task
 @with_settings(hide('commands'))
