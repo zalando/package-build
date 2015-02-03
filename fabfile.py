@@ -375,8 +375,8 @@ def build_pypi(repo, name=None):
         local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.date))
 
     with settings(host_string=env.repo_host, user='root'):
-        dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='www-data',
-                    group='www-data')
+        dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='zalando',
+                    group='zalando')
         put('{0}/dist/{1}'.format(p.basename, p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
 
     return p
