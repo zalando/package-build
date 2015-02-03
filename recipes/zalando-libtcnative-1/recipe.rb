@@ -12,7 +12,7 @@ class ZalandoLibtcnative < FPM::Cookery::Recipe
   source   "http://archive.apache.org/dist/tomcat/tomcat-connectors/native/#{version}/source/tomcat-native-#{version}-src.tar.gz"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
   section       "non-free/net"
-  build_depends "libapr1.0-dev", "libssl-dev"
+  build_depends "libapr1-dev", "libssl-dev"
   depends       "libapr1", "libc6", "libssl1.0.0"
 
   def build
