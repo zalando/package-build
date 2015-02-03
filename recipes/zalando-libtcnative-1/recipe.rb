@@ -18,8 +18,8 @@ class ZalandoLibtcnative < FPM::Cookery::Recipe
   def build
       Dir.chdir 'jni/native' do
         configure   :prefix => '/server/tomcat/7.0',
-                    '--with-apr' => '/usr/lib/libapr-1.so.0',
-                    '--with-java-home' => '/server/jdk/1.7.0'
+                    'with-apr' => '/usr/lib/libapr-1.so.0',
+                    'with-java-home' => '/server/jdk/1.7.0'
         make
       end
   end
