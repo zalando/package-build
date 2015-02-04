@@ -5,7 +5,7 @@ class ZalandoTomcat < FPM::Cookery::Recipe
   description "Tomcat meta package for Zalando"
 
   version  "7.0.57"
-  revision  0
+  revision  1
   arch     "all"
   name     "zalando-tomcat-#{version}"
   homepage "http://tomcat.apache.org/"
@@ -13,7 +13,7 @@ class ZalandoTomcat < FPM::Cookery::Recipe
 
   maintainer "Sören König <soeren.koenig@zalando.de>"
   section  "non-free/net"
-  depends  "libtcnative-1", "cronolog"
+  depends  "zalando-libtcnative-1-1.1.32", "cronolog"
 
   def build
     extras = [ "catalina-jmx-remote.jar", "catalina-ws.jar", "tomcat-juli-adapters.jar", "tomcat-juli.jar" ]
