@@ -26,7 +26,9 @@ class ZalandoLibtcnative < FPM::Cookery::Recipe
   end
 
   def install
-      make :install, 'DESTDIR' => destdir
+      Dir.chdir 'jni/native' do
+      	make :install, 'DESTDIR' => destdir
+      end
   end
 
 end
