@@ -13,7 +13,7 @@ class ZalandoTomcat < FPM::Cookery::Recipe
 
   maintainer "Sören König <soeren.koenig@zalando.de>"
   section  "non-free/net"
-  depends  "zalando-libtcnative-1-1.1.32", "cronolog"
+  depends  "libtcnative-1", "cronolog"
 
   def build
     extras = [ "catalina-jmx-remote.jar", "catalina-ws.jar", "tomcat-juli-adapters.jar", "tomcat-juli.jar" ]

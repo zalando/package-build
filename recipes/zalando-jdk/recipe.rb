@@ -10,10 +10,11 @@ class ZalandoJDK < FPM::Cookery::Recipe
   name      "zalando-jdk-#{version}"
   homepage  "http://www.oracle.com/"
   source    "cache/jdk-7u#{version[-2..-1]}-linux-x64.tar.gz"
+  md5	    "5a98b1a3e4c48363d03f664f173bbb9a"
 
   maintainer "Sören König <soeren.koenig@zalando.de>"
   section   "non-free/net"
-  depends   "zalando-libtcnative-1-1.1.32", "cronolog"
+  depends   "libtcnative-1", "cronolog"
 
   def build
   end

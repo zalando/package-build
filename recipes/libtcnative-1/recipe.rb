@@ -1,13 +1,13 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-class ZalandoLibtcnative < FPM::Cookery::Recipe
+class Libtcnative < FPM::Cookery::Recipe
   description "Tomcat native library using the Apache Portable Runtime for Zalando"
 
   version  "1.1.32"
   revision  0
-  arch     "all"
-  name     "zalando-libtcnative-1-#{version}"
+  arch     "amd64"
+  name     "libtcnative-1"
   homepage "http://tomcat.apache.org/native-doc/"
   source   "http://archive.apache.org/dist/tomcat/tomcat-connectors/native/#{version}/source/tomcat-native-#{version}-src.tar.gz"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
