@@ -9,6 +9,7 @@ from string import Template
 import json
 import time
 import datetime
+import re
 
 from fabric.api import local, run, sudo, execute, put
 from fabric.context_managers import settings, cd, lcd, hide
@@ -59,6 +60,19 @@ class Package(object):
             return self.name
 
         return self.repo.split('/')[-1].replace('.git', '')
+
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    return [ atoi(c) for c in re.split('(\d+)', text) ]
 
 
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
@@ -362,7 +376,7 @@ def build_pypi(repo, name=None):
         local('python setup.py sdist', capture=True)
 
     dirlisting = os.listdir('{0}/dist/'.format(p.basename))
-    dirlisting.sort(reverse=True)
+    dirlisting.sort(key=natural_keys, reverse=True)
     for file in dirlisting:
         if file.endswith('.tar.gz'):
             p.tgz = file
