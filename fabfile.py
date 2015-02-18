@@ -133,8 +133,15 @@ def repo_rpm_add(package, dist='centos6.5', component='base'):
 def repo_rpm_del(packagename, dist='centos6.5', component='base'):
     ''' delete "packagename" from repo '''
 
+    packagename = packagename.strip()
+    if not packagename:
+        abort('can not delete empty package name'.format(packagename))
+
+    if not packagename.endswith('.rpm'):
+        packagename += '*.rpm'
+
     path = '/'.join([env.repo_rpm_root, dist, component])
-    run('find {0} -name "*{1}*" -exec mv {{}} {2}/archive/ \;'.format(path, packagename, env.repo_rpm_root))
+    run('find {0} -name "{1}" -exec mv {{}} {2}/archive/ \;'.format(path, packagename, env.repo_rpm_root))
     output = run('createrepo {0}'.format(path))
     if output.succeeded:
         print red('deleted {0} from repo {1}'.format(packagename, dist))
