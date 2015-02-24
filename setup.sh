@@ -15,7 +15,7 @@ then
     sudo dpkg -i vagrant_1.4.3_x86_64.deb
 else
     echo "You have to install virtualbox and vagrant manually"
-if
+fi
 
 # HINT: for using KVM provider use plugin https://github.com/adrahon/vagrant-kvm
 # apt-get install qemu qemu-kvm build-essential ruby2.0-dev libvirt-dev libxslt1-dev libxml2-dev
