@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Thursday, 08. January 2015*
+*created Wednesday, 11. June 2014 - updated Wednesday, 25. February 2015*
 
 ## Requirements
 
@@ -47,13 +47,14 @@ Build native packages (.deb, .rpm) from pypi modules automatically for different
 - build slaves are vagrant boxes to have always a clean, well defined environment
 - Fabric tasks can be run manually from command line or will be triggered from a web server
 - this web server polls the SCM system (Git) for changes or can be notified HTTP request
-- packages to be build should provide a config file, build.json which defines build dependencies for environments ({"ubuntu14.04": ["python-parmiko", "PyYAML", "", ...]})
+- packages to be build should provide a config file, package.json which defines build dependencies for environments ({"ubuntu14.04": ["python-parmiko", "PyYAML", "", ...]})
 - packages are build with [fpm](https://github.com/jordansissel/fpm), therefore we build sdist packages first and provide them in a simple pypi repo
+- setup.py must have more loose requirements for other python modules than defined in package.json (e.g. if package.json requires PyYAML==3.10, setup.py must have at least also PyYAML==3.10 or PyYAML>=3.10 as dependency). Otherwise the code will fail because it did not find the modules which where in the respective egg-infos.
 
 ### Build Environment
 Needed in the shared folder of a vagrant node:
 
-- **project repo** checked out from Git for getting the build.json (@TODO: could be retrieved via HTTP from Stash `?raw`)
+- **project repo** checked out from Git for getting the package.json (@TODO: could be retrieved via HTTP from Stash `?raw`)
 - **Vagrantfile**
 - **boxes(.json)**
 - **provision(-$boxname).sh**
