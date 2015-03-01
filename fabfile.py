@@ -74,6 +74,12 @@ def natural_keys(text):
     '''
     return [ atoi(c) for c in re.split('(\d+)', text) ]
 
+def package_exists(path):
+    if os.path.isfile(path):
+        print 'package has already been build: {0}'.format(path)
+        return True
+
+    return False
 
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
 
@@ -330,6 +336,9 @@ def build_package(repo, name=None):
     for target, dependencies in package_dependencies:
         package_format = PACKAGE_FORMAT.get(target, 'deb')
 
+        if package_exists('{0}/{1}.{2}.{3}'.format(p.basename, p.date, target, package_format)):
+            continue
+
         if dependencies:
             dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
 
@@ -379,6 +388,9 @@ def build_pypi(repo, name=None):
     ''' build pypi package from repo URL '''
     p = execute(git_checkout, repo, name)
     p = p['<local-only>']
+
+    if package_exists('{0}/{1}.tar.gz'.format(p.basename, p.date)):
+        return p
 
     with lcd(p.basename):
         local('python setup.py sdist', capture=True)

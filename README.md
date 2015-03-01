@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Wednesday, 25. February 2015*
+*created Wednesday, 11. June 2014 - updated Sunday, 01. March 2015*
 
 ## Requirements
 
@@ -71,17 +71,7 @@ Needed in the shared folder of a vagrant node:
 
 - try other vagrant providers, which might be more performant than virtualbox
 - create base images for build hosts, which are already provisioned with `fpm`
-- maybe add mode to generete "uber"-packages with all requirements built-in
-- use symlinks with git commit timestamp to determine, whether package has already been build
-
-### Done
-
-- implement mechanism for package.json
-- repo_deb_init
-- recherche: .rpm arch for "noarch", .deb for "all" as separate packages? -> "noarch" and "all" packages can be in any architecture sections
-- repo_deb_add (bugfixing), use fpm's `--iteration` flag to add the short SHA for differentiate package nano releases
-- switch repo_deb_* commands from reprepro to use aptly:
-`aptly -config=/etc/aptly-ubuntu12.04.conf repo create -distribution="ubuntu12.04" ubuntu12.04` ...
+- maybe add mode to generate "uber"-packages with all requirements built-in
 
 ## Publish a package in our repos
 
