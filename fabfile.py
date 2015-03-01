@@ -355,8 +355,7 @@ def build_package(repo, name=None):
             # this is necessary because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
             file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
             print 'build a {1} of {0} on {2} ({3})'.format(blue(p.basename), package_format, v.user_hostname_port(vm_name=target), green(target))
-            messages = sudo('fpm -s python --python-pypi http://{0}/simple/ -t {2} {3} --iteration {4}.{5} --force --name {1} "{1}"'.format(
-                    env.repo_host,
+            messages = sudo('fpm -s python -t {1} {2} --iteration {3}.{4} --force --name {0} "{0}"'.format(
                     p.basename,
                     package_format,
                     dependencies,
