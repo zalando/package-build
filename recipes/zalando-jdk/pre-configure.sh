@@ -1,8 +1,9 @@
 #!/bin/bash
+set -e
 
-VERSION=$(grep -m 1 version recipe.rb)
-VERSION=${VERSION##*-}
-VERSION=${VERSION/\"/}
+LONGVERSION=$(sed -n 's|\s*version\s*"\(.*\)"|\1|p' recipe.rb)
+LONGVERSION=${LONGVERSION/-/_}
+VERSION=${LONGVERSION##*_}
 TARGET="cache/jdk-7u${VERSION}-linux-x64.tar.gz"
 
 [ -d cache ] || mkdir -p cache
