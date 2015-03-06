@@ -1,4 +1,8 @@
 class Python3Boto3 < FPM::Cookery::Recipe
+  # This is a bit hacky: boto3 is installed via pip3 into the destdir,
+  # which is going to be packaged by fpm afterwards. So the 'source'
+  # attribute is actually not needed, but syntactically required.
+  # This creates the python3-boto3 package with all it's dependencies.
   description "Python interface to Amazon's Web Services"
 
   name     'python3-boto3'
