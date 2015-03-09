@@ -315,7 +315,7 @@ def build_package(repo, name=None):
 
     start_time = time.time()
 
-    p = execute(build_pypi, repo, name)
+    p = execute(git_checkout, repo, name)
     p = p['<local-only>']
 
     # put all files for the build host in place
