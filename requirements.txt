@@ -3,3 +3,4 @@ apscheduler
 Fabric==1.8.0
 git+https://github.com/gitpython-developers/GitPython.git
 python-vagrant
+cuisine
