@@ -1,7 +1,16 @@
+#!/bin/env ruby
+# encoding: utf-8
+
 class PythonRequests < FPM::Cookery::PythonRecipe
-  homepage "http://python-requests.org"
-  name "requests"
+
+  name      "requests"
+  version   "2.2.1"
+  revision  0
+  arch      "all"
+  homepage  "http://python-requests.org"
+
+  maintainer    "Sören König <soeren.koenig@zalando.de>"
+
   build_depends ["python-setuptools"]
-  depends ["python"]
-  version "2.2.1"
+  depends        ["python"]
 end
