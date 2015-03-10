@@ -8,7 +8,7 @@ then
 
         cd /vagrant/recipes/${recipe}/ && (
             [ -x ./prepare.sh ] && ./prepare.sh
-            fpm-cook
+            [ -r ./recipe.rb ] && fpm-cook
         )
     done
 fi
