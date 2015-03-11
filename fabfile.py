@@ -364,7 +364,7 @@ def build_package(repo, name=None):
 
             for message in messages.split('\n'):
                 if 'Created package' in message:
-                    setattr(p, package_format, message.split(':path=>')[1].replace('"', '').replace('}', ''))
+                    setattr(p, package_format, message.split('"')[-2])
                     break
 
             if not getattr(p, package_format):
