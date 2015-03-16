@@ -202,7 +202,7 @@ def republish(dist='ubuntu12.04', snapshot=False):
                 return False
         else:
             run('aptly -config=/etc/aptly-{0}.conf publish list -raw=true | grep -q {0} || aptly -config=/etc/aptly-{0}.conf publish repo -distribution={0} {0}'.format(dist), warn_only=True)
-            if run('aptly -config=/etc/aptly-{0}.conf publish update {0}'.format(dist), warn_only=True).failed:
+            if run('aptly -config=/etc/aptly-{0}.conf publish update -force-overwrite {0}'.format(dist), warn_only=True).failed:
                 return False
 
     return True
