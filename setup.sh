@@ -3,12 +3,8 @@
 
 if grep -qi Debian /etc/os-release
 then
-
-    echo "installing a current version of Virtualbox as described on https://www.virtualbox.org/wiki/Linux_Downloads"
-    echo 'deb http://download.virtualbox.org/virtualbox/debian wheezy contrib' | sudo tee /etc/apt/sources.list.d/virtualbox.list
-    wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
     sudo apt-get update
-    sudo apt-get install virtualbox-4.3
+    sudo apt-get install virtualbox virtualbox-guest-additions-iso
 
     echo "installing a matching version of vagrant"
     wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
