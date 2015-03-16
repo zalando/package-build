@@ -1,5 +1,5 @@
 #!/bin/bash
-# tested on debian jessie
+# tested on Debian Jessie
 
 if grep -qi Debian /etc/os-release
 then
@@ -18,8 +18,9 @@ fi
 #vagrant box list | grep -q 'ubuntu12.04\s*(kvm)' || vagrant box add ubuntu12.04 https://vagrant-kvm-boxes.s3.amazonaws.com/precise64-kvm.box
 #vagrant box list | grep -q 'centos6.4\s*(kvm)' || vagrant box add centos6.4 https://vagrant-kvm-boxes.s3.amazonaws.com/centos64-amd64-kvm.box
 
-echo "add our target boxes..."
-vagrant box list | grep -q 'ubuntu12.04\s*(virtualbox)' || vagrant box add ubuntu12.04 https://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box
-vagrant box list | grep -q 'ubuntu14.04\s*(virtualbox)' || vagrant box add ubuntu14.04 https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box
-vagrant box list | grep -q 'centos6.5\s*(virtualbox)' || vagrant box add centos6.5 https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box
+echo "add our build boxes..."
+while read name url
+do
+    vagrant box list | grep -q "$name\s*(virtualbox" || vagrant box add $name $url
+done < boxes
 
