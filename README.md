@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Sunday, 01. March 2015*
+*created Wednesday, 11. June 2014 - updated Tuesday, 17. March 2015*
 
 ## Requirements
 
@@ -46,9 +46,9 @@ Build native packages (.deb, .rpm) from pypi modules automatically for different
 - whole process is triggered from Fabric tasks running on the "build host"
 - build slaves are vagrant boxes to have always a clean, well defined environment
 - Fabric tasks can be run manually from command line or will be triggered from a web server
-- this web server polls the SCM system (Git) for changes or can be notified HTTP request
+- this web server polls the SCM system (Git) for changes or can be notified by a HTTP request
 - packages to be build should provide a config file, package.json which defines build dependencies for environments ({"ubuntu14.04": ["python-parmiko", "PyYAML", "", ...]})
-- packages are build with [fpm](https://github.com/jordansissel/fpm), therefore we build sdist packages first and provide them in a simple pypi repo
+- packages are build with [fpm](https://github.com/jordansissel/fpm)
 - setup.py must have more loose requirements for other python modules than defined in package.json (e.g. if package.json requires PyYAML==3.10, setup.py must have at least also PyYAML==3.10 or PyYAML>=3.10 as dependency). Otherwise the code will fail because it did not find the modules which where in the respective egg-infos.
 
 ### Build Environment
@@ -56,21 +56,24 @@ Needed in the shared folder of a vagrant node:
 
 - **project repo** checked out from Git for getting the package.json (@TODO: could be retrieved via HTTP from Stash `?raw`)
 - **Vagrantfile**
-- **boxes(.json)**
+- **boxes**
 - **provision(-$boxname).sh**
 
 ## Considered Solutions for the Job Scheduling Framework
 
+- [PyCI](http://tbraun89.github.io/pyCI/): minimal CI server
+- [Go](http://www.go.cd/)
 - [buildbot](http://buildbot.net/): build framework with master/slave architecture, a lot to much
 - [dovetail](http://www.aviser.asia/dovetail/): defines build tasks, like `make`, no scheduler
 - [elita](https://elita.io/): HTTP API-focused continuous deployment framework
 - [taskpy](https://github.com/jakecoffman/taskpy): draft Jenkins rewrite in Python
 - [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
 
+
 ### Todo
 
 - try other vagrant providers, which might be more performant than virtualbox
-- create base images for build hosts, which are already provisioned with `fpm`
+- create base images for build hosts, which are already provisioned with `fpm` and other requirements
 - maybe add mode to generate "uber"-packages with all requirements built-in
 
 ## Publish a package in our repos
