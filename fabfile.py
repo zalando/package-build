@@ -320,7 +320,6 @@ def build_package(repo, name=None):
 
     # put all files for the build host in place
     copy('Vagrantfile', p.basename)
-    copy('boxes', p.basename)
     copy('cook-recipe.sh', p.basename)
     for file in glob.glob('provision*sh'):
         copy(file, p.basename)

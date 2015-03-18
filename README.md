@@ -1,17 +1,19 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Tuesday, 17. March 2015*
+*created Wednesday, 11. June 2014 - updated Wednesday, 18. March 2015*
 
-## Requirements
+## Setup
+You have to install this requirements:
 
 - [VirtualBox](https://www.virtualbox.org/)
 - [Vagrant](http://www.vagrantup.com/)
 
-## Setup
+    sudo apt-get install virtualbox virtualbox-guest-additions-iso
+
+    wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
+    sudo dpkg -i vagrant_1.4.3_x86_64.deb
 
     git clone ssh://git@stash.zalando.net:7999/system/package-build.git
-    cd package-build
-    ./setup.sh
 
 ## Re-building packages with fpm-cookery
 
@@ -22,15 +24,7 @@ fpm-cookery automatically builds only a package for the distribution/OS where it
 
     vagrant up {ubuntu12.04,ubuntu14.04,centos6.5}
 
-### How to use
-
-    vagrant ssh {ubuntu12.04,ubuntu14.04,centos6.5}
-    $ sudo -i
-    # cd /vagrant
-    /vagrant# cd recipes/redis/
-    /vagrant/recipes/redis# fpm-cook
-
-## More recipe examples
+### More recipe examples
 
 - [https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
 - [https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand](https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand)
@@ -56,8 +50,8 @@ Needed in the shared folder of a vagrant node:
 
 - **project repo** checked out from Git for getting the package.json (@TODO: could be retrieved via HTTP from Stash `?raw`)
 - **Vagrantfile**
-- **boxes**
 - **provision(-$boxname).sh**
+- **cook-recipe.sh**
 
 ## Considered Solutions for the Job Scheduling Framework
 
@@ -70,7 +64,7 @@ Needed in the shared folder of a vagrant node:
 - [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
 
 
-### Todo
+## Todo
 
 - try other vagrant providers, which might be more performant than virtualbox
 - create base images for build hosts, which are already provisioned with `fpm` and other requirements
