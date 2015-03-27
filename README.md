@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Wednesday, 18. March 2015*
+*created Wednesday, 11. June 2014 - updated Friday, 27. March 2015*
 
 ## Setup
 You have to install this requirements:
@@ -66,9 +66,17 @@ Needed in the shared folder of a vagrant node:
 
 ## Todo
 
-- try other vagrant providers, which might be more performant than virtualbox
 - create base images for build hosts, which are already provisioned with `fpm` and other requirements
 - maybe add mode to generate "uber"-packages with all requirements built-in
+- try other vagrant providers, which might be more performant than virtualbox
+- rewrite to use Docker:
+    - drop Vagrant completely
+    - one Dockerfile per distribution
+    - buildhost pulls repo with Dockerfiles and recipes (package-build)
+    - Docker images are build (replaces provision*.sh)
+    - iterating over package recipes (commit hook or cronjob pull)
+    - python modules: clone repo and cp to build dir
+    - every python module has to provide recipe & prepare.sh
 
 ## Publish a package in our repos
 
