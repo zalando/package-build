@@ -1,6 +1,9 @@
+*.deb
+*.rpmz
+*.tag.gz
+*.bak/
 .vagrant/
 cache/
-*.bak/
 tmp-build/
 tmp-dest/
 pkg/
