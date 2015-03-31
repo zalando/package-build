@@ -15,7 +15,7 @@ do
     then
         cd "/vagrant/recipes/${recipe}" && (
             [ -x ./prepare.sh ] && ./prepare.sh
-            [ -r ./recipe.rb ] && fpm-cook package --pkg-dir="$RELEASE"
+            [ -r ./recipe.rb ] && fpm-cook package --no-deps --pkg-dir="$RELEASE"
         )
     fi
 done
