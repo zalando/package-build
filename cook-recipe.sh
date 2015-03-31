@@ -15,7 +15,12 @@ do
     then
         cd "/vagrant/recipes/${recipe}" && (
             [ -x ./prepare.sh ] && ./prepare.sh
-            [ -r ./recipe.rb ] && fpm-cook package --no-deps --pkg-dir="$RELEASE"
+            if [ -r ./recipe.rb ]
+            then
+                git checkout .
+                sed -i "s/\(^[[:space:]]*revision[[:space:]]*\)\(@REVISION@\)$/\1$(date +%Y%m%d%H%M)/" ./recipe.rb
+                fpm-cook package --no-deps --pkg-dir="$RELEASE"
+           fi
         )
     fi
 done
