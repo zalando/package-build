@@ -28,6 +28,6 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   end
 
   def install
-      safesystem 'python setup.py install --root=../../tmp-dest --no-compile'
+      safesystem 'python setup.py install --root=../../tmp-dest --no-compile --install-layout=deb'
   end
 end
