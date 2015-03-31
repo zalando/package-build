@@ -1,57 +1,55 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Friday, 27. March 2015*
+*created Wednesday, 11. June 2014 - updated Tuesday, 31. March 2015*
 
 ## Setup
-You have to install this requirements:
 
-- [VirtualBox](https://www.virtualbox.org/)
-- [Vagrant](http://www.vagrantup.com/)
+[Vagrant](http://www.vagrantup.com/) >= v1.6 is needed to use the built-in docker provider. In Debian Jessie, it is included in the official repositories:
 
-    sudo apt-get install virtualbox virtualbox-guest-additions-iso
+    apt-get install vagrant
 
-    wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
-    sudo dpkg -i vagrant_1.4.3_x86_64.deb
+Then, clone the repo and install Python requirements:
 
     git clone ssh://git@stash.zalando.net:7999/system/package-build.git
+    cd package-build
+    sudo pip install -r requirements.txt
 
-## Re-building packages with fpm-cookery
+## Concept
 
-This way of package building is based on [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery).
-It has been created in order to make Debian packaging for Ubuntu much easier. It's using fpm-cookery recipes to make repeatable build processes (package version updates) less painful.
+- whole process is triggered from Fabric tasks running on the "build host"
+- build slaves are docker containers to have always a clean, well defined environment
+- packages are build with [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery)
+- setup.py must have more loose requirements for other python modules than defined in package.json (e.g. if package.json requires PyYAML==3.10, setup.py must have at least also PyYAML==3.10 or PyYAML>=3.10 as dependency). Otherwise the code will fail because it did not find the modules which where in the respective egg-infos.
 
-fpm-cookery automatically builds only a package for the distribution/OS where it's running on [source](https://github.com/bernd/fpm-cookery/blob/master/spec/facts_spec.rb#L72), so start the desired OS:
+## How To
 
-    vagrant up {ubuntu12.04,ubuntu14.04,centos6.5}
+The build environments are provided by docker containers, thus you have to create a new subfolder under `docker/` with a Dockerfile for all the distributions, you want to create a package for. Set the environment variable `RELEASE`, it's used to put the resulting package into an appropriate subfolder to avoid name clashes. It could be also used to determine to which repository the package should be uploaded to later.
 
-### More recipe examples
+The actual package build is done by [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery). So create a `recipe.rb` under an subfolder in `recipes/` and optionally a script called `prepare.sh`, which is meant to be run before `fpm-cook package` is executed.
+
+fpm-cookery automatically builds only a package for the distribution/OS where it's running on [source](https://github.com/bernd/fpm-cookery/blob/master/spec/facts_spec.rb#L72).
+
+### Command Line Examples
+To start the packaging process different distributions and packages, see the examples below
+
+Build `facter` for Ubuntu 14.04:
+
+    vagrant docker-run ubuntu14.04 -- /vagrant/cook-recipe.sh facter
+
+Build `facter` for Ubuntu 12.04 and Centos 6:
+
+    vagrant docker-run ubuntu12.04 centos6 -- /vagrant/cook-recipe.sh facter
+
+Build all recipes for Debian 7 ("Wheezy"):
+
+    vagrant docker-run debian7 -- /vagrant/cook-recipe.sh
+
+### More Recipe Examples
 
 - [https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
 - [https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand](https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand)
 - [https://github.com/gocardless/fpm-recipes](https://github.com/gocardless/fpm-recipes)
 - [https://github.com/henchmanio/fpm-recipes](https://github.com/henchmanio/fpm-recipes)
-
-## Build native packages from python modules
-
-Build native packages (.deb, .rpm) from pypi modules automatically for different target systems (Ubuntu 12.04, Ubuntu 14.04, Centos 6.5) and push them to internal package repositotries to make them avaialable.
-
-### Concept
-
-- whole process is triggered from Fabric tasks running on the "build host"
-- build slaves are vagrant boxes to have always a clean, well defined environment
-- Fabric tasks can be run manually from command line or will be triggered from a web server
-- this web server polls the SCM system (Git) for changes or can be notified by a HTTP request
-- packages to be build should provide a config file, package.json which defines build dependencies for environments ({"ubuntu14.04": ["python-parmiko", "PyYAML", "", ...]})
-- packages are build with [fpm](https://github.com/jordansissel/fpm)
-- setup.py must have more loose requirements for other python modules than defined in package.json (e.g. if package.json requires PyYAML==3.10, setup.py must have at least also PyYAML==3.10 or PyYAML>=3.10 as dependency). Otherwise the code will fail because it did not find the modules which where in the respective egg-infos.
-
-### Build Environment
-Needed in the shared folder of a vagrant node:
-
-- **project repo** checked out from Git for getting the package.json (@TODO: could be retrieved via HTTP from Stash `?raw`)
-- **Vagrantfile**
-- **provision(-$boxname).sh**
-- **cook-recipe.sh**
 
 ## Considered Solutions for the Job Scheduling Framework
 
@@ -63,14 +61,10 @@ Needed in the shared folder of a vagrant node:
 - [taskpy](https://github.com/jakecoffman/taskpy): draft Jenkins rewrite in Python
 - [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
 
-
 ## Todo
 
-- create base images for build hosts, which are already provisioned with `fpm` and other requirements
-- maybe add mode to generate "uber"-packages with all requirements built-in
-- try other vagrant providers, which might be more performant than virtualbox
+- generate "uber"-packages with all requirements built-in for Python modules -> virtualenv
 - rewrite to use Docker:
-    - drop Vagrant completely
     - one Dockerfile per distribution
     - buildhost pulls repo with Dockerfiles and recipes (package-build)
     - Docker images are build (replaces provision*.sh)

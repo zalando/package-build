@@ -1,7 +1,7 @@
 FROM debian:wheezy
-
 MAINTAINER soeren.koenig@zalando.de
 
+ENV RELEASE debian7
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
