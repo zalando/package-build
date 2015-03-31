@@ -1,0 +1,7 @@
+[epel]
+name=Extra Packages for Enterprise Linux 6 - $basearch
+baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch
+proxy=http://repo.zalando:3142
+failovermethod=priority
+enabled=1
+gpgcheck=0
