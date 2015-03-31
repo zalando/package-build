@@ -1,6 +1,6 @@
 #!/bin/env ruby
 # encoding: utf-8
-#
+
 class Python3Boto3 < FPM::Cookery::Recipe
   # This creates the python3-boto3 package with all it's dependencies.
   # This is a bit hacky: boto3 is installed via pip3 into the destdir,
