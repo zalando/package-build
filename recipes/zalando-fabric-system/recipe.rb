@@ -8,9 +8,9 @@ class ZalandoFabricSystem < FPM::Cookery::Recipe
   version  "0.1.2"
   revision @REVISION@
   arch      "all"
+
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-fabric-system/browse"
   source        "https://stash.zalando.net/scm/pymodules/zalando-fabric-system.git", :with => :git, :tag => "#{version}"
-
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "python-setuptools"
