@@ -4,9 +4,9 @@
 class ZalandoFabricSystem < FPM::Cookery::Recipe
   description "set of customized fabric scripts for Team Platform/System"
 
-  name     "zalando-fabric-system"
-  version  "0.1.2"
-  revision @REVISION@
+  name      "zalando-fabric-system"
+  version   "0.1.2"
+  revision  @REVISION@
   arch      "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-fabric-system/browse"
