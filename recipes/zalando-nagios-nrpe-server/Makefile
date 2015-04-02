@@ -30,20 +30,7 @@ deb:
 		-C ${PKG}/ \
 		-s dir -t deb .
 
-# [vagrant@vagrant-centos65 ~]$ rpm -ql nrpe
-# /etc/nagios/nrpe.cfg
-# /etc/nrpe.d
-# /etc/rc.d/init.d/nrpe
-# /etc/sysconfig/nrpe
-# /usr/sbin/nrpe
-# /usr/share/doc/nrpe-2.15
-# /usr/share/doc/nrpe-2.15/Changelog
-# /usr/share/doc/nrpe-2.15/LEGAL
-# /usr/share/doc/nrpe-2.15/NRPE.pdf
-# /usr/share/doc/nrpe-2.15/README
-# /usr/share/doc/nrpe-2.15/README.SSL
-# /usr/share/doc/nrpe-2.15/SECURITY
-# /var/run/nrpe
+# $ rpm -ql nrpe
 rpm:
 	rpm -ql nagios-common >/dev/null || sudo yum install -y nagios-common
 	rpm -ql openssl-devel >/dev/null || sudo yum install -y openssl-devel
@@ -74,5 +61,3 @@ rpmdev:
 clean:
 	rm -rf $(PKG)
 	make -C $(SRC) clean
-
-# dpkg -c zalando-nagios-nrpe-plugin_1.0_amd64.deb
