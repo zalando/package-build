@@ -16,7 +16,7 @@ class ZalandoFabricSystem < FPM::Cookery::Recipe
   build_depends   "python-setuptools"
 
   platforms [:ubuntu, :debian] do
-    depends     "fabric == 1.8.0", "python-cuisine == 0.6.5", "python-ldap", "python-netaddr == 0.7.10"
+    depends "fabric == 1.8.0", "python-cuisine == 0.6.5", "python-ldap", "python-netaddr == 0.7.10"
   end
 
   def build
