@@ -6,7 +6,7 @@ class ZalandoFabricSystem < FPM::Cookery::Recipe
 
   name      "zalando-fabric-system"
   version   "0.1.2"
-  revision  @REVISION@
+  revision  201504022017
   arch      "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-fabric-system/browse"
