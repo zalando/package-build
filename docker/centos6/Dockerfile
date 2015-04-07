@@ -1,7 +1,7 @@
 FROM centos:centos6
 MAINTAINER soeren.koenig@zalando.de
 
-ENV RELEASE centos6
+ENV DIST centos6
 
 COPY epel.repo /etc/yum.repos.d/
 COPY zalando-service-combined.ca /etc/ssl/certs/

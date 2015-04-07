@@ -1,7 +1,7 @@
 FROM ubuntu:12.04
 MAINTAINER soeren.koenig@zalando.de
 
-ENV RELEASE ubuntu12.04
+ENV DIST ubuntu12.04
 ENV DEBIAN_FRONTEND noninteractive
 
 COPY zalando-service-combined.ca /usr/share/ca-certificates/
