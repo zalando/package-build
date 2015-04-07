@@ -27,3 +27,4 @@ class ZalandoFabricSystem < FPM::Cookery::Recipe
       safesystem 'python setup.py install --root=../../tmp-dest --no-compile'
   end
 end
+# test
