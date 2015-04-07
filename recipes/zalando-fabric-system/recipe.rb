@@ -5,7 +5,7 @@ class ZalandoFabricSystem < FPM::Cookery::Recipe
   description "set of customized fabric scripts for Team Platform/System"
 
   name      "zalando-fabric-system"
-  version   "0.1.2"
+  version   "0.1.4"
   revision  201504022017
   arch      "all"
 
