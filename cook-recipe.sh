@@ -18,7 +18,8 @@ do
             if [ -r ./recipe.rb ]
             then
                 git checkout .
-                sed -i "s/\(^[[:space:]]*revision[[:space:]]*\)\(@REVISION@\)$/\1$(date +%Y%m%d%H%M)/" ./recipe.rb
+                sed -i "s/\(^[[:space:]]*revision[[:space:]]*\)\([[:digit:]]\{12\}\)$/\1$(date +%Y%m%d%H%M)/" ./recipe.rb
+
                 fpm-cook package --no-deps --pkg-dir="$RELEASE"
            fi
         )
