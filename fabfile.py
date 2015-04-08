@@ -39,7 +39,7 @@ else:
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
 
-PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
+PACKAGE_FORMAT = {'centos6': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
 
 def atoi(text):
@@ -86,7 +86,7 @@ def repo_rpm_init():
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
 @task
-def repo_rpm_list(dist='centos6.5'):
+def repo_rpm_list(dist='centos6'):
     ''' list repo's packages '''
 
     output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
@@ -99,7 +99,7 @@ def repo_rpm_list(dist='centos6.5'):
 @hosts(env.repo_host)
 @with_settings(hide('commands'), user='root')
 @task
-def repo_rpm_add(package, dist='centos6.5', component='base'):
+def repo_rpm_add(package, dist='centos6', component='base'):
     ''' upload and add a package file to the repo '''
 
     arch = 'x86_64'
@@ -118,7 +118,7 @@ def repo_rpm_add(package, dist='centos6.5', component='base'):
 @hosts(env.repo_host)
 @with_settings(hide('commands'), user='root')
 @task
-def repo_rpm_del(packagename, dist='centos6.5', component='base'):
+def repo_rpm_del(packagename, dist='centos6', component='base'):
     ''' delete "packagename" from repo '''
 
     packagename = packagename.strip()
