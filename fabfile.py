@@ -39,7 +39,7 @@ else:
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
 
-PACKAGE_FORMAT = {'centos6': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
+PACKAGE_FORMAT = {'centos6': 'rpm', 'debian7': 'deb', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
 
 def atoi(text):
