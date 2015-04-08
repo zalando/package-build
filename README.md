@@ -1,14 +1,10 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Tuesday, 31. March 2015*
+*created Wednesday, 11. June 2014 - updated Wednesday, 08. April 2015*
 
 ## Setup
 
-[Vagrant](http://www.vagrantup.com/) >= v1.6 is needed to use the built-in docker provider. In Debian Jessie, it is included in the official repositories:
-
-    apt-get install vagrant
-
-Then, clone the repo and install Python requirements:
+Clone the repo and install Python requirements:
 
     git clone ssh://git@stash.zalando.net:7999/system/package-build.git
     cd package-build
@@ -34,15 +30,11 @@ To start the packaging process different distributions and packages, see the exa
 
 Build `facter` for Ubuntu 14.04:
 
-    vagrant docker-run ubuntu14.04 -- /vagrant/cook-recipe.sh facter
-
-Build `facter` for Ubuntu 12.04 and Centos 6:
-
-    vagrant docker-run ubuntu12.04 centos6 -- /vagrant/cook-recipe.sh facter
+    fab package_build:ubuntu14.04,facter
 
 Build all recipes for Debian 7 ("Wheezy"):
 
-    vagrant docker-run debian7 -- /vagrant/cook-recipe.sh
+    package_build:debian7
 
 ### More Recipe Examples
 

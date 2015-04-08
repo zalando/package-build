@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]
 then
-    recipes=( $( ls -1 /vagrant/recipes/ ) )
+    recipes=( $( ls -1 /data/recipes/ ) )
     echo "No folders given, so running all recipes: ${recipes[*]}"
 else
     recipes=( "$@" )
@@ -11,9 +11,9 @@ fi
 
 for recipe in "${recipes[@]}"
 do
-    if [ -d "/vagrant/recipes/${recipe}" ]
+    if [ -d "/data/recipes/${recipe}" ]
     then
-        cd "/vagrant/recipes/${recipe}" && (
+        cd "/data/recipes/${recipe}" && (
             [ -x ./prepare.sh ] && ./prepare.sh
             if [ -r ./recipe.rb ]
             then

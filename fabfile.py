@@ -20,9 +20,10 @@ from fabric.colors import blue, green, red
 from cuisine import package_ensure, dir_ensure, file_link, file_write
 from git import Repo
 from git.remote import Remote
-import vagrant
 
 env.disable_known_hosts = True
+
+# @TODO: update README.md and sysdocu section
 
 if hasattr(env, 'legacy'):
     env.repo_host = 'iftp.zalando.net'
@@ -41,27 +42,6 @@ RPM_ARCHS = ['i386', 'x86_64']
 PACKAGE_FORMAT = {'centos6.5': 'rpm', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
 
 
-class Package(object):
-
-    name = None
-    tgz = None
-    rpm = None
-    deb = None
-
-    def __init__(self, repo, name=None):
-        self.repo = repo
-        self.name = name
-
-    @property
-    def basename(self):
-        ''' get the package name from a git repo url '''
-
-        if self.name:
-            return self.name
-
-        return self.repo.split('/')[-1].replace('.git', '')
-
-
 def atoi(text):
     return int(text) if text.isdigit() else text
 
@@ -72,7 +52,8 @@ def natural_keys(text):
     http://nedbatchelder.com/blog/200712/human_sorting.html
     (See Toothy's implementation in the comments)
     '''
-    return [ atoi(c) for c in re.split('(\d+)', text) ]
+    return [atoi(c) for c in re.split('(\d+)', text)]
+
 
 def package_exists(path):
     if os.path.isfile(path):
@@ -82,6 +63,7 @@ def package_exists(path):
     return False
 
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
+
 
 @hosts(env.repo_host)
 @with_settings(user='root')
@@ -174,7 +156,9 @@ def repo_deb_init():
                     fh.write(content)
             put(configfile, '/etc/aptly-{0}.conf'.format(dist))
             os.unlink(configfile)
-            run('aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} || aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
+            run('aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} \
+                || aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
+
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
@@ -201,7 +185,8 @@ def republish(dist='ubuntu12.04', snapshot=False):
             if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
                 return False
         else:
-            run('aptly -config=/etc/aptly-{0}.conf publish list -raw=true | grep -q {0} || aptly -config=/etc/aptly-{0}.conf publish repo -distribution={0} {0}'.format(dist), warn_only=True)
+            run('aptly -config=/etc/aptly-{0}.conf publish list -raw=true | grep -q {0} || \
+                 aptly -config=/etc/aptly-{0}.conf publish repo -distribution={0} {0}'.format(dist), warn_only=True)
             if run('aptly -config=/etc/aptly-{0}.conf publish update -force-overwrite {0}'.format(dist), warn_only=True).failed:
                 return False
 
@@ -256,6 +241,7 @@ def repo_deb_del(packagename, dist='ubuntu12.04'):
     if republish(dist):
         print red('deleted {0} from repo {1}'.format(packagename, dist))
 
+
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
@@ -264,10 +250,14 @@ def repo_deb_rebuild(dist='ubuntu12.04'):
 
     run('rm -fr {0}/{1}/'.format(env.repo_deb_root, dist))
     repo_deb_init()
-    run('find {0}/archive/{1}/ -name "*.deb" | sort -n | while read package; do dpkg -I $package >/dev/null && aptly -config=/etc/aptly-{1}.conf repo add -force-replace {1} $package; done'.format(env.repo_deb_root, dist))
+    run('find {0}/archive/{1}/ -name "*.deb" \
+            | sort -n \
+            | while read package; do dpkg -I $package >/dev/null \
+            && aptly -config=/etc/aptly-{1}.conf repo add -force-replace {1} $package; done'.format(env.repo_deb_root, dist))
 
     if republish(dist):
         print green('successfully rebuild repo for dist {0}'.format(dist))
+
 
 @task
 @with_settings(hide('commands'))
@@ -310,131 +300,61 @@ def package_info(package):
 
 
 @task
-def build_package(repo, name=None):
-    ''' build DEB and RPM packages from repo URL '''
+def docker_build(dist=None):
+    ''' build Docker image from ./docker/<dist> subdir '''
+
+    def build(dist):
+        local('''docker images | grep -q package_build/{dist} \
+                 || docker build --tag=package_build/{dist} docker/{dist}/'''.format(dist=dist))
+
+    if dist:
+        builddir = './docker/{}'.format(dist)
+        os.path.isdir(builddir) or abort('{} dir is not existing'.format(builddir))
+        build(dist)
+    else:
+        for root, dirs, files in os.walk('./docker/'):
+            for dist in dirs:
+                build(dist)
+
+
+@task
+def docker_run(dist=None, command=''):
+    ''' run a command on a Docker container based on dist'''
+
+    def run(dist, command):
+        with settings(warn_only=True):
+            cmd = 'docker run -v ${{PWD}}:/data package_build/{dist} {command}'.format(dist=dist, command=command)
+            if local(cmd).failed:
+                execute('docker_build', dist)
+                local(cmd)
+
+    if dist:
+        run(dist, command)
+    else:
+        for root, dirs, files in os.walk('./docker/'):
+            for dist in dirs:
+                run(dist, command)
+
+
+@task
+def package_build(dist=None, recipe=''):
+    ''' build packages from recipe for dist '''
 
     start_time = time.time()
+    print 'start_time: %s' % start_time
 
-    p = execute(git_checkout, repo, name)
-    p = p['<local-only>']
+    execute('docker_run', dist, '/data/cook-recipe.sh {}'.format(recipe))
 
-    # put all files for the build host in place
-    copy('Vagrantfile', p.basename)
-    copy('cook-recipe.sh', p.basename)
-    for file in glob.glob('provision*sh'):
-        copy(file, p.basename)
-
-    # detect specific dependencies for targets or fallback to autodetection
-    package_dependencies = []
-    if os.path.isfile('{0}/package.json'.format(p.basename)):
-        with open('{0}/package.json'.format(p.basename), 'r') as fh:
-            package_dependencies = json.load(fh).items()
-    else:
-        package_dependencies = [(t, '') for t in PACKAGE_FORMAT.keys()]
-
-    for target, dependencies in package_dependencies:
-        package_format = PACKAGE_FORMAT.get(target, 'deb')
-
-        if package_exists('{0}/{1}.{2}.{3}'.format(p.basename, p.date, target, package_format)):
-            continue
-
-        if dependencies:
-            dependencies = '--no-auto-depends ' + ' '.join([' -d "{0}"'.format(d) for d in dependencies])
-
-        v = vagrant.Vagrant(root=p.basename)
-
-        if v.status(vm_name=target)[0].state == v.RUNNING:
-            v.destroy(vm_name=target)
-
-        print 'running "{0}" for machine {1} on root dir ./{2}'.format(blue('vagrant up'), green(target), p.basename)
-        v.up(vm_name=target)
-
-        with settings(cd('/vagrant'), host_string=v.user_hostname_port(vm_name=target),
-                      key_filename=v.keyfile(vm_name=target), disable_known_hosts=True):
-            # this is necessary because `fpm` looks in a folder equally named like given with the -n option for setup.py to detect the correct version number of the resulting package
-            file_link('/vagrant', '/vagrant/{0}'.format(p.basename))
-            print 'build a {1} of {0} on {2} ({3})'.format(blue(p.basename), package_format, v.user_hostname_port(vm_name=target), green(target))
-            messages = sudo('fpm -s python -t {1} {2} --iteration {3}.{4} --force --name {0} "{0}"'.format(
-                    p.basename,
-                    package_format,
-                    dependencies,
-                    p.date,
-                    target))
-
-            for message in messages.split('\n'):
-                if 'Created package' in message:
-                    setattr(p, package_format, message.split('"')[-2])
-                    break
-
-            if not getattr(p, package_format):
-                print 'error while creating {0} package'.format(package_format)
-                continue
-            file_link(getattr(p, package_format), '{0}.{1}.{2}'.format(p.date, target, package_format))
-
-        if getattr(p, package_format):
-            v.halt(vm_name=target)
-            execute('repo_{0}_add'.format(package_format), '{0}/{1}'.format(p.basename, getattr(p, package_format)), target)
-        else:
-            print 'no package has been created, you may want to inspect the state in the machine:'
-            print 'cd {0}/ && vagrant ssh {1}'.format(p.basename, target)
-        print
+    for root, dirs, files in os.walk('./recipes/'):
+        for file in files:
+            if file == 'lastbuild' and os.path.getmtime(os.path.join(root, file)) >= start_time:
+                package_name = ''
+                with open(os.path.join(root, file), 'r') as fh:
+                    package_name = fh.readline().strip()
+                if package_name:
+                    package_format = package_name.split('.')[-1]
+                    dist = root.split('/')[-1]
+                    execute('repo_{0}_add'.format(package_format), os.path.join(root, package_name), dist)
     print 'task ran {0} seconds'.format(time.time() - start_time)
 
 
-@task
-def build_pypi(repo, name=None):
-    ''' build pypi package from repo URL '''
-    p = execute(git_checkout, repo, name)
-    p = p['<local-only>']
-
-    if package_exists('{0}/{1}.tar.gz'.format(p.basename, p.date)):
-        return p
-
-    with lcd(p.basename):
-        local('python setup.py sdist', capture=True)
-
-    dirlisting = os.listdir('{0}/dist/'.format(p.basename))
-    dirlisting.sort(key=natural_keys, reverse=True)
-    for file in dirlisting:
-        if file.endswith('.tar.gz'):
-            p.tgz = file
-            break
-
-    if not p.tgz:
-        abort('error while creating tar.gz package')
-
-    with lcd(p.basename):
-        local('ln -sf dist/{0} {1}.tar.gz'.format(p.tgz, p.date))
-
-    with settings(host_string=env.repo_host, user='root'):
-        dir_ensure('{0}/{1}'.format(env.repo_pypi_root, p.basename), recursive=True, owner='zalando',
-                    group='zalando')
-        put('{0}/dist/{1}'.format(p.basename, p.tgz), '{0}/{1}'.format(env.repo_pypi_root, p.basename))
-
-    return p
-
-
-@task
-def git_checkout(repo, name=None):
-    ''' clone / pull repo URL '''
-
-    p = Package(repo, name=name)
-
-    if not os.path.isdir(p.basename):
-        repo = Repo.clone_from(p.repo, p.basename)
-    else:
-        repo = Repo(p.basename)
-        # ensure that the remote "origin" is set to the correct url
-        if 'origin' in [remote.name for remote in repo.remotes]:
-            Remote.remove(repo, 'origin')
-        Remote.add(repo, 'origin', p.repo)
-
-    try:
-        repo.remote().pull(refspec='master')
-    except ValueError:
-        pass
-    commit = repo.commit()
-    p.sha = commit.hexsha[:7]
-    p.date = datetime.datetime.fromtimestamp(commit.committed_date).strftime('%Y%m%d%H%M')
-    print 'updated repo for "{0}" to commit {1}, date {2}'.format(blue(p.basename), green(p.sha), green(p.date))
-    return p
