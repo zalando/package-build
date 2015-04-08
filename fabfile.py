@@ -72,7 +72,7 @@ def repo_rpm_init():
     ''' initialize package repo '''
 
     package_ensure('createrepo')
-    dir_ensure('{0}/archive/'.format(env.repo_rpm_root), recursive=True)
+    dir_ensure('{0}/archive/{1}'.format(env.repo_rpm_root, dist), recursive=True)
 
     for dist, package_format in PACKAGE_FORMAT.items():
         if package_format == 'rpm':
@@ -106,10 +106,10 @@ def repo_rpm_add(package, dist='centos6', component='base'):
     if any(map(lambda arch: arch in package, ['i386, i586, i686'])):
         arch = 'i386'
 
-    put(package, '{0}/archive/'.format(env.repo_rpm_root))
+    put(package, '{0}/archive/{1}'.format(env.repo_rpm_root, dist))
     package = package.split('/')[-1]
     path = '/'.join([env.repo_rpm_root, dist, component, arch])
-    run('cp {0}/archive/{1} {2}'.format(env.repo_rpm_root, package, path))
+    run('cp {0}/archive/{1}/{2} {3}'.format(env.repo_rpm_root, dist, package, path))
     output = run('createrepo {0}'.format(path))
     if output.succeeded:
         print green('added {0} to repo {1}'.format(package, dist))
