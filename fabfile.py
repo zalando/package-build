@@ -156,14 +156,14 @@ def repo_deb_init():
                     fh.write(content)
             put(configfile, '/etc/aptly-{0}.conf'.format(dist))
             os.unlink(configfile)
-            run('aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} \
-                || aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
+            run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo list --raw=true | grep -q {0} \
+                || /usr/bin/aptly -config /etc/aptly-{0}.conf repo create {0}'.format(dist))
 
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
 def get_last_snapshot(dist='ubuntu14.04'):
-    output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot list -sort="time" -raw=true'.format(dist))
+    output = sudo('/usr/bin/aptly -config=/etc/aptly-{0}.conf snapshot list -sort="time" -raw=true'.format(dist))
     return output.split('\n').pop()
 
 
@@ -172,22 +172,22 @@ def republish(dist='ubuntu14.04', snapshot=False):
     with hide('commands'):
         if snapshot:
             print 'drop current publication of repo {0}, if existing'.format(green(dist))
-            run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
+            run('/usr/bin/aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish drop {0}'.format(dist), warn_only=True)
 
             print 'drop snapshot from today, if existing'
-            run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
+            run('/usr/bin/aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot drop $(date +%F)'.format(dist), warn_only=True)
 
             print 'create current snapshot'
-            if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
+            if run('/usr/bin/aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all snapshot create $(date +%F) from repo {0}'.format(dist)).failed:
                 return False
 
             print 'publish current snapshot'
-            if run('aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
+            if run('/usr/bin/aptly -config=/etc/aptly-{0}.conf -architectures=i386,amd64,all publish snapshot $(date +%F)'.format(dist)).failed:
                 return False
         else:
-            run('aptly -config=/etc/aptly-{0}.conf publish list -raw=true | grep -q {0} || \
-                 aptly -config=/etc/aptly-{0}.conf publish repo -distribution={0} {0}'.format(dist), warn_only=True)
-            if run('aptly -config=/etc/aptly-{0}.conf publish update -force-overwrite {0}'.format(dist), warn_only=True).failed:
+            run('/usr/bin/aptly -config=/etc/aptly-{0}.conf publish list -raw=true | grep -q {0} || \
+                 /usr/bin/aptly -config=/etc/aptly-{0}.conf publish repo -distribution={0} {0}'.format(dist), warn_only=True)
+            if run('/usr/bin/aptly -config=/etc/aptly-{0}.conf publish update -force-overwrite {0}'.format(dist), warn_only=True).failed:
                 return False
 
     return True
@@ -201,9 +201,9 @@ def repo_deb_list(dist='ubuntu14.04', snapshot=False):
 
     if snapshot:
         last = get_last_snapshot(dist)
-        output = sudo('aptly -config=/etc/aptly-{0}.conf snapshot show -with-packages {1}'.format(dist, last))
+        output = sudo('/usr/bin/aptly -config=/etc/aptly-{0}.conf snapshot show -with-packages {1}'.format(dist, last))
     else:
-        output = sudo('aptly -config=/etc/aptly-{0}.conf repo show -with-packages {0}'.format(dist))
+        output = sudo('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo show -with-packages {0}'.format(dist))
     for line in output.split('\n'):
         print line
 
@@ -223,7 +223,7 @@ def repo_deb_add(package, dist='ubuntu14.04'):
     with hide('commands'):
         put(package, '{0}/archive/{1}'.format(env.repo_deb_root, dist))
         package = package.split('/')[-1]
-        run('aptly -config=/etc/aptly-{0}.conf repo add -force-replace {0} {1}/archive/{0}/{2}'.format(dist, env.repo_deb_root,  package))
+        run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo add -force-replace {0} {1}/archive/{0}/{2}'.format(dist, env.repo_deb_root,  package))
 
     if republish(dist):
         print green('added {0} to repo {1}'.format(package, dist))
@@ -236,7 +236,7 @@ def repo_deb_del(packagename, dist='ubuntu14.04'):
     ''' delete "packagename" from repo '''
 
     with hide('commands'):
-        run('aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
+        run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
 
     if republish(dist):
         print red('deleted {0} from repo {1}'.format(packagename, dist))
@@ -253,7 +253,7 @@ def repo_deb_rebuild(dist='ubuntu14.04'):
     run('find {0}/archive/{1}/ -name "*.deb" \
             | sort -n \
             | while read package; do dpkg -I $package >/dev/null \
-            && aptly -config=/etc/aptly-{1}.conf repo add -force-replace {1} $package; done'.format(env.repo_deb_root, dist))
+            && /usr/bin/aptly -config=/etc/aptly-{1}.conf repo add -force-replace {1} $package; done'.format(env.repo_deb_root, dist))
 
     if republish(dist):
         print green('successfully rebuild repo for dist {0}'.format(dist))
