@@ -20,6 +20,7 @@ do
                 git checkout .
                 sed -i "s/\(^[[:space:]]*revision[[:space:]]*\)\([[:digit:]]\{12\}\)$/\1$(date +%Y%m%d%H%M)/" ./recipe.rb
                 [ -d "$DIST" ] || mkdir "$DIST"
+                fpm-cook clean
                 fpm-cook package --no-deps --pkg-dir="$DIST" \
                     | tee /dev/stderr \
                     | grep '===> Created package:' \
