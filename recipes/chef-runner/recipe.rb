@@ -32,7 +32,7 @@ class ChefRunner < FPM::Cookery::Recipe
 
   def install
     bin.install builddir("gobuild/bin/chef-runner")
-    rm_rf "#{builddir}/gobuild/src", :verbose => true
+    rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     rm_rf "#{builddir}/gobuild/bin", :verbose => true
   end
 end
