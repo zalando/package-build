@@ -7,3 +7,4 @@ cache/
 tmp-build/
 tmp-dest/
 pkg/
+.netrc

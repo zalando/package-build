@@ -5,6 +5,7 @@ ENV DIST ubuntu12.04
 ENV DEBIAN_FRONTEND noninteractive
 ENV PATH $PATH:/usr/local/go/bin
 
+COPY .netrc /root/.netrc
 COPY zalando/ /usr/share/ca-certificates/zalando/
  
 RUN echo Europe/Berlin > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata

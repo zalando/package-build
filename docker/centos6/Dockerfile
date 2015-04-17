@@ -4,6 +4,7 @@ MAINTAINER soeren.koenig@zalando.de
 ENV DIST centos6
 ENV PATH $PATH:/usr/local/go/bin
 
+COPY .netrc /root/.netrc
 COPY epel.repo /etc/yum.repos.d/
 COPY zalando-service-combined.ca /etc/ssl/certs/zalando-service-combined.pem
 COPY zalando-service-combined.ca /etc/pki/ca-trust/source/anchors/zalando-service-combined.pem
