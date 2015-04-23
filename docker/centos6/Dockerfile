@@ -19,4 +19,4 @@ RUN curl -O https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz \
 
 RUN gem install --no-rdoc --no-ri fpm-cookery
 
-RUN /usr/bin/update-ca-trust
+RUN /usr/bin/update-ca-trust enable
