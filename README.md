@@ -1,6 +1,8 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Wednesday, 08. April 2015*
+*created Wednesday, 11. June 2014 - updated Monday, 27. April 2015*
+
+This is a toolset for creating native system packages, read more on [System Docu](https://sysdocu.zalando.net/Packages-and-Repos).
 
 ## Setup
 
@@ -15,7 +17,6 @@ Clone the repo and install Python requirements:
 - whole process is triggered from Fabric tasks running on the "build host"
 - build slaves are docker containers to have always a clean, well defined environment
 - packages are build with [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery)
-- setup.py must have more loose requirements for other python modules than defined in package.json (e.g. if package.json requires PyYAML==3.10, setup.py must have at least also PyYAML==3.10 or PyYAML>=3.10 as dependency). Otherwise the code will fail because it did not find the modules which where in the respective egg-infos.
 
 ## How To
 
@@ -34,35 +35,25 @@ Build `facter` for Ubuntu 14.04:
 
 Build all recipes for Debian 7 ("Wheezy"):
 
-    package_build:debian7
+    fab package_build:debian7
 
 ### More Recipe Examples
 
 - [https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
 - [https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand](https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand)
-- [https://github.com/gocardless/fpm-recipes](https://github.com/gocardless/fpm-recipes)
 - [https://github.com/henchmanio/fpm-recipes](https://github.com/henchmanio/fpm-recipes)
+- [https://github.com/Graylog2/fpm-recipes.git](https://github.com/Graylog2/fpm-recipes.git)
+- [https://github.com/haf/fpm-recipes.git](https://github.com/haf/fpm-recipes.git)
 
 ## Considered Solutions for the Job Scheduling Framework
 
 - [PyCI](http://tbraun89.github.io/pyCI/): minimal CI server
-- [Go](http://www.go.cd/)
+- [Go](http://www.go.cd/) seems to be at very early development stage
 - [buildbot](http://buildbot.net/): build framework with master/slave architecture, a lot to much
 - [dovetail](http://www.aviser.asia/dovetail/): defines build tasks, like `make`, no scheduler
 - [elita](https://elita.io/): HTTP API-focused continuous deployment framework
 - [taskpy](https://github.com/jakecoffman/taskpy): draft Jenkins rewrite in Python
 - [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
-
-## Todo
-
-- generate "uber"-packages with all requirements built-in for Python modules -> virtualenv
-- rewrite to use Docker:
-    - one Dockerfile per distribution
-    - buildhost pulls repo with Dockerfiles and recipes (package-build)
-    - Docker images are build (replaces provision*.sh)
-    - iterating over package recipes (commit hook or cronjob pull)
-    - python modules: clone repo and cp to build dir
-    - every python module has to provide recipe & prepare.sh
 
 ## Publish a package in our repos
 
