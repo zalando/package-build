@@ -1,2 +1,3 @@
 # Drop options here like this:
 # OPTIONS="-ui-dir /var/lib/consul-ui"
+# GOMAXPROCS=`nproc`
