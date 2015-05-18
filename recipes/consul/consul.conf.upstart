@@ -3,8 +3,8 @@ description "Consul Agent"
 start on (local-filesystems and net-device-up IFACE!=lo)
 stop on runlevel [06]
 
-env USER="zalando"
-env GROUP="zalando"
+env USER="consul"
+env GROUP="consul"
 env CONSUL="/usr/bin/consul"
 env CONFIG="/etc/consul"
 env OPTIONS=""

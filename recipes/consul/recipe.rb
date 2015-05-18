@@ -7,7 +7,7 @@ class Consul < FPM::Cookery::Recipe
 
   name      "zalando-consul"
   version   "0.5.0"
-  revision  201504261401
+  revision  201505181714
 
   homepage      "http://www.consul.io/"
   source        "https://github.com/hashicorp/consul.git", :with => :git
