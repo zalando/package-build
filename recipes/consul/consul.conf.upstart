@@ -9,9 +9,6 @@ env CONSUL="/usr/bin/consul"
 env CONFIG="/etc/consul"
 env OPTIONS=""
 
-setuid $USER
-setgid $GROUP
-
 pre-start script
   # Allow bind to ports under 1024
   setcap 'cap_net_bind_service=+ep' $CONSUL
@@ -22,7 +19,7 @@ script
     [ -e /etc/default/consul ] && . /etc/default/consul
 
     #export GOMAXPROCS=`nproc`
-    exec $CONSUL agent -config-dir $CONFIG $OPTIONS >> /var/log/consul.log 2>&1
+    exec sudo -u $USER -g $GROUP $CONSUL agent -config-dir $CONFIG $OPTIONS >> /var/log/consul.log 2>&1
 end script
 
 respawn
