@@ -19,7 +19,7 @@ script
     [ -e /etc/default/consul ] && . /etc/default/consul
 
     #export GOMAXPROCS=`nproc`
-    exec sudo -u $USER -g $GROUP $CONSUL agent -config-dir $CONFIG $OPTIONS >> /var/log/consul.log 2>&1
+    exec sudo GOMAXPROCS=`nproc` -u $USER -g $GROUP $CONSUL agent -config-dir $CONFIG $OPTIONS >> /var/log/consul.log 2>&1
 end script
 
 respawn
