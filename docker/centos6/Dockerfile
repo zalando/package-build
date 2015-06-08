@@ -8,6 +8,7 @@ COPY .netrc /root/.netrc
 COPY epel.repo /etc/yum.repos.d/
 COPY zalando-service-combined.ca /etc/ssl/certs/zalando-service-combined.pem
 COPY zalando-service-combined.ca /etc/pki/ca-trust/source/anchors/zalando-service-combined.pem
+COPY gitconfig /root/.gitconfig
 
 ENV TIMEZONE Europe/Berlin
 RUN echo ZONE="$TIMEZONE" > /etc/sysconfig/clock && cp "/usr/share/zoneinfo/$TIMEZONE" /etc/localtime
