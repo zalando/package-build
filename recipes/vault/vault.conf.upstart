@@ -1,0 +1,20 @@
+# Consul Agent (Upstart unit)
+description "Vault Server"
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [06]
+
+env VAULT="/usr/bin/vault"
+env CONFIG="/etc/vault/config.hcl"
+env OPTIONS=""
+
+script
+    # read settings like GOMAXPROCS from "/etc/default/consul", if available.
+    [ -e /etc/default/vault ] && . /etc/default/vault
+
+    #export GOMAXPROCS=`nproc`
+    exec GOMAXPROCS=`nproc` $VAULT server -config=$CONFIG $OPTIONS >> /var/log/vault.log 2>&1
+end script
+
+respawn
+respawn limit 10 10
+kill timeout 10
