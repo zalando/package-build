@@ -1,13 +1,13 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-class Consul < FPM::Cookery::Recipe
+class Vault < FPM::Cookery::Recipe
   description "A tool for managing secrets, written in Go."
   GOPACKAGE = "zalando.de/system/vault"
 
   name      "zalando-vault"
   version   "0.1.3"
-  revision  201506101727
+  revision  201506191604
 
   homepage      "http://vaultproject.io/"
   source        "https://github.com/hashicorp/vault.git", :with => :git
