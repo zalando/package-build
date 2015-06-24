@@ -1,0 +1,6 @@
+consul = "127.0.0.1:8500"
+token = ""
+retry = "10s"
+max_stale = "10m"
+log_level = "warn"
+pid_file = "/var/run/consul-template.pid"

@@ -1,16 +1,16 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-class Vault < FPM::Cookery::Recipe
-  description "A tool for managing secrets, written in Go."
-  GOPACKAGE = "github.com/hashicorp/vault"
+class ConsulTemplate < FPM::Cookery::Recipe
+  description "Generic template rendering and notifications with Consul."
+  GOPACKAGE = "github.com/hashicorp/consul-template"
 
-  name      "zalando-vault"
-  version   "0.1.3"
-  revision  201506242015
+  name      "zalando-consul-template"
+  version   "0.10.0"
+  revision  201506242000
 
-  homepage      "http://vaultproject.io/"
-  source        "https://github.com/hashicorp/vault.git", :with => :git
+  homepage      "https://github.com/hashicorp/consul-template/"
+  source        "https://github.com/hashicorp/consul-template.git", :with => :git
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
   build_depends   "golang-go git"
@@ -31,9 +31,8 @@ class Vault < FPM::Cookery::Recipe
   end
 
   def install
-    etc("init").install_p(workdir("vault.conf.upstart"), "vault.conf")
-    etc("vault").install_p(workdir("vault_config.hcl"), "config.hcl")
-    bin.install builddir("gobuild/bin/vault")
+    etc("consul-template").install_p(workdir("consul-template_config.hcl"), "config.hcl")
+    bin.install builddir("gobuild/bin/consul-template")
     rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     rm_rf "#{builddir}/gobuild/bin", :verbose => true
   end
