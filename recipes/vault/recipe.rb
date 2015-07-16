@@ -6,8 +6,8 @@ class Vault < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/hashicorp/vault"
 
   name      "zalando-vault"
-  version   "0.2.0"
-  revision  201507071444
+  version   "0.2.1"
+  revision  201507161050
 
   homepage      "http://vaultproject.io/"
   source        "https://github.com/hashicorp/vault.git", :with => :git
