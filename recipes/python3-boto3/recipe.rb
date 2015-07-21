@@ -8,7 +8,7 @@ class Python3Boto3 < FPM::Cookery::Recipe
   description "Python interface to Amazon's Web Services"
 
   name     "python3-boto3"
-  version  "0.0.10"
+  version  "1.1.0"
   revision 0
   arch      "all"
   homepage "http://aws.amazon.com/sdk-for-python/"
