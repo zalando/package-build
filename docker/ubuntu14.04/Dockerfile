@@ -9,8 +9,8 @@ COPY .netrc /root/.netrc
 COPY zalando/ /usr/share/ca-certificates/zalando/
  
 RUN echo Europe/Berlin > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata
-RUN apt-get update
-RUN apt-get install -y ruby1.9.1 ruby1.9.1-dev python-setuptools build-essential git-core curl lsb-release
+RUN apt-get update -y
+RUN apt-get install -y ruby1.9.1 ruby1.9.1-dev python-setuptools build-essential git-core curl lsb-release unzip
 RUN apt-get clean
 
 RUN curl -O https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz \
