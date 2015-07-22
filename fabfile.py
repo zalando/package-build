@@ -337,7 +337,7 @@ def docker_run(dist=None, command=''):
 
 
 @task
-def package_build(dist=None, recipe=''):
+def package_build(dist=None, recipe='', upload=False):
     ''' build packages from recipe for dist '''
 
     start_time = time.time()
@@ -354,7 +354,8 @@ def package_build(dist=None, recipe=''):
                 if package_name:
                     package_format = package_name.split('.')[-1]
                     dist = root.split('/')[-1]
-                    execute('repo_{0}_add'.format(package_format), os.path.join(root, package_name), dist)
+                    if upload:
+                        execute('repo_{0}_add'.format(package_format), os.path.join(root, package_name), dist)
     print 'task ran {0} seconds'.format(time.time() - start_time)
 
 
