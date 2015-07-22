@@ -7,7 +7,7 @@ class Etcd < FPM::Cookery::Recipe
 
   name      "zalando-etcd"
   version   "2.1.1"
-  revision  201507221106
+  revision  201507221110
 
   homepage      "https://github.com/coreos/etcd"
   source        "https://github.com/coreos/etcd.git", :with => :git
@@ -27,16 +27,15 @@ class Etcd < FPM::Cookery::Recipe
     # ugly hack, but we need the `develop` branch of github.com/gin-gonic/gin/
     safesystem "go get -v github.com/gin-gonic/gin/"
     safesystem "cd $GOPATH/src/github.com/gin-gonic/gin/ && git checkout develop"
-    # safesystem "go get -v #{GOPACKAGE}"
-    # safesystem "go get -v #{GOPACKAGE}/etcdctl"
-    safesystem "cd $GOPATH/src/github.com/coreos/etcd && ./build"
+    safesystem "go get -v #{GOPACKAGE}"
+    safesystem "go get -v #{GOPACKAGE}/etcdctl"
   end
 
   def install
     etc("init").install_p(workdir("etcd.conf.upstart"), "etcd.conf")
     etc("init.d").install_p(workdir("etcd_init.d"), "etcd")
-    bin.install builddir("gobuild/src/github.com/coreos/etcd/bin/etcd")
-    bin.install builddir("gobuild/src/github.com/coreos/etcd/bin/etcdctl")
+    bin.install builddir("gobuild/bin/etcd")
+    bin.install builddir("gobuild/bin/etcdctl")
     rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     rm_rf "#{builddir}/gobuild/bin", :verbose => true
   end
