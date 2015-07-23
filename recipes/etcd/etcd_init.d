@@ -3,7 +3,7 @@ set -e
 
 ### BEGIN INIT INFO
 # Provides:           etcd
-# Required-Start:     $docker
+# Required-Start:     
 # Required-Stop:      
 # Should-Start:       
 # Should-Stop:        
