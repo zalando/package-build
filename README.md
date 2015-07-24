@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Monday, 27. April 2015*
+*created Wednesday, 11. June 2014 - updated Friday, 24. July 2015*
 
 This is a toolset for creating native system packages, read more on [System Docu](https://sysdocu.zalando.net/Packages-and-Repos).
 
@@ -36,6 +36,10 @@ Build `facter` for Ubuntu 14.04:
 Build all recipes for Debian 7 ("Wheezy"):
 
     fab package_build:debian7
+
+To test the created package, it will not be automatically uploaded and published in our repositories, unless you set the parameter `upload` to `True`:
+
+    fab package_build:debian7,upload=True
 
 ### More Recipe Examples
 

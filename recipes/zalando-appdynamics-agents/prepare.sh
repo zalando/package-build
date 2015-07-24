@@ -24,18 +24,18 @@ do
 done
 
 # put everything in place
-[ -d cache/rootfs/server/appdynamics-agents/appdynamics-jvm ] \
-    || mkdir -p cache/rootfs/server/appdynamics-agents/appdynamics-jvm
-unzip -o cache/AppServerAgent.zip -d cache/rootfs/server/appdynamics-agents/appdynamics-jvm
+[ -d cache/rootfs/server/appdynamics/appdynamics-jvm ] \
+    || mkdir -p cache/rootfs/server/appdynamics/appdynamics-jvm
+unzip -o cache/AppServerAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-jvm
 
-[ -d cache/rootfs/server/appdynamics-agents/appdynamics-machine ] \
-    || mkdir -p cache/rootfs/server/appdynamics-agents/appdynamics-machine
-unzip -o cache/MachineAgent.zip -d cache/rootfs/server/appdynamics-agents/appdynamics-machine
+[ -d cache/rootfs/server/appdynamics/appdynamics-machine ] \
+    || mkdir -p cache/rootfs/server/appdynamics/appdynamics-machine
+unzip -o cache/MachineAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-machine
 
-cp cache/controller-info.xml cache/rootfs/server/appdynamics-agents/appdynamics-jvm/ver${LONGVERSION}/conf/
-cp cache/controller-info.xml cache/rootfs/server/appdynamics-agents/appdynamics-jvm/conf/
-cp cache/custom-activity-correlation.xml cache/rootfs/server/appdynamics-agents/appdynamics-jvm/ver${LONGVERSION}/conf/
-cp cache/transactions.xml cache/rootfs/server/appdynamics-agents/appdynamics-jvm/ver${LONGVERSION}/conf/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/conf/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/conf
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/ver${LONGVERSION}/conf/
 
 cp cache/*sh cache/rootfs/usr/local/bin
 find cache/rootfs -type f -name '*sh' -exec chmod +x {} \;
