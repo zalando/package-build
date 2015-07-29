@@ -4,13 +4,13 @@
 class ZalandoJDK < FPM::Cookery::Recipe
   description "Tomcat meta package for Zalando"
 
-  version   "1.7.0-80"
+  version   "1.8.0-51"
   revision   0
   arch      "all"
   name      "zalando-jdk-#{version}"
   homepage  "http://www.oracle.com/"
-  source    "cache/jdk-7u#{version[-2..-1]}-linux-x64.tar.gz"
-  md5	    "6152f8a7561acf795ca4701daa10a965"
+  source    "cache/jdk-8u#{version[-2..-1]}-linux-x64.tar.gz"
+  md5	    "b34ff02c5d98b6f372288c17e96c51cf"
 
   maintainer "Sören König <soeren.koenig@zalando.de>"
   section   "non-free/net"
