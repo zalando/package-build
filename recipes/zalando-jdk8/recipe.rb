@@ -1,13 +1,13 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-class ZalandoJDK < FPM::Cookery::Recipe
+class ZalandoJDK8 < FPM::Cookery::Recipe
   description "Tomcat meta package for Zalando"
 
   version   "1.8.0-51"
-  revision   0
+  revision   1
   arch      "all"
-  name      "zalando-jdk-#{version}"
+  name      "zalando-jdk8-#{version}"
   homepage  "http://www.oracle.com/"
   source    "cache/jdk-8u#{version[-2..-1]}-linux-x64.tar.gz"
   md5	    "b34ff02c5d98b6f372288c17e96c51cf"
