@@ -18,11 +18,11 @@ class BaboonStatus < FPM::Cookery::Recipe
   build_depends "python-setuptools"
 
   platforms [:ubuntu, :debian] do
-    depends     "requests >= 2.5.2", "zalando-cli"
+    depends     "python-requests >= 2.5.2", "zalando-cli"
   end
 
   platforms [:centos] do
-    depends     "requests >= 2.5.2", "zalando-cli"
+    depends     "python-requests >= 2.5.2", "zalando-cli"
   end
 
   def build
