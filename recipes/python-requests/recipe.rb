@@ -4,7 +4,7 @@
 class PythonRequests < FPM::Cookery::PythonRecipe
 
   name      "requests"
-  version   "2.2.1"
+  version   "2.7.0"
   revision  0
   arch      "all"
   homepage  "http://python-requests.org"
