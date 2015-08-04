@@ -18,7 +18,7 @@ case "$1" in
     fi
 
     install -d -o "$user" -g "$group" -m 0755 "$datadir"
-    chown -R "$user"."$group" "$datadir"/*
+    chown -R "$user"."$group" "$datadir"
 
     ;;
 esac
