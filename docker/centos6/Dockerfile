@@ -12,7 +12,7 @@ COPY gitconfig /root/.gitconfig
 
 ENV TIMEZONE Europe/Berlin
 RUN echo ZONE="$TIMEZONE" > /etc/sysconfig/clock && cp "/usr/share/zoneinfo/$TIMEZONE" /etc/localtime
-RUN yum install -y ruby ruby-devel rubygems python-setuptools make gcc tar rpm-build git curl
+RUN yum install -y ruby ruby-devel rubygems python-setuptools make gcc tar rpm-build git curl mercurial
 RUN yum clean all
 
 RUN curl -O https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz \
