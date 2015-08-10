@@ -51,5 +51,5 @@ To test the created package, it will not be automatically uploaded and published
 
 ## Publish a package in our repos
 
-[Sysdocu](https://sysdocu.zalando.net/Packages-and-Repos/Internal-Repo#Manage-internal-APT-/-RPM-repositories)
+[Techmonkeys Wiki](https://wiki.tm.zalando/Packages-and-Repos/Internal-Repo#Manage-internal-APT-/-RPM-repositories)
 
