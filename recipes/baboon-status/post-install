@@ -5,7 +5,7 @@ case "$1" in
     configure)
     user="zalando"
     group="zalando"
-    datadir="/server/appdynamics"
+    datadir="/data/zalando/logs/baboon-status"
 
     if ! getent group "$group" > /dev/null 2>&1 ; then
         addgroup --system "$group" --gid 907 --quiet 
@@ -18,7 +18,7 @@ case "$1" in
     fi
 
     install -d -o "$user" -g "$group" -m 0755 "$datadir"
-    chown -R "$user"."$group" "$datadir"/*
+    chown -R "$user"."$group" "$datadir"
 
     ;;
 esac

@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Friday, 24. July 2015*
+*created Wednesday, 11. June 2014 - updated Monday, 10. August 2015*
 
 This is a toolset for creating native system packages, read more on [System Docu](https://sysdocu.zalando.net/Packages-and-Repos).
 
@@ -49,17 +49,7 @@ To test the created package, it will not be automatically uploaded and published
 - [https://github.com/Graylog2/fpm-recipes.git](https://github.com/Graylog2/fpm-recipes.git)
 - [https://github.com/haf/fpm-recipes.git](https://github.com/haf/fpm-recipes.git)
 
-## Considered Solutions for the Job Scheduling Framework
-
-- [PyCI](http://tbraun89.github.io/pyCI/): minimal CI server
-- [Go](http://www.go.cd/) seems to be at very early development stage
-- [buildbot](http://buildbot.net/): build framework with master/slave architecture, a lot to much
-- [dovetail](http://www.aviser.asia/dovetail/): defines build tasks, like `make`, no scheduler
-- [elita](https://elita.io/): HTTP API-focused continuous deployment framework
-- [taskpy](https://github.com/jakecoffman/taskpy): draft Jenkins rewrite in Python
-- [ghetto-CI](http://miohtama.github.io/vvv/tools/ghetto.html): quick & dirty CI in only 145 statements
-
 ## Publish a package in our repos
 
-[Sysdocu](https://sysdocu.zalando.net/Packages-and-Repos/Internal-Repo#Manage-internal-APT-/-RPM-repositories)
+[Techmonkeys Wiki](https://wiki.tm.zalando/Packages-and-Repos/Internal-Repo#Manage-internal-APT-/-RPM-repositories)
 
