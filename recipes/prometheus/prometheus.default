@@ -1,0 +1,2 @@
+# Drop options here like this:
+# OPTIONS="-config.file=/etc/prometheus/prometheus.yml -alertmanager.url=http://127.0.0.1:9093 -storage.local.path=/data/prometheus"

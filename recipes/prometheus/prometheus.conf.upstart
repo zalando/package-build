@@ -1,0 +1,20 @@
+# Consul Agent (Upstart unit)
+description "Prometheus Server"
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [06]
+
+env PROMETHEUS="/usr/bin/prometheus"
+env CONFIG="/etc/prometheus"
+env OPTIONS=""
+
+script
+    # read settings like GOMAXPROCS from "/etc/default/consul", if available.
+    [ -e /etc/default/prometheus ] && . /etc/default/prometheus
+
+    #export GOMAXPROCS=`nproc`
+    exec $PROMETHEUS $OPTIONS >> /var/log/prometheus.log 2>&1
+end script
+
+respawn
+respawn limit 10 10
+kill timeout 10
