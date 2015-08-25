@@ -11,6 +11,8 @@ appdynamics-params.sh
 controller-info.xml
 custom-activity-correlation.xml
 transactions.xml
+analytics-agent.properties
+monitor.xml
 )
 
 # build basic directory structure
@@ -36,6 +38,8 @@ cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/conf/
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/conf
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/ver${LONGVERSION}/conf/
+cp cache/analytics-agent.properties cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf/
+cp cache/monitor.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/
 
 cp cache/*sh cache/rootfs/usr/local/bin
 find cache/rootfs -type f -name '*sh' -exec chmod +x {} \;
