@@ -6,11 +6,11 @@ class Kubectl < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/GoogleCloudPlatform/kubernetes"
 
   name      "zalando-kubectl"
-  version   "1.0.1"
-  revision  201507231048
+  version   "1.0.3"
+  revision  201507231052
 
   homepage      "https://kubernetes.io/"
-  source        "https://github.com/GoogleCloudPlatform/kubernetes/archive/v1.0.1.tar.gz"
+  source        "https://github.com/kubernetes/kubernetes/archive/v1.0.3.tar.gz"
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
   build_depends   "golang-go"
@@ -20,6 +20,6 @@ class Kubectl < FPM::Cookery::Recipe
   end
 
   def install
-    bin.install builddir("kubernetes-1.0.1/_output/local/bin/linux/amd64/kubectl")
+    bin.install builddir("kubernetes-1.0.3/_output/local/bin/linux/amd64/kubectl")
   end
 end
