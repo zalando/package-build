@@ -1,7 +1,7 @@
-# Consul Agent (Upstart unit)
-description "Kuberneted Podmaster"
-start on (local-filesystems and net-device-up IFACE!=lo)
-stop on runlevel [06]
+# Kubernetes Podmaster (Upstart unit)
+description "Kubernetes Podmaster"
+start on started kube-apiserver
+stop on stopping kube-apiserver
 
 env PODMASTER="/usr/bin/podmaster"
 env OPTIONS=""
