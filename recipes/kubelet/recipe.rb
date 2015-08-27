@@ -7,7 +7,7 @@ class Kubelet < FPM::Cookery::Recipe
 
   name      "zalando-kubelet"
   version   "1.0.3"
-  revision  201.0.381258
+  revision  201507231052
 
   homepage      "https://kubernetes.io/"
   source        "https://github.com/kubernetes/kubernetes/archive/v1.0.3.tar.gz"
