@@ -1,0 +1,19 @@
+# Consul Agent (Upstart unit)
+description "Kuberneted Podmaster"
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [06]
+
+env PODMASTER="/usr/bin/podmaster"
+env OPTIONS=""
+
+script
+    # read settings like GOMAXPROCS from "/etc/default/consul", if available.
+    [ -e /etc/default/podmaster ] && . /etc/default/podmaster
+
+    #export GOMAXPROCS=`nproc`
+    exec $PODMASTER $OPTIONS >> /var/log/podmaster.log 2>&1
+end script
+
+respawn
+respawn limit 10 10
+kill timeout 10
