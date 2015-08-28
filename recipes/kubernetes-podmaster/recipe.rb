@@ -7,7 +7,7 @@ class Podmaster < FPM::Cookery::Recipe
 
   name      "zalando-podmaster"
   version   "0.0.1"
-  revision  201508271702
+  revision  201508271735
 
   homepage      "https://github.com/zalando-techmonkeys/kubernetes-podmaster"
   source        "https://github.com/zalando-techmonkeys/kubernetes-podmaster.git", :with => :git
@@ -33,6 +33,7 @@ class Podmaster < FPM::Cookery::Recipe
   def install
     etc("default").install_p(workdir("podmaster.default"), "podmaster")
     etc("init").install_p(workdir("podmaster.conf.upstart"), "podmaster.conf")
+    etc("init.d").install_p(workdir("podmaster.init.d"), "podmaster")
     bin.install builddir("gobuild/bin/kubernetes-podmaster")
     rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     rm_rf "#{builddir}/gobuild/bin", :verbose => true

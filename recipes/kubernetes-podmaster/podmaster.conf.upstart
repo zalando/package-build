@@ -1,16 +1,16 @@
 # Kubernetes Podmaster (Upstart unit)
 description "Kubernetes Podmaster"
-start on started kube-apiserver
-stop on stopping kube-apiserver
+start on started etcd
+stop on stopping etcd
 
 env PODMASTER="/usr/bin/podmaster"
 env OPTIONS=""
 
 script
-    # read settings like GOMAXPROCS from "/etc/default/consul", if available.
+    # read settings like GOMAXPROCS from "/etc/default/<appname>", if available.
     [ -e /etc/default/podmaster ] && . /etc/default/podmaster
 
-    #export GOMAXPROCS=`nproc`
+    export GOMAXPROCS=4
     exec $PODMASTER $OPTIONS >> /var/log/podmaster.log 2>&1
 end script
 
