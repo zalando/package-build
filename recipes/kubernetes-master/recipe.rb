@@ -7,7 +7,7 @@ class KubernetesMaster < FPM::Cookery::Recipe
 
   name      "zalando-kubernetes-master"
   version   "1.0.3"
-  revision  201507241252
+  revision  201508271327
 
   homepage      "https://kubernetes.io/"
   source        "https://github.com/kubernetes/kubernetes/archive/v1.0.3.tar.gz"

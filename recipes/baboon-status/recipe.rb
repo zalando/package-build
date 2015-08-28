@@ -6,7 +6,7 @@ class BaboonStatus < FPM::Cookery::Recipe
 
   name     "baboon-status"
   version  "0.0.7"
-  revision  201507301749
+  revision  201508251650
   arch     "all"
 
   homepage      "https://stash.zalando.net/projects/system/repos/baboon-status/browse"

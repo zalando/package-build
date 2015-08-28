@@ -7,7 +7,7 @@ class Podmaster < FPM::Cookery::Recipe
 
   name      "zalando-podmaster"
   version   "0.0.1"
-  revision  201508271735
+  revision  201508280956
 
   homepage      "https://github.com/zalando-techmonkeys/kubernetes-podmaster"
   source        "https://github.com/zalando-techmonkeys/kubernetes-podmaster.git", :with => :git

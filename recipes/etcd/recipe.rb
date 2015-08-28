@@ -7,7 +7,7 @@ class Etcd < FPM::Cookery::Recipe
 
   name      "zalando-etcd"
   version   "2.1.1"
-  revision  201507221110
+  revision  201507231125
 
   homepage      "https://github.com/coreos/etcd"
   source        "https://github.com/coreos/etcd.git", :with => :git

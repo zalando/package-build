@@ -7,7 +7,7 @@ class BaboonProxy < FPM::Cookery::Recipe
 
   name      "baboon-proxy"
   version   "0.0.1"
-  revision  201504171102
+  revision  201508251650
 
   homepage      "https://stash.zalando.net/projects/SYSTEM/repos/baboon-proxy/browse"
   source        "https://stash.zalando.net/scm/system/baboon-proxy.git", :with => :git

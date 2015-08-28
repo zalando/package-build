@@ -7,7 +7,7 @@ class Prometheus < FPM::Cookery::Recipe
 
   name      "zalando-prometheus"
   version   "0.15.1"
-  revision  201508241646
+  revision  201508271136
 
   homepage      "http://prometheus.io/"
   source        "https://github.com/prometheus/prometheus.git", :with => :git

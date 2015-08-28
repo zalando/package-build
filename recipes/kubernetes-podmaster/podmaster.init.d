@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          podmaster
+# Provides:          kubernetes-podmaster
 # Required-Start:    $local_fs $network $named $time $syslog $etcd
 # Required-Stop:     $local_fs $network $named $time $syslog $etcd
 # Default-Start:     2 3 4 5
@@ -8,7 +8,7 @@
 # Description:       <DESCRIPTION>
 ### END INIT INFO
 
-NAME=podmaster
+NAME=kubernetes-podmaster
 SCRIPT=/usr/bin/$NAME
 RUNAS=root
 OPTIONS=""

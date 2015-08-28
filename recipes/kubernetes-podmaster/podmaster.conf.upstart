@@ -3,15 +3,15 @@ description "Kubernetes Podmaster"
 start on started etcd
 stop on stopping etcd
 
-env PODMASTER="/usr/bin/podmaster"
+env PODMASTER="/usr/bin/kubernetes-podmaster"
 env OPTIONS=""
 
 script
     # read settings like GOMAXPROCS from "/etc/default/<appname>", if available.
-    [ -e /etc/default/podmaster ] && . /etc/default/podmaster
+    [ -e /etc/default/kubernetes-podmaster ] && . /etc/default/kubernetes-podmaster
 
     export GOMAXPROCS=4
-    exec $PODMASTER $OPTIONS >> /var/log/podmaster.log 2>&1
+    exec $PODMASTER $OPTIONS >> /var/log/kubernetes-podmaster.log 2>&1
 end script
 
 respawn

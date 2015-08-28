@@ -7,7 +7,7 @@ class Chimp < FPM::Cookery::Recipe
 
   name      "chimp"
   version   "0.0.1"
-  revision  201508101734
+  revision  201508251650
 
   homepage      "https://stash.zalando.net/projects/SYSTEM/repos/chimp/browse/"
   source        "https://stash.zalando.net/scm/system/chimp.git", :with => :git, :branch => 'master'
