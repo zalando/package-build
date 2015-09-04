@@ -5,7 +5,7 @@ class BaboonStatus < FPM::Cookery::Recipe
   description "Status page for baboon-proxy."
 
   name     "baboon-status"
-  version  "0.0.7"
+  version  "0.0.8"
   revision  201508251650
   arch     "all"
 
