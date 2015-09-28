@@ -1,8 +1,8 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Monday, 10. August 2015*
+*created Wednesday, 11. June 2014 - updated Monday, 28. September 2015*
 
-This is a toolset for creating native system packages, read more on [System Docu](https://sysdocu.zalando.net/Packages-and-Repos).
+This is a toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes), read more on [System Docu](https://wiki.tm.zalando/Packages-and-Repos).
 
 ## Setup
 
@@ -37,9 +37,17 @@ Build all recipes for Debian 7 ("Wheezy"):
 
     fab package_build:debian7
 
-To test the created package, it will not be automatically uploaded and published in our repositories, unless you set the parameter `upload` to `True`:
+For testing purposes, the created package will not be automatically uploaded and published in our repositories, unless you set the parameter `upload` to `True`:
 
     fab package_build:debian7,upload=True
+
+Publish a package to the internal repository for ubuntu14.04 ("Trusty"):
+
+    fab repo_deb_add:~/path/to/package.deb
+
+If you want to publish a package in the repos for other distributions, you have to pass them explicitely:
+
+    fab repo_deb_add:~/path/to/package.deb,dist=ubuntu12.04
 
 ### More Recipe Examples
 
@@ -48,8 +56,4 @@ To test the created package, it will not be automatically uploaded and published
 - [https://github.com/henchmanio/fpm-recipes](https://github.com/henchmanio/fpm-recipes)
 - [https://github.com/Graylog2/fpm-recipes.git](https://github.com/Graylog2/fpm-recipes.git)
 - [https://github.com/haf/fpm-recipes.git](https://github.com/haf/fpm-recipes.git)
-
-## Publish a package in our repos
-
-[Techmonkeys Wiki](https://wiki.tm.zalando/Packages-and-Repos/Internal-Repo#Manage-internal-APT-/-RPM-repositories)
 
