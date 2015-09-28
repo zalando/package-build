@@ -7,10 +7,10 @@ class MacaqueZmonAgg < FPM::Cookery::Recipe
 
   name      "macaque-zmon-agg"
   version   "1.0.0"
-  revision  201509281709
+  revision  201509281839
 
   homepage      "https://github.com/zalando-techmonkeys/macaque-zmon-agg"
-  source        "https://github.com/zalando-techmonkeys/macaque-zmon-agg", :with => :git, :tag => "1.0.0"
+  source        "https://github.com/zalando-techmonkeys/macaque-zmon-agg", :with => :git, :tag => "#{version}"
   maintainer    "Sandor Szücs <sandor.szuecs@zalando.de>"
 
   build_depends   "golang-go git"
