@@ -19,7 +19,7 @@ class ZalandoJDK8 < FPM::Cookery::Recipe
   def build
     jce_extras = [ "UnlimitedJCEPolicyJDK8/local_policy.jar", "UnlimitedJCEPolicyJDK8/US_export_policy.jar"  ]
     jce_extras.each { |extra|
-        system "unzip -op cache/jce_policy-8.zip jce_policy-8.zip #{extra} > lib/security/#{extra.partition('/').last}"
+        system "cp ../../cache/#{extra} ./jre/lib/security/#{extra.partition('/').last}"
     }
   end
 
