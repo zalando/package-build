@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Monday, 28. September 2015*
+*created Wednesday, 11. June 2014 - updated Tuesday, 29. September 2015*
 
 This is a toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes), read more on [System Docu](https://wiki.tm.zalando/Packages-and-Repos).
 
@@ -11,6 +11,7 @@ Clone the repo and install Python requirements:
     git clone ssh://git@stash.zalando.net:7999/system/package-build.git
     cd package-build
     sudo pip install -r requirements.txt
+    fab docker_build # this will setup the required Docker images and could take a while
 
 ## Concept
 
