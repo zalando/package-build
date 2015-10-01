@@ -1,16 +1,16 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-class Chimp < FPM::Cookery::Recipe
-  description "Command Line Interface for Chimp."
+class ChimpServer < FPM::Cookery::Recipe
+  description "The Chimp server."
   GOPACKAGE = "github.com/zalando-techmonkeys/chimp"
 
-  name      "chimp"
-  version   "v0.2"
-  revision  201510011630
+  name      "chimp-server"
+  version   "0.0.1"
+  revision  201508251650
 
   homepage      "https://stash.zalando.net/projects/SYSTEM/repos/chimp/browse/"
-  source        "https://stash.zalando.net/scm/system/chimp.git", :with => :git, :tag => "#{version}"
+  source        "https://stash.zalando.net/scm/system/chimp.git", :with => :git, :branch => 'master'
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "golang-go git mercurial"
