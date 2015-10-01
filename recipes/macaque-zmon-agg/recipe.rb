@@ -24,8 +24,7 @@ class MacaqueZmonAgg < FPM::Cookery::Recipe
 
     safesystem "go get github.com/tools/godep"
     safesystem "cd ${GOPATH}/src/#{GOPACKAGE} && ${GOPATH}/bin/godep restore"
-    safesystem "cd ${GOPATH}/src/#{GOPACKAGE} && go install ./..."
-
+    safesystem "go install #{GOPACKAGE}/..."
   end
 
   def install
