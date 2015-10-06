@@ -29,7 +29,6 @@ class Chimp < FPM::Cookery::Recipe
 
   def install
     bin.install builddir("gobuild/bin/chimp")
-    rm_rf "#{builddir}/gobuild/pkg", :verbose => true
-    rm_rf "#{builddir}/gobuild/bin", :verbose => true
+    rm_rf "#{builddir}", :verbose => true
   end
 end
