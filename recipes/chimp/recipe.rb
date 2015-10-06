@@ -6,7 +6,7 @@ class Chimp < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/zalando-techmonkeys/chimp"
 
   name      "chimp"
-  version   "v0.2"
+  version   "v0.2.1"
   revision  201510011630
 
   homepage      "https://stash.zalando.net/projects/SYSTEM/repos/chimp/browse/"
