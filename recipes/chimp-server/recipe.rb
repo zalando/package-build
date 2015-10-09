@@ -1,11 +1,11 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-class ChimpCli < FPM::Cookery::Recipe
-  description "Command Line Interface for Chimp."
+class ChimpServer < FPM::Cookery::Recipe
+  description "The Chimp server."
   GOPACKAGE = "github.com/zalando-techmonkeys/chimp"
 
-  name      "chimp-cli"
+  name      "chimp-server"
   version   "0.0.1"
   revision  201508251650
 
@@ -21,15 +21,14 @@ class ChimpCli < FPM::Cookery::Recipe
     cp_r Dir["*"], pkgdir
 
     ENV["GOPATH"] = builddir("gobuild/")
-    safesystem "go env"
 
     safesystem "go get github.com/tools/godep"
-    safesystem "cd ${GOPATH}/src/github.com/zalando-techmonkeys/chimp/ && ${GOPATH}/bin/godep restore"
+    safesystem "cd ${GOPATH}/src/#{GOPACKAGE} && ${GOPATH}/bin/godep restore"
     safesystem "go install #{GOPACKAGE}/..."
   end
 
   def install
-    bin.install builddir("gobuild/bin/chimp-cli")
+    bin.install builddir("gobuild/bin/chimp")
     rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     rm_rf "#{builddir}/gobuild/bin", :verbose => true
   end

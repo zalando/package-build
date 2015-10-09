@@ -3,7 +3,7 @@
 
 class BaboonProxy < FPM::Cookery::Recipe
   description "Proxy server for the F5 API, written in Go."
-  GOPACKAGE = "zalando.de/system/baboon-proxy"
+  GOPACKAGE = "zalando.de/techmonkeys/baboon-proxy"
 
   name      "baboon-proxy"
   version   "0.0.1"

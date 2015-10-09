@@ -1,3 +1,3 @@
 [http]
-        sslCAInfo = /etc/ssl/certs/zalando-service-combined.pem
+        sslCAPath = /etc/pki/tls/certs/
 

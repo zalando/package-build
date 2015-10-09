@@ -312,9 +312,9 @@ def docker_build(dist=None):
         os.path.isdir(builddir) or abort('{} dir is not existing'.format(builddir))
         build(dist)
     else:
-        for root, dirs, files in os.walk('./docker/'):
-            for dist in dirs:
-                build(dist)
+        for entry in os.listdir('./docker/'):
+            if os.path.isdir(entry):
+                build(entry)
 
 
 @task
