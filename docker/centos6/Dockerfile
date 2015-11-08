@@ -6,9 +6,7 @@ ENV PATH $PATH:/usr/local/go/bin
 
 COPY .netrc /root/.netrc
 COPY epel.repo /etc/yum.repos.d/
-COPY zalando-service-combined.ca /etc/ssl/certs/zalando-service-combined.pem
 COPY zalando-service-combined.ca /etc/pki/ca-trust/source/anchors/zalando-service-combined.pem
-COPY gitconfig /root/.gitconfig
 
 ENV TIMEZONE Europe/Berlin
 RUN echo ZONE="$TIMEZONE" > /etc/sysconfig/clock && cp "/usr/share/zoneinfo/$TIMEZONE" /etc/localtime
@@ -20,4 +18,6 @@ RUN curl -O https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz \
 
 RUN gem install --no-rdoc --no-ri fpm-cookery
 
+
+RUN /usr/bin/update-ca-trust
 RUN /usr/bin/update-ca-trust enable
