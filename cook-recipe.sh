@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -f /opt/rh/ruby193/enable ] && source /opt/rh/ruby193/enable
+
 if [ $# -eq 0 ]
 then
     recipes=( $( ls -1 /data/recipes/ ) )
