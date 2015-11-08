@@ -17,6 +17,9 @@ RUN yum install -y --noplugins ruby193 ruby193-ruby-devel ruby193-rubygems
 RUN curl -O https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.4.1.linux-amd64.tar.gz
 
+RUN pip install --upgrade pip 
+RUN pip install virtualenv virtualenv-tools
+
 RUN echo "source /opt/rh/ruby193/enable" > /etc/profile.d/ruby193.sh
 RUN source /opt/rh/ruby193/enable && gem install --no-rdoc --no-ri fpm-cookery
 

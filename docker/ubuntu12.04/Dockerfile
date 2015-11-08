@@ -16,6 +16,9 @@ RUN apt-get clean
 RUN curl -O https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
 
+RUN pip install --upgrade pip 
+RUN pip install virtualenv virtualenv-tools
+
 RUN gem install --no-rdoc --no-ri fpm-cookery
 
 RUN echo 'zalando/zalando-service-combined.crt' >> '/etc/ca-certificates.conf'
