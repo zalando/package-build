@@ -2,7 +2,10 @@ Package Building
 ================
 *created Wednesday, 11. June 2014 - updated Monday, 09. November 2015*
 
-This is the toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes), read more on [System Docu](https://wiki.tm.zalando/Packages-and-Repos).
+This is the Techmonkey's toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes).
+- whole process is triggered from Fabric tasks running on the "build host"
+- build slaves are Docker containers to have always a clean, well defined environment
+- actual package building is done with [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery)
 
 ## Setup
 
@@ -12,12 +15,6 @@ Clone the repo and install Python requirements:
     cp package-build.yaml-example ~/.config/package-build.yaml
     vim ~/.config/package-build.yaml # adapt to your repo server setup
     fab docker_build # this will setup the required Docker images and could take a while
-
-## Concept
-
-- whole process is triggered from Fabric tasks running on the "build host"
-- build slaves are docker containers to have always a clean, well defined environment
-- packages are build with [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery)
 
 ## How To
 
