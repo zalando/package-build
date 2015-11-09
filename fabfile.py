@@ -8,6 +8,7 @@ from string import Template
 import json
 import time
 import re
+import yaml
 
 from fabric.api import local, run, sudo, execute, put
 from fabric.context_managers import settings, hide
@@ -20,24 +21,17 @@ from distutils.util import strtobool
 
 env.disable_known_hosts = True
 
-# @TODO: update README.md and sysdocu section
-
-if hasattr(env, 'legacy'):
-    env.repo_host = 'iftp.zalando.net'
-    env.repo_deb_root = '/data/zalando/iftp.zalando.net/htdocs/repo/apt/'
-    env.repo_rpm_root = '/data/zalando/iftp.zalando.net/htdocs/repo/rpm/'
-    env.repo_pypi_root = '/data/zalando/iftp.zalando.net/htdocs/simple/'
-else:
-    env.repo_host = 'z-repo'
-    env.repo_deb_root = '/data/zalando/data/repo.zalando/apt/'
-    env.repo_rpm_root = '/data/zalando/data/repo.zalando/rpm/'
-    env.repo_pypi_root = '/data/zalando/data/repo.zalando/pypi/'
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
-
 PACKAGE_FORMAT = {'centos6': 'rpm', 'debian7': 'deb', 'ubuntu12.04': 'deb', 'ubuntu14.04': 'deb'}
+
+CONFIG_FILE = os.path.expanduser('~/.config/package-build.yaml')
+if not os.path.isfile(CONFIG_FILE):
+    abort('config file {} not found, aborting here'.format(CONFIG_FILE))
+with open(CONFIG_FILE, 'r') as config_file:
+    env.update(yaml.load(config_file)['env'])
 
 
 def atoi(text):

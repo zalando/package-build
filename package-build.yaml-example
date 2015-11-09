@@ -1,0 +1,5 @@
+---
+env:
+    repo_host: 'myrepohost'
+    repo_deb_root: '/usr/share/nginx/www/apt/'
+    repo_rpm_root: '/usr/share/nginx/www/rpm/'
