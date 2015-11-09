@@ -20,6 +20,7 @@ from fabric.colors import blue, green, red
 from cuisine import package_ensure, dir_ensure, file_link, file_write
 from git import Repo
 from git.remote import Remote
+from distutils.util import strtobool
 
 env.disable_known_hosts = True
 
@@ -36,6 +37,7 @@ else:
     env.repo_rpm_root = '/data/zalando/data/repo.zalando/rpm/'
     env.repo_pypi_root = '/data/zalando/data/repo.zalando/pypi/'
 
+PATH = os.path.dirname(os.path.abspath(__file__))
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
 
@@ -61,6 +63,9 @@ def package_exists(path):
         return True
 
     return False
+
+def prep_bool_arg(arg):
+    return bool(strtobool(str(arg)))
 
 # some repo_* commands must run as root, because sudo won't allow access to the GPG keyring
 
@@ -300,21 +305,30 @@ def package_info(package):
 
 
 @task
-def docker_build(dist=None):
-    ''' build Docker image from ./docker/<dist> subdir '''
+def docker_build(dist=None, force=False):
+    ''' build Docker image from ./docker/<dist>/Dockerfile '''
+    force = prep_bool_arg(force)
 
-    def build(dist):
-        local('''docker images | grep -q package_build/{dist} \
-                 || docker build --tag=package_build/{dist} docker/{dist}/'''.format(dist=dist))
+    def build(dist, force):
+        image_existing = False
+        if not force:
+            with settings(warn_only=True):
+                image_existing = local('docker images | grep -q package_build/{dist}'.format(dist=dist)).succeeded
+
+        if not image_existing:
+            print('(re)building image {}...'.format(dist))
+            local('docker build --tag=package_build/{dist} {path}/docker/{dist}/'.format(dist=dist, path=PATH))
 
     if dist:
-        builddir = './docker/{}'.format(dist)
+        print('building Docker image for {}...'.format(dist))
+        builddir = os.path.join(PATH, 'docker', dist)
         os.path.isdir(builddir) or abort('{} dir is not existing'.format(builddir))
-        build(dist)
+        build(dist, force)
     else:
-        for entry in os.listdir('./docker/'):
-            if os.path.isdir(entry):
-                build(entry)
+        print('building Docker images for all distributions...')
+        for entry in os.listdir(os.path.join(PATH, 'docker')):
+            if os.path.isdir(os.path.join(PATH, 'docker', entry)):
+                build(entry, force)
 
 
 @task
@@ -357,5 +371,4 @@ def package_build(dist=None, recipe='', upload=False):
                     if upload:
                         execute('repo_{0}_add'.format(package_format), os.path.join(root, package_name), dist)
     print 'task ran {0} seconds'.format(time.time() - start_time)
-
 
