@@ -50,6 +50,10 @@ If you want to publish a package in the repos for other distributions, you have 
 
     fab repo_deb_add:~/path/to/package.deb,dist=ubuntu12.04
 
+Delete a package from the repo for a specified distribution:
+
+    fab repo_deb_del:dist=ubuntu12.04,chimp
+
 ### More Recipe Examples
 
 - [https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
