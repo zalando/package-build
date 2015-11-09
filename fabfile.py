@@ -2,24 +2,20 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
+
 import os
-import glob
-from shutil import copy
 from string import Template
 import json
 import time
-import datetime
 import re
 
 from fabric.api import local, run, sudo, execute, put
-from fabric.context_managers import settings, cd, lcd, hide
+from fabric.context_managers import settings, hide
 from fabric.decorators import task, hosts, with_settings
 from fabric.utils import abort
 from fabric.state import env
-from fabric.colors import blue, green, red
-from cuisine import package_ensure, dir_ensure, file_link, file_write
-from git import Repo
-from git.remote import Remote
+from fabric.colors import green, red
+from cuisine import package_ensure, dir_ensure, file_write
 from distutils.util import strtobool
 
 env.disable_known_hosts = True
@@ -371,4 +367,3 @@ def package_build(dist=None, recipe='', upload=False):
                     if upload:
                         execute('repo_{0}_add'.format(package_format), os.path.join(root, package_name), dist)
     print 'task ran {0} seconds'.format(time.time() - start_time)
-
