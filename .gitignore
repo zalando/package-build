@@ -1,10 +1,11 @@
 *.deb
-*.rpmz
+*.rpm
 *.tag.gz
-*.bak/
-.vagrant/
+debian7/
+centos6/
+ubuntu12.04/
+ubuntu14.04/
 cache/
 tmp-build/
 tmp-dest/
 pkg/
-.netrc
