@@ -7,7 +7,7 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   name     "zalando-cmdb-client"
   version  "1.0.20"
   revision  201504071657
-  arch      "all"
+  arch     "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-cmdb-client/browse"
   source        "https://stash.zalando.net/scm/pymodules/zalando-cmdb-client.git", :with => :git, :tag => "#{version}"
