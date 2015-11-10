@@ -22,8 +22,6 @@ class Etcd < FPM::Cookery::Recipe
 
     ENV["GOPATH"] = builddir("gobuild/")
 
-    safesystem "go version"
-    safesystem "go env"
     # ugly hack, but we need the `develop` branch of github.com/gin-gonic/gin/
     safesystem "go get -v github.com/gin-gonic/gin/"
     safesystem "cd $GOPATH/src/github.com/gin-gonic/gin/ && git checkout develop"

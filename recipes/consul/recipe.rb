@@ -22,8 +22,6 @@ class Consul < FPM::Cookery::Recipe
 
     ENV["GOPATH"] = builddir("gobuild/")
 
-    safesystem "go version"
-    safesystem "go env"
     # ugly hack, but we need the `develop` branch of github.com/gin-gonic/gin/
     safesystem "go get -v github.com/gin-gonic/gin/"
     safesystem "cd $GOPATH/src/github.com/gin-gonic/gin/ && git checkout develop"
@@ -36,7 +34,6 @@ class Consul < FPM::Cookery::Recipe
     var("lib/consul-ui").install builddir("gobuild/src/#{GOPACKAGE}/ui/dist/static/")
     etc("default").install_p(workdir("consul.default"), "consul")
     etc("init").install_p(workdir("consul.conf.upstart"), "consul.conf")
-    # etc('init.d').install_p(workdir('consul.init.d'), 'consul')
     bin.install builddir("gobuild/bin/consul")
     rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     rm_rf "#{builddir}/gobuild/bin", :verbose => true

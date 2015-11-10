@@ -21,7 +21,6 @@ class Podmaster < FPM::Cookery::Recipe
     cp_r Dir["*"], pkgdir
 
     ENV["GOPATH"] = builddir("gobuild/")
-    safesystem "go env"
     safesystem "go get github.com/coreos/go-etcd/etcd"
     safesystem "go get github.com/golang/glog"
     safesystem "go get github.com/spf13/pflag"
