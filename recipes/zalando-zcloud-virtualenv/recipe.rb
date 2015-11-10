@@ -12,6 +12,8 @@ class ZalandoZcloud < FPM::Cookery::VirtualenvRecipe
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-zcloud/browse"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
+  build_depends   "python-setuptools"
+
   virtualenv_fix_name false
   virtualenv_install_location "/opt/"
 
