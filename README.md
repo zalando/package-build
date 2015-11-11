@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Monday, 09. November 2015*
+*created Wednesday, 11. June 2014 - updated Wednesday, 11. November 2015*
 
 This is the Techmonkey's toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes).
 - whole process is triggered from Fabric tasks running on the "build host"
@@ -59,3 +59,6 @@ Delete a package from the repo for a specified distribution:
 - [https://github.com/Graylog2/fpm-recipes.git](https://github.com/Graylog2/fpm-recipes.git)
 - [https://github.com/haf/fpm-recipes.git](https://github.com/haf/fpm-recipes.git)
 
+## License
+
+The contents of this repository are licensed under the [MIT License](LICENSE).
