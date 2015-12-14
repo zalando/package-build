@@ -6,14 +6,14 @@ class Consul < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/hashicorp/consul"
 
   name      "zalando-consul"
-  version   "0.5.2"
-  revision  201508251650
+  version   "0.6.0"
+  revision  201512142015
 
   homepage      "http://www.consul.io/"
-  source        "https://github.com/hashicorp/consul.git", :with => :git
+  source        "https://github.com/hashicorp/consul/archive/v0.6.0.tar.gz"
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
-  build_depends   "golang-go git"
+  build_depends   "golang-go"
 
   def build
     pkgdir = builddir("gobuild/src/#{GOPACKAGE}")
@@ -22,16 +22,13 @@ class Consul < FPM::Cookery::Recipe
 
     ENV["GOPATH"] = builddir("gobuild/")
 
-    # ugly hack, but we need the `develop` branch of github.com/gin-gonic/gin/
-    safesystem "go get -v github.com/gin-gonic/gin/"
-    safesystem "cd $GOPATH/src/github.com/gin-gonic/gin/ && git checkout develop"
     safesystem "go get -v #{GOPACKAGE}"
     safesystem "cd $GOPATH/src/#{GOPACKAGE}/ui && gem install bundler && bundle && make dist"
   end
 
   def install
-    var("lib/consul-ui").install builddir("gobuild/src/#{GOPACKAGE}/ui/dist/index.html")
-    var("lib/consul-ui").install builddir("gobuild/src/#{GOPACKAGE}/ui/dist/static/")
+    var("lib/consul-ui").install builddir("gobuild/src/#{GOPACKAGE}/pkg/web_ui/index.html")
+    var("lib/consul-ui").install builddir("gobuild/src/#{GOPACKAGE}/pkg/web_ui/static/")
     etc("default").install_p(workdir("consul.default"), "consul")
     etc("init").install_p(workdir("consul.conf.upstart"), "consul.conf")
     bin.install builddir("gobuild/bin/consul")
