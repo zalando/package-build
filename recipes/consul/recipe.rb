@@ -4,25 +4,26 @@
 class Consul < FPM::Cookery::Recipe
   description "Service discovery and configuration with dc awareness, written in Go."
   GOPACKAGE = "github.com/hashicorp/consul"
+  TAG = "v0.6.0"
 
   name      "zalando-consul"
   version   "0.6.0"
-  revision  201512142015
+  revision  201512151209
 
   homepage      "http://www.consul.io/"
-  source        "https://github.com/hashicorp/consul/archive/v0.6.0.tar.gz"
+  source        "https://github.com/hashicorp/consul.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
-  build_depends   "golang-go"
+  build_depends   "golang-go git"
 
   def build
     pkgdir = builddir("gobuild/src/#{GOPACKAGE}")
     mkdir_p pkgdir
-    cp_r Dir["*"], pkgdir
 
     ENV["GOPATH"] = builddir("gobuild/")
 
-    safesystem "go get -v #{GOPACKAGE}"
+    safesystem "cp -r . $GOPATH/src/#{GOPACKAGE}"
+    safesystem "export PATH=$PATH:$GOPATH/bin; cd $GOPATH/src/#{GOPACKAGE} && make dev"
     safesystem "cd $GOPATH/src/#{GOPACKAGE}/ui && gem install bundler && bundle && make dist"
   end
 
