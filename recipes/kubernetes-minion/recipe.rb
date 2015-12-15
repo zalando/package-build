@@ -6,11 +6,11 @@ class KubernetesMinion < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/GoogleCloudPlatform/kubernetes"
 
   name      "zalando-kubernetes-minion"
-  version   "1.0.6"
+  version   "1.1.3"
   revision  201508271312
 
   homepage      "https://kubernetes.io/"
-  source        "https://github.com/kubernetes/kubernetes/archive/v1.0.6.tar.gz"
+  source        "https://github.com/kubernetes/kubernetes/archive/v1.1.3.tar.gz"
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
   build_depends   "golang-go"
@@ -24,7 +24,7 @@ class KubernetesMinion < FPM::Cookery::Recipe
     etc("init.d").install_p(workdir("kubelet_init.d"), "kubelet")
     etc("init").install_p(workdir("kube-proxy.conf.upstart"), "kube-proxy.conf")
     etc("init.d").install_p(workdir("kube-proxy_init.d"), "kube-proxy")
-    bin.install builddir("kubernetes-1.0.6/_output/local/bin/linux/amd64/kubelet")
-    bin.install builddir("kubernetes-1.0.6/_output/local/bin/linux/amd64/kube-proxy")
+    bin.install builddir("kubernetes-1.1.3/_output/local/bin/linux/amd64/kubelet")
+    bin.install builddir("kubernetes-1.1.3/_output/local/bin/linux/amd64/kube-proxy")
   end
 end
