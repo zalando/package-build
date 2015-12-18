@@ -4,10 +4,11 @@
 class Vault < FPM::Cookery::Recipe
   description "A tool for managing secrets, written in Go."
   GOPACKAGE = "github.com/hashicorp/vault"
+  TAG = "v0.4.0"
 
   name      "zalando-vault"
-  version   "0.2.1"
-  revision  201507161056
+  version   "0.4.0"
+  revision  201512181333
 
   homepage      "http://vaultproject.io/"
   source        "https://github.com/hashicorp/vault.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
