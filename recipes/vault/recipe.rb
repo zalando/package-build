@@ -10,7 +10,7 @@ class Vault < FPM::Cookery::Recipe
   revision  201507161056
 
   homepage      "http://vaultproject.io/"
-  source        "https://github.com/hashicorp/vault.git", :with => :git
+  source        "https://github.com/hashicorp/vault.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
   build_depends   "golang-go git"
@@ -18,14 +18,11 @@ class Vault < FPM::Cookery::Recipe
   def build
     pkgdir = builddir("gobuild/src/#{GOPACKAGE}")
     mkdir_p pkgdir
-    cp_r Dir["*"], pkgdir
 
     ENV["GOPATH"] = builddir("gobuild/")
 
-    # ugly hack, but we need the `develop` branch of github.com/gin-gonic/gin/
-    safesystem "go get -v github.com/gin-gonic/gin/"
-    safesystem "cd $GOPATH/src/github.com/gin-gonic/gin/ && git checkout develop"
-    safesystem "go get -v #{GOPACKAGE}"
+    safesystem "cp -r . $GOPATH/src/#{GOPACKAGE}"
+    safesystem "export PATH=$PATH:$GOPATH/bin; cd $GOPATH/src/#{GOPACKAGE} && make bootstrap && make dev"
   end
 
   def install
