@@ -6,8 +6,8 @@ class MacaqueZmonAgg < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/zalando-techmonkeys/macaque-zmon-agg"
 
   name      "macaque-zmon-agg"
-  version   "1.0.1"
-  revision  201509281912
+  version   "1.1.0"
+  revision  201512221610
 
   homepage      "https://github.com/zalando-techmonkeys/macaque-zmon-agg"
   source        "https://github.com/zalando-techmonkeys/macaque-zmon-agg", :with => :git, :tag => "#{version}"
