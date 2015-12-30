@@ -12,8 +12,8 @@ RUN apt-get update
 RUN apt-get install -y ruby1.9.1 ruby1.9.1-dev python-setuptools python-dev python-pip build-essential git-core curl lsb-release unzip mercurial
 RUN apt-get clean
 
-RUN curl -O https://storage.googleapis.com/golang/go1.4.1.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go1.4.1.linux-amd64.tar.gz
+RUN curl -O https://storage.googleapis.com/golang/go1.5.1.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.5.1.linux-amd64.tar.gz
 
 COPY pip.conf /etc/pip.conf
 RUN pip install --upgrade pip 
