@@ -7,7 +7,7 @@ class Howler < FPM::Cookery::Recipe
 
   name      "howler"
   version   "0.0.3"
-  revision  201601141050
+  revision  201601141348
 
   homepage      "https://github.com/zalando-techmonkeys/howler"
   source        "https://github.com/zalando-techmonkeys/howler", :with => :git, :tag => "#{version}"
@@ -25,7 +25,7 @@ class Howler < FPM::Cookery::Recipe
 
     safesystem "go get github.com/tools/godep"
     safesystem "cd ${GOPATH}/src/#{GOPACKAGE} && ${GOPATH}/bin/godep restore"
-    safesystem "go install #{GOPACKAGE}/..."
+    safesystem "go install -tags zalando #{GOPACKAGE}/..."
   end
 
   def install
