@@ -8,7 +8,7 @@ class Vault < FPM::Cookery::Recipe
 
   name      "zalando-vault"
   version   "0.4.0"
-  revision  201512181333
+  revision  201601141001
 
   homepage      "http://vaultproject.io/"
   source        "https://github.com/hashicorp/vault.git", :with => :git, :extract => :clone, :tag => "#{TAG}"

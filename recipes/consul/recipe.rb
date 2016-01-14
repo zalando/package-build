@@ -4,7 +4,7 @@
 class Consul < FPM::Cookery::Recipe
   description "Service discovery and configuration with dc awareness, written in Go."
   GOPACKAGE = "github.com/hashicorp/consul"
-  TAG = "v0.6.0"
+  TAG = "v0.6.2"
 
   name      "zalando-consul"
   version   "0.6.0"
