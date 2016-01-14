@@ -3,14 +3,14 @@
 
 class KubernetesMaster < FPM::Cookery::Recipe
   description "Container Cluster Manager from Google http://kubernetes.io"
-  GOPACKAGE = "github.com/GoogleCloudPlatform/kubernetes"
+  GOPACKAGE = "github.com/kubernetes/kubernetes"
 
   name      "zalando-kubernetes-master"
-  version   "1.1.3"
+  version   "1.1.4"
   revision  201508271327
 
   homepage      "https://kubernetes.io/"
-  source        "https://github.com/kubernetes/kubernetes/archive/v1.1.3.tar.gz"
+  source        "https://github.com/kubernetes/kubernetes/archive/v1.1.4.tar.gz"
   maintainer    "Markus Wyrsch <markus.wyrsch@zalando.de>"
 
   build_depends   "golang-go"
@@ -26,8 +26,8 @@ class KubernetesMaster < FPM::Cookery::Recipe
     etc("init.d").install_p(workdir("kube-apiserver_init.d"), "kube-apiserver")
     etc("init").install_p(workdir("kube-scheduler.conf.upstart"), "kube-scheduler.conf")
     etc("init.d").install_p(workdir("kube-scheduler_init.d"), "kube-scheduler")
-    bin.install builddir("kubernetes-1.1.3/_output/local/bin/linux/amd64/kube-controller-manager")
-    bin.install builddir("kubernetes-1.1.3/_output/local/bin/linux/amd64/kube-apiserver")
-    bin.install builddir("kubernetes-1.1.3/_output/local/bin/linux/amd64/kube-scheduler")
+    bin.install builddir("kubernetes-1.1.4/_output/local/bin/linux/amd64/kube-controller-manager")
+    bin.install builddir("kubernetes-1.1.4/_output/local/bin/linux/amd64/kube-apiserver")
+    bin.install builddir("kubernetes-1.1.4/_output/local/bin/linux/amd64/kube-scheduler")
   end
 end
