@@ -6,8 +6,8 @@ class Howler < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/zalando-techmonkeys/howler"
 
   name      "howler"
-  version   "0.0.2"
-  revision  201601131517
+  version   "0.0.3"
+  revision  201601141050
 
   homepage      "https://github.com/zalando-techmonkeys/howler"
   source        "https://github.com/zalando-techmonkeys/howler", :with => :git, :tag => "#{version}"
