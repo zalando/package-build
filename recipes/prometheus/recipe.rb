@@ -8,7 +8,7 @@ class Prometheus < FPM::Cookery::Recipe
 
   name      "zalando-prometheus"
   version   "0.16.1"
-  revision  201601141015
+  revision  201601141023
 
   homepage      "http://prometheus.io/"
   source        "https://github.com/prometheus/prometheus.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
@@ -29,7 +29,7 @@ class Prometheus < FPM::Cookery::Recipe
   def install
     etc("default").install_p(workdir("prometheus.default"), "prometheus")
     etc("init").install_p(workdir("prometheus.conf.upstart"), "prometheus.conf")
-    bin.install builddir("prometheus-tag-0.16.1/prometheus")
-    bin.install builddir("prometheus-tag-0.16.1/promtool")
+    bin.install builddir("gobuild/src/#{GOPACKAGE}/prometheus")
+    bin.install builddir("gobuild/src/#{GOPACKAGE}/promtool")
   end
 end
