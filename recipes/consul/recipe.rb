@@ -7,8 +7,8 @@ class Consul < FPM::Cookery::Recipe
   TAG = "v0.6.2"
 
   name      "zalando-consul"
-  version   "0.6.0"
-  revision  201512151209
+  version   "0.6.2"
+  revision  201601141127
 
   homepage      "http://www.consul.io/"
   source        "https://github.com/hashicorp/consul.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
