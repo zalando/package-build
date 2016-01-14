@@ -369,19 +369,25 @@ def docker_run(dist=None, command=''):
 def package_build(dist=None, recipe='', upload=False):
     ''' build packages from recipe for dist '''
 
-    start_time = time.time()
+    if dist:
+        dists = [dist]
+    else:
+        dists = [d for d, _ in PACKAGE_FORMAT.items()]
 
-    execute('docker_run', dist, '/data/cook-recipe.sh {}'.format(recipe))
+    for dist in dists:
+        start_time = time.time()
+        execute('docker_run', dist, '/data/cook-recipe.sh {}'.format(recipe))
 
-    for root, dirs, files in os.walk(pj(PATH, 'recipes')):
-        for file in files:
-            if file == 'lastbuild' and os.path.getmtime(pj(root, file)) >= start_time:
-                package_name = ''
-                with open(pj(root, file), 'r') as fh:
-                    package_name = fh.readline().strip()
-                if package_name:
-                    package_format = package_name.split('.')[-1]
-                    dist = root.split('/')[-1]
-                    if upload:
-                        execute('repo_{0}_add'.format(package_format), pj(root, package_name), dist)
-    print 'task ran {0} seconds'.format(time.time() - start_time)
+        for root, dirs, files in os.walk(pj(PATH, 'recipes')):
+            for file in files:
+                if file == 'lastbuild' and os.path.getmtime(pj(root, file)) >= start_time:
+                    package_name = ''
+                    with open(pj(root, file), 'r') as fh:
+                        package_name = fh.readline().strip()
+                        print('package_name: {}'.format(package_name))
+                    if package_name:
+                        package_format = package_name.split('.')[-1]
+                        dist = root.split('/')[-1]
+                        if upload:
+                            execute('repo_{0}_add'.format(package_format), pj(root, package_name), dist)
+        print 'task ran {0} seconds'.format(time.time() - start_time)
