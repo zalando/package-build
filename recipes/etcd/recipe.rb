@@ -4,10 +4,10 @@
 class Etcd < FPM::Cookery::Recipe
   description "A distributed consistent key-value store for shared configuration and service discovery"
   GOPACKAGE = "github.com/coreos/etcd"
-  TAG = "v2.2.2"
+  TAG = "v2.2.4"
 
   name      "zalando-etcd"
-  version   "2.2.2"
+  version   "2.2.4"
   revision  201512161414
 
   homepage      "https://github.com/coreos/etcd"
