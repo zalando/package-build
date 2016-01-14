@@ -1,6 +1,6 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Wednesday, 11. November 2015*
+*created Wednesday, 11. June 2014 - updated Thursday, 14. January 2016*
 
 This is the Techmonkey's toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes).
 - whole process is triggered from Fabric tasks running on the "build host"
@@ -30,6 +30,10 @@ To start the packaging process different distributions and packages, see the exa
 Build `facter` for Ubuntu 14.04:
 
     fab package_build:ubuntu14.04,facter
+
+Build `facter` for all configured distributions:
+
+    fab package_build:recipe=facter
 
 Build all recipes for Debian 7 ("Wheezy"):
 
