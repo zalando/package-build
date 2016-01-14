@@ -8,7 +8,7 @@ class Prometheus < FPM::Cookery::Recipe
 
   name      "zalando-prometheus"
   version   "0.16.1"
-  revision  201508271136
+  revision  201601141015
 
   homepage      "http://prometheus.io/"
   source        "https://github.com/prometheus/prometheus.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
@@ -17,7 +17,13 @@ class Prometheus < FPM::Cookery::Recipe
   build_depends   "git"
 
   def build
-      safesystem "make build"
+    pkgdir = builddir("gobuild/src/#{GOPACKAGE}")
+    mkdir_p pkgdir
+
+    ENV["GOPATH"] = builddir("gobuild/")
+
+    safesystem "cp -r . $GOPATH/src/#{GOPACKAGE}"
+    safesystem "export PATH=$PATH:$GOPATH/bin; cd $GOPATH/src/#{GOPACKAGE} && make build"
   end
 
   def install
