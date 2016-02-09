@@ -6,7 +6,7 @@ class Howler < FPM::Cookery::Recipe
   GOPACKAGE = "github.com/zalando-techmonkeys/howler"
 
   name      "howler"
-  version   "0.0.5"
+  version   "0.0.6"
   revision  201601221100
 
   homepage      "https://github.com/zalando-techmonkeys/howler"
