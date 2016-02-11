@@ -8,7 +8,7 @@ class Vault < FPM::Cookery::Recipe
 
   name      "zalando-vault"
   version   "0.5.0"
-  revision  201601141001
+  revision  201602111347
 
   homepage      "http://vaultproject.io/"
   source        "https://github.com/hashicorp/vault.git", :with => :git, :extract => :clone, :tag => "#{TAG}"
@@ -21,6 +21,7 @@ class Vault < FPM::Cookery::Recipe
     mkdir_p pkgdir
 
     ENV["GOPATH"] = builddir("gobuild/")
+    ENV["GO15VENDOREXPERIMENT"] = 0
 
     safesystem "cp -r . $GOPATH/src/#{GOPACKAGE}"
     safesystem "export PATH=$PATH:$GOPATH/bin; cd $GOPATH/src/#{GOPACKAGE} && make bootstrap && make dev"
