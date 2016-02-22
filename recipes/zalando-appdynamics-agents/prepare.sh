@@ -8,10 +8,8 @@ AppServerAgent.zip
 MachineAgent.zip
 appdynamics-machine.sh
 appdynamics-params.sh
-controller-info.xml
 custom-activity-correlation.xml
 transactions.xml
-analytics-agent.properties
 monitor.xml
 )
 
@@ -22,7 +20,7 @@ monitor.xml
 # download resources
 for RESOURCE in "${RESOURCES[@]}"
 do
-    [ -f cache/$RESOURCE ] || curl -kL --progress-bar -o cache/$RESOURCE https://repo.zalando/static/appdynamics/${RESOURCE}
+    [ -f cache/"${RESOURCE}" ] || curl -kL --progress-bar -o cache/"${RESOURCE}" https://repo.zalando/static/appdynamics/"${RESOURCE}"
 done
 
 # put everything in place
@@ -37,8 +35,7 @@ unzip -o cache/MachineAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-m
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/conf/
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/conf
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/ver${LONGVERSION}/conf/
-cp cache/analytics-agent.properties cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/ver"${LONGVERSION}"/conf/
 cp cache/monitor.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/
 
 cp cache/*sh cache/rootfs/usr/local/bin
