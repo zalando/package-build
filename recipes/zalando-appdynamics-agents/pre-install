@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    install|upgrade)
+	if -d /server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf; then
+	    rm -r /server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf 
+	fi
+	;;
+    abort-upgrade)
+	;;
+    *)
+	echo "preinst called with unknown argument \`$1'" >&2
+	exit 1
+	;;
+esac
+
+
