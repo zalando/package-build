@@ -1,6 +1,9 @@
 #!/bin/env ruby
 # encoding: utf-8
 
+# THIS SHOULD NOT BE USED ANYMORE, BECAUSE THE BINARIES FOR THIS PROJECT ARE NOW
+# COMPILED AND DISTRIBUTED VIA CI JOBS.
+
 class BaboonProxy < FPM::Cookery::Recipe
   description "Proxy server for the F5 API, written in Go."
   GOPACKAGE = "zalando.de/techmonkeys/baboon-proxy"

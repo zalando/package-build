@@ -1,12 +1,15 @@
 #!/bin/env ruby
 # encoding: utf-8
 
+# THIS SHOULD NOT BE USED ANYMORE, BECAUSE THE BINARIES FOR THIS PROJECT ARE NOW
+# COMPILED AND DISTRIBUTED VIA CI JOBS.
+
 class Chimp < FPM::Cookery::Recipe
   description "Command Line Interface for Chimp."
   GOPACKAGE = "github.com/zalando-techmonkeys/chimp"
 
   name      "chimp"
-  version   "v0.2.2"
+  version   "v0.4.5"
   revision  201510061821
 
   homepage      "https://stash.zalando.net/projects/SYSTEM/repos/chimp/browse/"
@@ -37,8 +40,6 @@ class Chimp < FPM::Cookery::Recipe
     # For allowing more than one successive builds, there has some cleanup to be done.
     # If the build cookie is still existing on the second run, fpm-cook will stop and
     # not build the binary again.
-#    rm_rf "#{builddir}/gobuild/bin", :verbose => true
-#    rm_rf "#{builddir}/gobuild/pkg", :verbose => true
     package_name = "#{name}-#{version}"
     build_cookie_name = (builddir/".build-cookie-#{package_name.gsub(/[^\w]/,'_')}").to_s
     rm_rf "#{build_cookie_name}", :verbose => true

@@ -1,6 +1,9 @@
 #!/bin/env ruby
 # encoding: utf-8
 
+# THIS SHOULD NOT BE USED ANYMORE, BECAUSE THE BINARIES FOR THIS PROJECT ARE NOW
+# COMPILED AND DISTRIBUTED VIA CI JOBS.
+
 class MacaqueZmonAgg < FPM::Cookery::Recipe
   description "Macaque is a Zmon aggregator API, written in Go."
   GOPACKAGE = "github.com/zalando-techmonkeys/macaque-zmon-agg"
@@ -22,6 +25,7 @@ class MacaqueZmonAgg < FPM::Cookery::Recipe
 
     ENV["GOPATH"] = builddir("gobuild/")
 
+    # ugly hack, but we need the `develop` branch of github.com/gin-gonic/gin/
     safesystem "go get github.com/tools/godep"
     safesystem "cd ${GOPATH}/src/#{GOPACKAGE} && ${GOPATH}/bin/godep restore"
     safesystem "go install #{GOPACKAGE}/..."

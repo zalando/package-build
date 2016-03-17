@@ -1,6 +1,9 @@
 #!/bin/env ruby
 # encoding: utf-8
 
+# THIS SHOULD NOT BE USED ANYMORE, BECAUSE THE BINARIES FOR THIS PROJECT ARE NOW
+# COMPILED AND DISTRIBUTED VIA CI JOBS.
+
 class Howler < FPM::Cookery::Recipe
   description "Howler: waits to hear something in the Marathon Event Bus and shouts it to the other monkeys"
   GOPACKAGE = "github.com/zalando-techmonkeys/howler"
@@ -12,7 +15,6 @@ class Howler < FPM::Cookery::Recipe
   homepage      "https://github.com/zalando-techmonkeys/howler"
   source        "https://github.com/zalando-techmonkeys/howler", :with => :git, :tag => "#{version}"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
-
 
   build_depends   "golang-go git"
 
