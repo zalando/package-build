@@ -9,3 +9,4 @@ cache/
 tmp-build/
 tmp-dest/
 pkg/
+fabfile.pyc
