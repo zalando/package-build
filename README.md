@@ -1,8 +1,7 @@
 Package Building
 ================
-*created Wednesday, 11. June 2014 - updated Thursday, 14. January 2016*
 
-This is the Techmonkey's toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes).
+This is Zalando Technology's toolset for creating native system packages (.deb for Debian-like and .rpm for RedHat-like OSes).
 - whole process is triggered from Fabric tasks running on the "build host"
 - build slaves are Docker containers to have always a clean, well defined environment
 - actual package building is done with [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery)
