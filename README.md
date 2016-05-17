@@ -65,6 +65,6 @@ To delete a package from the repo for a specified distribution:
 - [https://github.com/Graylog2/fpm-recipes.git](https://github.com/Graylog2/fpm-recipes.git)
 - [https://github.com/haf/fpm-recipes.git](https://github.com/haf/fpm-recipes.git)
 
-## License
+### License
 
 The contents of this repository are licensed under the [MIT License](LICENSE).
