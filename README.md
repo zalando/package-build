@@ -16,9 +16,12 @@ With a few simple scripts, you can use package-build to create isolated, self-co
 Clone the repo and install the Python requirements:
 
     sudo pip install -r requirements.txt
+
     cp package-build.yaml-example ~/.config/package-build.yaml
     vim ~/.config/package-build.yaml # adapt to your repo server setup
     fab docker_build # this will setup the required Docker images and could take a while
+    
+If pycrypto makes trouble here, install Python's headers before: `sudo apt-get install python-dev` or `sudo yum install python-devel` depending on your OS.
 
 ### How-to
 
