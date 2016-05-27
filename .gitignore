@@ -1,10 +1,11 @@
 *.deb
 *.rpm
 *.tag.gz
-debian7/
-centos6/
-ubuntu12.04/
-ubuntu14.04/
+recipes/*/debian7/
+recipes/*/centos6/
+recipes/*/ubuntu12.04/
+recipes/*/ubuntu14.04/
+recipes/*/ubuntu16.04/
 cache/
 tmp-build/
 tmp-dest/
