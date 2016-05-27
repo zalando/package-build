@@ -10,7 +10,7 @@ COPY zalando-service-combined.ca /etc/pki/ca-trust/source/anchors/zalando-servic
 ENV TIMEZONE Europe/Berlin
 RUN echo ZONE="$TIMEZONE" > /etc/sysconfig/clock && cp "/usr/share/zoneinfo/$TIMEZONE" /etc/localtime
 RUN yum clean all
-RUN yum install -y --noplugins python-setuptools python-devel python-pip make gcc tar rpm-build git curl mercurial centos-release-SCL
+RUN yum install -y --noplugins python-setuptools python-devel python-pip make gcc tar rpm-build git curl mercurial centos-release-scl
 RUN yum install -y --noplugins ruby193 ruby193-ruby-devel ruby193-rubygems
 
 RUN curl -O https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz \
