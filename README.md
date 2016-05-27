@@ -20,7 +20,7 @@ Clone the repo and install the Python requirements:
     cp package-build.yaml-example ~/.config/package-build.yaml
     vim ~/.config/package-build.yaml # adapt to your repo server setup
     fab docker_build # this will setup the required Docker images and could take a while
-    
+
 If pycrypto makes trouble here, install Python's headers before: `sudo apt-get install python-dev` or `sudo yum install python-devel` depending on your OS.
 
 ### How-to
@@ -32,9 +32,9 @@ As stated above, [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](ht
 ###$ Command Line Examples
 To start the packaging process's different distributions and packages, see the examples below.
 
-Build `facter` for Ubuntu 14.04:
+Build `facter` for Ubuntu 16.04 ("Xenial"):
 
-    fab package_build:ubuntu14.04,facter
+    fab package_build:ubuntu16.04,facter
 
 Build `facter` for all configured distributions:
 
@@ -48,7 +48,7 @@ For testing: The created package will not automatically upload and publish to yo
 
     fab package_build:debian7,upload=True
 
-Publish a package to the internal repository for ubuntu14.04 ("Trusty"):
+Publish a package to the internal repository for ubuntu16.04 (which is the default distribution):
 
     fab repo_deb_add:~/path/to/package.deb
 

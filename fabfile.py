@@ -30,6 +30,7 @@ PACKAGE_FORMAT = {
     'debian7': 'deb',
     'ubuntu12.04': 'deb',
     'ubuntu14.04': 'deb',
+    'ubuntu16.04': 'deb',
 }
 
 CONFIG_FILE = os.path.expanduser('~/.config/package-build.yaml')
@@ -164,13 +165,13 @@ def repo_deb_init():
 
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
-def get_last_snapshot(dist='ubuntu14.04'):
+def get_last_snapshot(dist='ubuntu16.04'):
     output = sudo('/usr/bin/aptly -config=/etc/aptly-{0}.conf snapshot list -sort="time" -raw=true'.format(dist))
     return output.split('\n').pop()
 
 
 @hosts(env.repo_host)
-def republish(dist='ubuntu14.04', snapshot=False):
+def republish(dist='ubuntu16.04', snapshot=False):
     with hide('commands'):
         if snapshot:
             print 'drop current publication of repo {0}, if existing'.format(green(dist))
@@ -209,7 +210,7 @@ def republish(dist='ubuntu14.04', snapshot=False):
 @hosts(env.repo_host)
 @with_settings(hide('commands'))
 @task
-def repo_deb_list(dist='ubuntu14.04', snapshot=False):
+def repo_deb_list(dist='ubuntu16.04', snapshot=False):
     ''' list repo's packages '''
 
     if snapshot:
@@ -224,11 +225,11 @@ def repo_deb_list(dist='ubuntu14.04', snapshot=False):
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_deb_add(package, dist='ubuntu14.04'):
-    '''Upload and add package to an apt repo, defaults to ubuntu14.04
+def repo_deb_add(package, dist='ubuntu16.04'):
+    '''Upload and add package to an apt repo, defaults to ubuntu16.04
 
     Example:
-    % fab repo_deb_add:myfoo.deb,dist=ubuntu14.04
+    % fab repo_deb_add:myfoo.deb,dist=ubuntu16.04
     '''
 
     if not os.path.isfile(os.path.expanduser(package)):
@@ -247,7 +248,7 @@ def repo_deb_add(package, dist='ubuntu14.04'):
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_deb_del(packagename, dist='ubuntu14.04'):
+def repo_deb_del(packagename, dist='ubuntu16.04'):
     ''' delete "packagename" from repo '''
 
     with hide('commands'):
@@ -260,7 +261,7 @@ def repo_deb_del(packagename, dist='ubuntu14.04'):
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_deb_rebuild(dist='ubuntu14.04'):
+def repo_deb_rebuild(dist='ubuntu16.04'):
     ''' rebuild repository and re-import all packages '''
 
     run('rm -fr {0}/{1}/'.format(env.repo_deb_root, dist))
