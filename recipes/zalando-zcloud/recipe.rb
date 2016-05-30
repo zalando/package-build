@@ -6,7 +6,7 @@ class ZalandoZcloud < FPM::Cookery::Recipe
 
   name     "zalando-zcloud"
   version  "0.2.11"
-  revision  201605271310
+  revision  201605301337
   arch     "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-zcloud/browse"
@@ -28,6 +28,6 @@ class ZalandoZcloud < FPM::Cookery::Recipe
   end
 
   def install
-      safesystem 'python setup.py install --root=../../tmp-dest --no-compile'
+      safesystem 'python setup.py install --root=../../tmp-dest --no-compile --prefix=/usr/local'
   end
 end
