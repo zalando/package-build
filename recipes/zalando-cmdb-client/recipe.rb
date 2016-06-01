@@ -6,7 +6,7 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
 
   name     "zalando-cmdb-client"
   version  "1.0.24"
-  revision  201504071657
+  revision  201606011659
   arch     "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-cmdb-client/browse"
@@ -15,8 +15,17 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
 
   build_depends   "python-setuptools"
 
-  platforms [:ubuntu, :debian] do
+  platforms [:debian] do
     depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-paramiko >= 1.7.0", "python-yaml >= 3.10"
+  end
+
+  platforms [:ubuntu] do
+      case FPM::Cookery::Facts.osmajorrelease
+        when '16.04'
+            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-paramiko >= 1.7.0", "python-yaml >= 3.10"
+        when '14.04', '12.04'
+            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-paramiko >= 1.7.0", "python-yaml >= 3.10"
+      end
   end
 
   platforms [:centos] do
