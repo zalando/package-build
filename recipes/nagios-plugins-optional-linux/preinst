@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ "$1" = install ]; then
+   if [ ! -d /usr/lib/nagios -a -d /usr/lib64/nagios ]; then 
+	ln -s /usr/lib64/nagios /usr/lib/
+   fi
+   if [ ! -d /etc/nagios -a ! -L /etc/nagios ]; then
+   	mkdir /etc/nagios
+   fi	
+
+## ... und noch viel mehr
+
+fi

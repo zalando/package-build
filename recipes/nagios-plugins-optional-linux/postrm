@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+OPTIONAL_PLUGINS="optional-file"
+
+if [ "$1" = "purge" ]; then
+        if which ucf >/dev/null 2>&1; then
+                have_ucf="yes"
+        fi
+        for f in $OPTIONAL_PLUGINS; do
+                rm -f /etc/nagios-plugins/config/${f}.cfg
+                if [ "$have_ucf" = "yes" ]; then
+                        ucf --purge /etc/nagios-plugins/config/${f}.cfg
+                fi
+        done
+fi
+

@@ -1,0 +1,67 @@
+#!/bin/bash 
+
+cfgfile="/etc/nagios/nrpe_optional.cfg"
+template="/usr/share/nagios-plugins/templates-optional/optional-linux.cfg"
+
+if [ "$1" = "configure" ]; then
+        (
+                cd /usr/share/nagios-plugins/templates-optional
+                for f in *.cfg; do
+                        ucf $f /etc/nagios-plugins/config/$f
+		done
+                for f in *.ncfg; do
+			if [ ! -f $f ]; then
+				continue
+			fi	
+                        ucf $f /etc/nagios/ngraph.d/optional/$f
+		done
+
+
+
+
+		## NRPE
+		if [ ! -f $cfgfile -a -f /etc/nagios/nrpe.cfg ]; then
+			echo "include=${cfgfile} " >> /etc/nagios/nrpe.cfg	
+		else
+			if [ `grep "^include=${cfgfile}" /etc/nagios/nrpe.cfg` ]; then
+				echo -e "OK:  $cfgfile was already included in /etc/nagios/nrpe.cfg"
+			else	
+				echo -e "\nWarning: $cfgfile was not included in /etc/nagios/nrpe.cfg"
+			fi	
+		fi
+		touch $cfgfile
+
+                while read line; do
+                        echo "$line" | grep '^# NRPE-client: command' >/dev/null 2>&1
+                        if [ $? -eq 0 ]; then
+                                nrpestring=`echo "$line" | sed s'/# NRPE-client: //g'`
+                                nrpecommand=`echo $nrpestring | awk -F= '{print $1}'`
+                                grep -F "$nrpecommand" $cfgfile >/dev/null 2>&1
+                                if [ $? -ne 0 ]; then
+                                        echo "$nrpestring" >> $cfgfile
+                                else
+                                        echo -e "\nWarning: $nrpecommand already defined in $cfgfile"
+                                        echo -e "replaced with     $nrpestring"
+                                        replacewithsed=`echo $nrpecommand | sed 's/\[/\\\[/' | sed 's/\]/\\\]/'`
+                                        sed "s/^\s*\(${replacewithsed}\)/#\1/" ${cfgfile} >> ${cfgfile}.tmp
+                                        mv ${cfgfile}.tmp $cfgfile
+                                        echo "$nrpestring" >> $cfgfile
+                                fi
+                        fi
+                done < $template
+
+		grep ".1.3.6.1.4.1.2021.4" /etc/snmp/snmpd.conf > /dev/null 2>&1
+		if [ $? -ne 0 -a -f /etc/snmp/snmpd.conf ]; then
+			echo -e "\n## added by nagios-plugins-optional-linux\nview    systemview    included   .1.3.6.1.4.1.2021.4" >> /etc/snmp/snmpd.conf
+		else
+			echo -e "\nWarning: not updated /etc/snmp/snmpd.conf for existing OID .1.3.6.1.4.1.2021.4"
+		fi
+		grep "rocommunity public 127.0.0.1" /etc/snmp/snmpd.conf > /dev/null 2>&1
+		if [ $? -ne 0 -a -f /etc/snmp/snmpd.conf ]; then
+			echo "PLEASE ADD 'rocommunity public 127.0.0.1'  as first line to /etc/snmp/snmpd.conf"
+		fi
+
+        );
+fi
+
+
