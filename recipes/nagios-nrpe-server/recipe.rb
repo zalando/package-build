@@ -16,29 +16,45 @@ class NagiosNRPEServer < FPM::Cookery::Recipe
   license     'Apache 2'
   section     'monitoring'
 
-  depends       'nagios-plugins'
-  build_depends 'gcc', 'make', 'libssl-dev'
+  platforms [:ubuntu] do
 
+        case FPM::Cookery::Facts.osmajorrelease 
+        when "16.04"
+        
+          depends       'nagios-plugins'
+          build_depends 'gcc', 'make', 'libssl-dev'
+        
+        
+          def build
+            patch(workdir("nagios-nrpe_2.15-1ubuntu1.diff"), 1)
+        
+            configure :prefix => prefix
+        
+            make
+        
+            safesystem('chmod +x debian/rules')
+            safesystem('debian/rules binary')
+          end
+        
+          def install
+            etc.install Dir['debian/nagios-nrpe-server/etc/*']
+            root('/usr').install Dir['debian/nagios-nrpe-server/usr/*']
+          end
+        
+           pre_install "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/preinst"
+           post_install "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/postinst"
+           pre_uninstall "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/prerm"
+           post_uninstall "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/postrm"
 
-  def build
-    patch(workdir("nagios-nrpe_2.15-1ubuntu1.diff"), 1)
-
-    configure :prefix => prefix
-
-    make
-
-    safesystem('chmod +x debian/rules')
-    safesystem('debian/rules binary')
+        else
+            FPM::Cookery::Log.error("Not building for Ubuntu #{FPM::Cookery::Facts.osmajorrelease}")
+            exit 1 
+        end
   end
-
-  def install
-    etc.install Dir['debian/nagios-nrpe-server/etc/*']
-    root('/usr').install Dir['debian/nagios-nrpe-server/usr/*']
+    
+  platforms [:debian, :centos, :redhat] do
+    FPM::Cookery::Log.error("Not building for this platform")
+    exit 1 
   end
-
-   pre_install "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/preinst"
-   post_install "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/postinst"
-   pre_uninstall "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/prerm"
-   post_uninstall "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/postrm"
-
+    
 end
