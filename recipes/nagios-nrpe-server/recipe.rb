@@ -23,18 +23,14 @@ class NagiosNRPEServer < FPM::Cookery::Recipe
     configure :prefix => prefix
 
     make
-    # this creates user & group "nagios", `make install` would fail, when they not exist
-    safesystem('bash debian/nagios-nrpe-server.preinst install')
+
     safesystem('chmod +x debian/rules')
     safesystem('debian/rules binary')
   end
 
   def install
-    make :install, 'DESTDIR' => destdir
     etc.install Dir['debian/nagios-nrpe-server/etc/*']
-    doc.install Dir['debian/nagios-nrpe-server/usr/share/doc/*']
-    man.install Dir['debian/nagios-nrpe-server/usr/share/man/*']
-
+    root('/usr').install Dir['debian/nagios-nrpe-server/usr/*']
   end
 
   post_install
