@@ -1,3 +1,6 @@
+#!/bin/env ruby
+# encoding: utf-8
+
 class NagiosNRPEServer < FPM::Cookery::Recipe
   description 'Nagios Remote Plugin Executor'
 
