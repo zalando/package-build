@@ -33,5 +33,9 @@ class NagiosNRPEServer < FPM::Cookery::Recipe
     root('/usr').install Dir['debian/nagios-nrpe-server/usr/*']
   end
 
-  post_install
+   pre_install "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/preinst"
+   post_install "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/postinst"
+   pre_uninstall "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/prerm"
+   post_uninstall "tmp-build/nrpe-#{version}/debian/nagios-nrpe-server/DEBIAN/postrm"
+
 end
