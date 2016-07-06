@@ -11,7 +11,7 @@ class ZalandoAppdynamicsAgents < FPM::Cookery::Recipe
   homepage  "http://www.appdynamics.com/"
   source    "cache/appdynamics.tgz"
 
-  maintainer "Sören König <soeren.koenig@zalando.de>"
+  maintainer "Felix Müller <felix.mueller@zalando.de>"
   section    "non-free/net"
 
   post_install "post-install"
