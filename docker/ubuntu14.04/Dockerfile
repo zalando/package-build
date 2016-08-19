@@ -19,6 +19,7 @@ COPY pip.conf /etc/pip.conf
 RUN pip install --upgrade pip 
 RUN pip install virtualenv virtualenv-tools
 
+RUN gem install --no-rdoc --no-ri json_pure --version 1.7.7
 RUN gem install --no-rdoc --no-ri fpm-cookery
 
 RUN echo 'zalando/zalando-service-combined.crt' >> '/etc/ca-certificates.conf'

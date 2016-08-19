@@ -21,6 +21,7 @@ RUN pip install --upgrade pip
 RUN pip install virtualenv virtualenv-tools
 
 RUN echo "source /opt/rh/ruby193/enable" > /etc/profile.d/ruby193.sh
+RUN source /opt/rh/ruby193/enable && gem install --no-rdoc --no-ri json_pure json --version 1.7.7
 RUN source /opt/rh/ruby193/enable && gem install --no-rdoc --no-ri fpm --version 1.4.0
 RUN source /opt/rh/ruby193/enable && gem install --no-rdoc --no-ri fpm-cookery
 
