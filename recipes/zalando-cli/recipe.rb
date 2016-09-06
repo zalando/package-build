@@ -5,8 +5,8 @@ class ZalandoCli < FPM::Cookery::Recipe
   description "Boilerplate code for CLI tools."
 
   name     "zalando-cli"
-  version  "0.0.6"
-  revision  201508031338
+  version  "0.0.7"
+  revision  201609061124
   arch      "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-cli/browse"
