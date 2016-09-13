@@ -1,0 +1,51 @@
+#!/bin/sh
+# postinst script for android-sdk
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+
+case "${1}" in
+    configure)
+    [ -f /etc/default/android-sdk ] && . /etc/default/android-sdk
+    [ -z "${ANDROID_SDK_USER}" ] && ANDROID_SDK_USER="jenkins"
+    [ -z "${ANDROID_SDK_GROUP}" ] && ANDROID_SDK_GROUP="jenkins"
+    if ! getent group "${ANDROID_SDK_GROUP}" > /dev/null 2>&1 ; then
+        addgroup --system "${ANDROID_SDK_GROUP}" --gid 927 --quiet
+    fi
+    if ! id ${ANDROID_SDK_USER} > /dev/null 2>&1 ; then
+        adduser --system --home /data/jenkins --no-create-home \
+        --ingroup "${ANDROID_SDK_GROUP}" --disabled-password --shell /bin/bash \
+        "${ANDROID_SDK_USER}" --uid 927
+    fi
+
+    # Set user permissions 
+    [ -z "${INSTALL_DIR}" ] && INSTALL_DIR="/server/android-sdk/"
+    mkdir -p "${INSTALL_DIR}"
+    chgrp -R "${ANDROID_SDK_GROUP}" "${INSTALL_DIR}"
+    chmod 775 "${INSTALL_DIR}"
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "${0} called with unknown argument '${1}'" >&2
+        exit 1
+    ;;
+esac
+
+exit 0
