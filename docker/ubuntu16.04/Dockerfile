@@ -7,7 +7,7 @@ ENV PATH $PATH:/usr/local/go/bin
 
 COPY zalando/ /usr/share/ca-certificates/zalando/
  
-RUN echo Europe/Berlin > /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata
+RUN ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
 RUN apt-get update
 RUN apt-get install -y ruby ruby-dev python-setuptools python-dev python-pip build-essential git-core curl lsb-release unzip mercurial
 RUN apt-get clean
