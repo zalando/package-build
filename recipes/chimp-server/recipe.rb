@@ -6,14 +6,14 @@
 
 class ChimpServer < FPM::Cookery::Recipe
   description "The Chimp server."
-  GOPACKAGE = "github.com/zalando-techmonkeys/chimp"
+  GOPACKAGE = "github.com/zalando/chimp"
 
   name      "chimp-server"
   version   "v0.4.5"
   revision  201508251650
 
-  homepage      "https://stash.zalando.net/projects/SYSTEM/repos/chimp/browse/"
-  source        "https://stash.zalando.net/scm/system/chimp.git", :with => :git, :tag => "#{version}"
+  homepage      "https://github.com/zalando/chimp"
+  source        "https://github.com/zalando/chimp.git", :with => :git, :tag => "#{version}"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "golang-go git mercurial"

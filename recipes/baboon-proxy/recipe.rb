@@ -6,19 +6,20 @@
 
 class BaboonProxy < FPM::Cookery::Recipe
   description "Proxy server for the F5 API, written in Go."
-  GOPACKAGE = "zalando.de/techmonkeys/baboon-proxy"
+  GOPACKAGE = "zalando.de/zalando/baboon-proxy"
 
   name      "baboon-proxy"
   version   "0.0.1"
   revision  201508251650
 
-  homepage      "https://stash.zalando.net/projects/SYSTEM/repos/baboon-proxy/browse"
-  source        "https://stash.zalando.net/scm/system/baboon-proxy.git", :with => :git
+  homepage      "https://github.com/zalando/baboon-proxy"
+  source        "https://github.com/zalando/baboon-proxy.git", :with => :git
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "golang-go git"
 
   def build
+    # Set up directory structure and $GOPATH.
     pkgdir = builddir("gobuild/src/#{GOPACKAGE}")
     mkdir_p pkgdir
     cp_r Dir["*"], pkgdir
@@ -32,8 +33,15 @@ class BaboonProxy < FPM::Cookery::Recipe
   end
 
   def install
-    bin.install builddir("gobuild/bin/baboon-proxy")
-    rm_rf "#{builddir}/gobuild/pkg", :verbose => true
-    rm_rf "#{builddir}/gobuild/bin", :verbose => true
+    bin.install builddir("gobuild/bin/#{name}")
+  end
+
+  def after_install
+    # For allowing more than one successive builds, there has some cleanup to be done.
+    # If the build cookie is still existing on the second run, fpm-cook will stop and
+    # not build the binary again.
+    package_name = "#{name}-#{version}"
+    build_cookie_name = (builddir/".build-cookie-#{package_name.gsub(/[^\w]/,'_')}").to_s
+    rm_rf "#{build_cookie_name}", :verbose => true
   end
 end
