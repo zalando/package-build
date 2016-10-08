@@ -36,7 +36,7 @@ case "${1}" in
     [ -z "${INSTALL_DIR}" ] && INSTALL_DIR="/server/android-sdk/"
     mkdir -p "${INSTALL_DIR}"
     chgrp -R "${ANDROID_SDK_GROUP}" "${INSTALL_DIR}"
-    chmod 775 "${INSTALL_DIR}"
+    chmod -R 775 "${INSTALL_DIR}"
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

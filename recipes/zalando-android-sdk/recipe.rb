@@ -5,7 +5,7 @@ class ZalandoAndroidSDK < FPM::Cookery::Recipe
   description "Software development kit for Android platform"
 
   version   "24.4.1"
-  revision   3
+  revision   4
   arch      "all"
   name      "zalando-android-sdk"
   homepage  "https://developer.android.com/studio/index.html"
