@@ -27,7 +27,9 @@ RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
 PACKAGE_FORMAT = {
     'centos6': 'rpm',
+    'centos7': 'rpm',
     'debian7': 'deb',
+    'debian8': 'deb',
     'ubuntu12.04': 'deb',
     'ubuntu14.04': 'deb',
     'ubuntu16.04': 'deb',
