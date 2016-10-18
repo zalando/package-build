@@ -5,8 +5,8 @@ class ZalandoZcloud < FPM::Cookery::Recipe
   description "Package containing CLI, agent and additional scripts for installing nodes via zCloud"
 
   name     "zalando-zcloud"
-  version  "0.3.1"
-  revision  201609261631
+  version  "0.3.2"
+  revision  201610171449
   arch     "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-zcloud/browse"
@@ -16,11 +16,11 @@ class ZalandoZcloud < FPM::Cookery::Recipe
   build_depends   "python-setuptools"
 
   platforms [:ubuntu, :debian] do
-    depends     "zalando-cmdb-client", "python-paramiko >= 1.7.0"
+    depends     "zalando-cmdb-client", "python-paramiko >= 1.7.0", "python-libvirt"
   end
 
   platforms [:centos] do
-    depends     "zalando-cmdb-client", "python-paramiko >= 1.7.0"
+    depends     "zalando-cmdb-client", "python-paramiko >= 1.7.0", "libvirt-python"
   end
 
   def build
