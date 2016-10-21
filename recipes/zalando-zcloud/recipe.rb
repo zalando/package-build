@@ -6,7 +6,7 @@ class ZalandoZcloud < FPM::Cookery::Recipe
 
   name     "zalando-zcloud"
   version  "0.3.2"
-  revision  201610171449
+  revision  201610210952
   arch     "all"
 
   homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-zcloud/browse"
