@@ -25,7 +25,7 @@ group="root"
 chroot="/"
 chdir="/"
 nice=""
-collectors_enabled="diskstats,entropy,filesystem,hwmon,meminfo,netdev,netstat,sockstat,stat,textfile,uname,vmstat,bonding,logind,megacli"
+collectors_enabled="diskstats,entropy,filesystem,meminfo,netdev,netstat,sockstat,stat,textfile,uname,vmstat,bonding,megacli"
 textfile_directory="/var/cache/$name"
 
 
