@@ -5,7 +5,7 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   description "Python client library for CMDB REST API."
 
   name     "zalando-cmdb-client"
-  version  "1.0.31"
+  version  "1.0.32"
   revision  201610281139
   arch     "all"
 
@@ -16,20 +16,20 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   build_depends   "python-setuptools"
 
   platforms [:debian] do
-    depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-paramiko >= 1.7.0", "python-yaml >= 3.10"
+    depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-yaml >= 3.10"
   end
 
   platforms [:ubuntu] do
       case FPM::Cookery::Facts.osmajorrelease
         when '16.04'
-            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-paramiko >= 1.7.0", "python-yaml >= 3.10"
+            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-yaml >= 3.10"
         when '14.04', '12.04'
-            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-paramiko >= 1.7.0", "python-yaml >= 3.10"
+            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-yaml >= 3.10"
       end
   end
 
   platforms [:centos] do
-    depends     "PyYAML >= 3.10", "python-argparse", "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-paramiko >= 1.7.0", "python-setuptools"
+    depends     "PyYAML >= 3.10", "python-argparse", "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-setuptools"
   end
 
   def build
