@@ -2,7 +2,9 @@
 *.rpm
 *.tag.gz
 recipes/*/debian7/
+recipes/*/debian8/
 recipes/*/centos6/
+recipes/*/centos7/
 recipes/*/ubuntu12.04/
 recipes/*/ubuntu14.04/
 recipes/*/ubuntu16.04/
