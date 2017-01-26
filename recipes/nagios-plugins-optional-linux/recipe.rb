@@ -9,8 +9,8 @@ class NagiosPluginsOptionalLinux < FPM::Cookery::Recipe
   arch     "all"
   name     "nagios-plugins-optional-linux"
 
-  homepage   "https://stash.zalando.net/projects/SYSTEM/repos/nagios-plugins-optional-linux/browse"
-  source     "https://stash.zalando.net/scm/system/nagios-plugins-optional-linux.git", :with => :git
+  homepage   "https://github.bus.zalan.do/system/nagios-plugins-optional-linux"
+  source     "https://github.bus.zalan.do/system/nagios-plugins-optional-linux.git", :with => :git
   maintainer "Sören König <soeren.koenig@zalando.de>"
 
   section    "universe/net"

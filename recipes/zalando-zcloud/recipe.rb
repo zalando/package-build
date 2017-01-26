@@ -9,8 +9,8 @@ class ZalandoZcloud < FPM::Cookery::Recipe
   revision  201611141113
   arch     "all"
 
-  homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-zcloud/browse"
-  source        "https://stash.zalando.net/scm/pymodules/zalando-zcloud.git", :with => :git, :tag => "#{version}"
+  homepage      "https://github.bus.zalan.do/team-ghost/zalando-zcloud"
+  source        "https://github.bus.zalan.do/team-ghost/zalando-zcloud.git", :with => :git, :tag => "#{version}"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "python-setuptools"

@@ -9,7 +9,7 @@ class ZalandoZcloud < FPM::Cookery::VirtualenvRecipe
   revision  201511091736
   arch     "all"
 
-  homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-zcloud/browse"
+  homepage      "https://github.bus.zalan.do/team-ghost/zalando-zcloud"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "python-setuptools"

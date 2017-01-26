@@ -10,8 +10,8 @@ class LibNagiosStatusPerl < FPM::Cookery::Recipe
   arch     "all"
   name     "libnagios-status-perl"
 
-  homepage   "https://stash.zalando.net/projects/SYSTEM/repos/libnagios-status-perl/browse"
-  source     "https://stash.zalando.net/scm/system/libnagios-status-perl.git", :with => :git
+  homepage   "https://github.bus.zalan.do/system/libnagios-status-perl"
+  source     "https://github.bus.zalan.do/system/libnagios-status-perl.git", :with => :git
   maintainer "Matthias Kerk <matthias.kerk@zalando.de>"
 
   section    "perl"

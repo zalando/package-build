@@ -9,8 +9,8 @@ class ZalandoCli < FPM::Cookery::Recipe
   revision  201609061124
   arch      "all"
 
-  homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-cli/browse"
-  source        "https://stash.zalando.net/scm/pymodules/zalando-cli.git", :with => :git, :tag => "#{version}"
+  homepage      "https://github.bus.zalan.do/system/zalando-cli"
+  source        "https://github.bus.zalan.do/system/zalando-cli.git", :with => :git, :tag => "#{version}"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   build_depends   "python-setuptools"

@@ -9,7 +9,7 @@ class ZalandoCMDBClient < FPM::Cookery::VirtualenvRecipe
   revision  201511102030
   arch     "all"
 
-  homepage      "https://stash.zalando.net/projects/PYMODULES/repos/zalando-cmdb-client/browse"
+  homepage      "https://github.bus.zalan.do/team-ghost/zalando-cmdb-client"
   maintainer    "Sören König <soeren.koenig@zalando.de>"
 
   virtualenv_install_location "/opt/"
