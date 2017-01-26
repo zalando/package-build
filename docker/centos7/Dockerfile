@@ -27,3 +27,5 @@ RUN source /opt/rh/ruby193/enable && gem install --no-rdoc --no-ri fpm-cookery
 
 RUN /usr/bin/update-ca-trust
 RUN /usr/bin/update-ca-trust enable
+
+ADD http://repo.zalando/static/.netrc /root/.netrc

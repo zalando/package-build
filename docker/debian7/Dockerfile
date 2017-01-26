@@ -25,3 +25,4 @@ RUN gem install --no-rdoc --no-ri fpm-cookery
 RUN echo 'zalando/zalando-service-combined.crt' >> '/etc/ca-certificates.conf'
 RUN /usr/sbin/update-ca-certificates
 
+ADD http://repo.zalando/static/.netrc /root/.netrc
