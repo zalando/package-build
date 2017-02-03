@@ -250,11 +250,15 @@ def repo_deb_add(package, dist='ubuntu16.04'):
 @hosts(env.repo_host)
 @with_settings(user='root')
 @task
-def repo_deb_del(packagename, dist='ubuntu16.04'):
+def repo_deb_del(packagename, query='', dist='ubuntu16.04'):
     ''' delete "packagename" from repo '''
 
     with hide('commands'):
-        run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
+        if query:
+            run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo remove {0} "{1} ({2})"'.format(dist, packagename, query))
+        else:
+            run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
+
 
     if republish(dist):
         print red('deleted {0} from repo {1}'.format(packagename, dist))
