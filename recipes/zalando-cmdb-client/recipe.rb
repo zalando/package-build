@@ -5,8 +5,8 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   description "Python client library for CMDB REST API."
 
   name     "zalando-cmdb-client"
-  version  "1.0.34"
-  revision  201703241434
+  version  "1.0.36"
+  revision  201706231428
   arch     "all"
 
   homepage      "https://github.bus.zalan.do/team-ghost/zalando-cmdb-client"
