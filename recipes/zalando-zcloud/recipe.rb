@@ -5,8 +5,8 @@ class ZalandoZcloud < FPM::Cookery::Recipe
   description "Package containing CLI, agent and additional scripts for installing nodes via zCloud"
 
   name     "zalando-zcloud"
-  version  "0.3.6"
-  revision  201611141113
+  version  "0.3.7"
+  revision  201705091159
   arch     "all"
 
   homepage      "https://github.bus.zalan.do/team-ghost/zalando-zcloud"
