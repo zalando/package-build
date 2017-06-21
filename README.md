@@ -18,14 +18,14 @@ Clone the repo and install the Python requirements:
     sudo pip install -r requirements.txt
 
     cp package-build.yaml-example ~/.config/package-build.yaml
-    vim ~/.config/package-build.yaml # adapt to your repo server setup
+    vim ~/.config/package-build.yaml # adapt to your repo server and distributions for which you want to build packages
     fab docker_build # this will setup the required Docker images and could take a while
 
 If pycrypto makes trouble here, install Python's headers before: `sudo apt-get install python-dev` or `sudo yum install python-devel` depending on your OS.
 
 ### How-to
 
-Docker containers provide the build environments, so you'll have to create a new subfolder under `docker/` with a Dockerfile for all the distributions for which you want to create a package. Set the environment variable `RELEASE` to put the resulting package into an appropriate subfolder, avoid name clashes, and determine to which repository the package should be uploaded to later.
+Docker containers provide the build environments, so you'll have to create a new subfolder under `docker/` with a Dockerfile for all the distributions for which you want to create a package. Create an entry in the config file `~/.config/package-build.yaml` for each distribution to map it to a package format ("rpm" or "deb", see the example config file).
 
 As stated above, [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery) do the actual package build. (fpm-cookery automatically builds [only a package for the distribution/OS where it's running] (https://github.com/bernd/fpm-cookery/blob/master/spec/facts_spec.rb#L72).) Create a `recipe.rb` under a subfolder in `recipes/`. Optionally, create a script called `prepare.sh`, meant to be run before `fpm-cook package` is executed.
 

@@ -3,3 +3,11 @@ env:
     repo_host: 'myrepohost'
     repo_deb_root: '/usr/share/nginx/www/apt/'
     repo_rpm_root: '/usr/share/nginx/www/rpm/'
+    dists:
+        rpm:
+            - centos6
+            - centos7
+        deb:
+            - debian7
+            - debian8
+            - ubuntu16.04

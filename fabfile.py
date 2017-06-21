@@ -25,21 +25,17 @@ env.disable_known_hosts = True
 PATH = os.path.dirname(os.path.abspath(__file__))
 RPM_COMPONENTS = ['base', 'updates', 'extras']
 RPM_ARCHS = ['i386', 'x86_64']
-PACKAGE_FORMAT = {
-    'centos6': 'rpm',
-    'centos7': 'rpm',
-    'debian7': 'deb',
-    'debian8': 'deb',
-    'ubuntu12.04': 'deb',
-    'ubuntu14.04': 'deb',
-    'ubuntu16.04': 'deb',
-}
 
 CONFIG_FILE = os.path.expanduser('~/.config/package-build.yaml')
 if not os.path.isfile(CONFIG_FILE):
     abort('config file {} not found, aborting here'.format(CONFIG_FILE))
 with open(CONFIG_FILE, 'r') as config_file:
     env.update(yaml.load(config_file)['env'])
+
+PACKAGE_FORMAT = {}
+for package_format, dists in env.dists.iteritems():
+    for dist in dists:
+        PACKAGE_FORMAT[dist] = package_format
 
 
 def atoi(text):
@@ -258,7 +254,6 @@ def repo_deb_del(packagename, query='', dist='ubuntu16.04'):
             run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo remove {0} "{1} ({2})"'.format(dist, packagename, query))
         else:
             run('/usr/bin/aptly -config=/etc/aptly-{0}.conf repo remove {0} {1}'.format(dist, packagename))
-
 
     if republish(dist):
         print red('deleted {0} from repo {1}'.format(packagename, dist))
