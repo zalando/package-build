@@ -6,7 +6,7 @@ Package-build is a toolset for creating native system packages: .deb for Debian-
 ### The Idea
 With a few simple scripts, you can use package-build to create isolated, self-contained packages; provide them in your internal repos; and not worry about deployment and dependencies. You can even use these scripts to package tarballs that are randomly dropped into a web folder. Because a simple shell script performs the actual package-building, you can easily use the same commands in a continuous integration context — i.e., to automatically build packages every time a recipe changes or a new one has been added.
 
-####Details:
+#### Details:
 - the whole build process is triggered from [Fabric](https://packages.debian.org/unstable/main/fabric) tasks running on the "build host"
 - build slaves are Docker containers to maintain a clean, well-defined environment
 - actual package building is done with [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery)
@@ -29,8 +29,8 @@ Docker containers provide the build environments, so you'll have to create a new
 
 As stated above, [fpm](https://github.com/jordansissel/fpm) and [fpm-cookery](https://github.com/bernd/fpm-cookery) do the actual package build. (fpm-cookery automatically builds [only a package for the distribution/OS where it's running] (https://github.com/bernd/fpm-cookery/blob/master/spec/facts_spec.rb#L72).) Create a `recipe.rb` under a subfolder in `recipes/`. Optionally, create a script called `prepare.sh`, meant to be run before `fpm-cook package` is executed.
 
-###$ Command Line Examples
-To start the packaging process's different distributions and packages, see the examples below.
+### $ Command Line Examples
+To start the packaging process for different distributions and packages, see the examples below.
 
 Build `facter` for Ubuntu 16.04 ("Xenial"):
 
@@ -63,8 +63,7 @@ To delete a package from the repo for a specified distribution:
 ### More Recipe Examples
 
 - [https://github.com/bernd/fpm-recipes](https://github.com/bernd/fpm-recipes)
-- [https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand](https://github.com/piavlo/fpm-recipes-piavlo/tree/master/gearmand)
-- [https://github.com/henchmanio/fpm-recipes](https://github.com/henchmanio/fpm-recipes)
+- [https://github.com/piavlo/fpm-recipes-piavlo](https://github.com/piavlo/fpm-recipes-piavlo)
 - [https://github.com/Graylog2/fpm-recipes.git](https://github.com/Graylog2/fpm-recipes.git)
 - [https://github.com/haf/fpm-recipes.git](https://github.com/haf/fpm-recipes.git)
 
