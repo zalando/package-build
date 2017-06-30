@@ -4,8 +4,8 @@ set -x
 
 LONGVERSION=$(sed -n 's|\s*version\s*"\(.*\)"|\1|p' recipe.rb)
 RESOURCES=(
-AppServerAgent.zip
-MachineAgent.zip
+AppServerAgent-$LONGVERSION.zip
+MachineAgent-$LONGVERSION.zip
 appdynamics-machine.sh
 appdynamics-params.sh
 custom-activity-correlation.xml
