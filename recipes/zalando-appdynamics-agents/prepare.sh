@@ -26,11 +26,11 @@ done
 # put everything in place
 [ -d cache/rootfs/server/appdynamics/appdynamics-jvm ] \
     || mkdir -p cache/rootfs/server/appdynamics/appdynamics-jvm
-unzip -o cache/AppServerAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-jvm
+unzip -o cache/AppServerAgent-$LONGVERSION.zip -d cache/rootfs/server/appdynamics/appdynamics-jvm
 
 [ -d cache/rootfs/server/appdynamics/appdynamics-machine ] \
     || mkdir -p cache/rootfs/server/appdynamics/appdynamics-machine
-unzip -o cache/MachineAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-machine
+unzip -o cache/MachineAgent-$LONGVERSION.zip -d cache/rootfs/server/appdynamics/appdynamics-machine
 
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/conf/
 cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf
