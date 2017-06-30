@@ -4,8 +4,8 @@ set -x
 
 LONGVERSION=$(sed -n 's|\s*version\s*"\(.*\)"|\1|p' recipe.rb)
 RESOURCES=(
-AppServerAgent.zip
-MachineAgent.zip
+AppServerAgent-$LONGVERSION.zip
+MachineAgent-$LONGVERSION.zip
 appdynamics-machine.sh
 appdynamics-params.sh
 custom-activity-correlation.xml
@@ -26,17 +26,17 @@ done
 # put everything in place
 [ -d cache/rootfs/server/appdynamics/appdynamics-jvm ] \
     || mkdir -p cache/rootfs/server/appdynamics/appdynamics-jvm
-unzip -o cache/AppServerAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-jvm
+unzip -o cache/AppServerAgent-$LONGVERSION.zip -d cache/rootfs/server/appdynamics/appdynamics-jvm
 
 [ -d cache/rootfs/server/appdynamics/appdynamics-machine ] \
     || mkdir -p cache/rootfs/server/appdynamics/appdynamics-machine
-unzip -o cache/MachineAgent.zip -d cache/rootfs/server/appdynamics/appdynamics-machine
+unzip -o cache/MachineAgent-$LONGVERSION.zip -d cache/rootfs/server/appdynamics/appdynamics-machine
 
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/conf/
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/conf
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/ver"${LONGVERSION}"/conf/
-cp cache/monitor.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/MachineAgent-4/conf/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/MachineAgent-4/monitors/analytics-agent/conf
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/AppServerAgent-4/conf
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/AppServerAgent-4/ver"${LONGVERSION}"/conf/
+cp cache/monitor.xml cache/rootfs/server/appdynamics/appdynamics-machine/MachineAgent-4/monitors/analytics-agent/
 
 cp cache/*sh cache/rootfs/usr/local/bin
 find cache/rootfs -type f -name '*sh' -exec chmod +x {} \;
