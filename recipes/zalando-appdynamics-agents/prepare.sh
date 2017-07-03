@@ -32,11 +32,11 @@ unzip -o cache/AppServerAgent-$LONGVERSION.zip -d cache/rootfs/server/appdynamic
     || mkdir -p cache/rootfs/server/appdynamics/appdynamics-machine
 unzip -o cache/MachineAgent-$LONGVERSION.zip -d cache/rootfs/server/appdynamics/appdynamics-machine
 
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/MachineAgent-4/conf/
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/MachineAgent-4/monitors/analytics-agent/conf
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/AppServerAgent-4/conf
-cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/AppServerAgent-4/ver"${LONGVERSION}"/conf/
-cp cache/monitor.xml cache/rootfs/server/appdynamics/appdynamics-machine/MachineAgent-4/monitors/analytics-agent/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/conf/
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/conf
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/conf
+cp cache/*.xml cache/rootfs/server/appdynamics/appdynamics-jvm/ver"${LONGVERSION}"/conf/
+cp cache/monitor.xml cache/rootfs/server/appdynamics/appdynamics-machine/monitors/analytics-agent/
 
 cp cache/*sh cache/rootfs/usr/local/bin
 find cache/rootfs -type f -name '*sh' -exec chmod +x {} \;
