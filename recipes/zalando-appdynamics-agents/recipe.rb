@@ -4,8 +4,8 @@
 class ZalandoAppdynamicsAgents < FPM::Cookery::Recipe
   description "Appdynamics agents bundle containing AppServerAgent and MachineAgent"
 
-  version   "4.2.8.0"
-  revision   1
+  version   "4.3.3.9"
+  revision   2
   arch      "all"
   name      "zalando-appdynamics-agents"
   homepage  "http://www.appdynamics.com/"
