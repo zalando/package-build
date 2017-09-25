@@ -23,7 +23,8 @@ pidfile="/var/run/$name.pid"
 user="root"
 group="root"
 chroot="/"
-chdir="/"
+chdir="/var/log/$name"
+logdir="$chdir"
 nice=""
 collectors_enabled="diskstats,entropy,filesystem,meminfo,netdev,netstat,sockstat,stat,textfile,uname,vmstat,bonding,megacli"
 textfile_directory="/var/cache/$name"
@@ -51,9 +52,9 @@ emit() {
 start() {
 
   # Ensure the log directory is setup correctly.
-  [ ! -d "/var/log/node_exporter" ] && mkdir "/var/log/node_exporter"
-  chown "$user":"$group" "/var/log/node_exporter"
-  chmod 755 "/var/log/node_exporter"
+  [ ! -d "$logdir" ] && mkdir "$logdir"
+  chown "$user":"$group" "$logdir"
+  chmod 755 "$logdir"
 
   # Ensure the textfile directory is setup correctly.
   [ ! -d "$textfile_directory" ] && mkdir "$textfile_directory"
@@ -67,7 +68,7 @@ start() {
 
     cd \"$chdir\"
     exec \"$program\" -collectors.enabled $collectors_enabled -collector.textfile.directory $textfile_directory
-  " >> /var/log/node_exporter/node_exporter-stdout.log 2>> /var/log/node_exporter/node_exporter-stderr.log &
+  " >> $logdir/node_exporter-stdout.log 2>> $logdir/node_exporter-stderr.log &
 
   # Generate the pidfile from here. If we instead made the forked process
   # generate it there will be a race condition between the pidfile writing
