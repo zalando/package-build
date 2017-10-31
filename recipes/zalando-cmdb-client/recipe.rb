@@ -5,8 +5,8 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   description "Python client library for CMDB REST API."
 
   name     "zalando-cmdb-client"
-  version  "1.0.36"
-  revision  201706231428
+  version  "1.1.1"
+  revision  201710271520
   arch     "all"
 
   homepage      "https://github.bus.zalan.do/team-ghost/zalando-cmdb-client"
@@ -15,21 +15,8 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
 
   build_depends   "python-setuptools"
 
-  platforms [:debian] do
-    depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-yaml >= 3.10"
-  end
-
-  platforms [:ubuntu] do
-      case FPM::Cookery::Facts.osmajorrelease
-        when '16.04'
-            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-yaml >= 3.10"
-        when '14.04', '12.04'
-            depends     "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-yaml >= 3.10"
-      end
-  end
-
   platforms [:centos] do
-    depends     "PyYAML >= 3.10", "python-argparse", "python-netaddr >= 0.7.5", "python-netifaces", "python-ordereddict", "python-setuptools"
+    depends     "python-argparse", "python-setuptools"
   end
 
   def build
@@ -37,6 +24,6 @@ class ZalandoCMDBClient < FPM::Cookery::Recipe
   end
 
   def install
-      safesystem 'python setup.py install --root=../../tmp-dest --no-compile'
+    safesystem 'python setup.py install --root=../../tmp-dest --no-compile'
   end
 end
