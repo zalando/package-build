@@ -368,8 +368,8 @@ def docker_run(dist=None, command=''):
 
 
 @task
-def package_build(dist=None, recipe='', upload=False):
-    ''' build packages from recipe for dist '''
+def package_build(recipe, dist=None, upload=False):
+    ''' build package from recipe for dist '''
 
     if dist:
         dists = [dist]

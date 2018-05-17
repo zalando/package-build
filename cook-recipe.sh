@@ -4,8 +4,8 @@
 
 if [ $# -eq 0 ]
 then
-    recipes=( $( ls -1 /data/recipes/ ) )
-    echo "No folders given, so running all recipes: ${recipes[*]}"
+    echo >&2 "no recipes given, aborting here"
+    exit 1
 else
     recipes=( "$@" )
     echo "running recipes: ${recipes[*]}"

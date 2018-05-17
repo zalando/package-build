@@ -34,15 +34,11 @@ To start the packaging process for different distributions and packages, see the
 
 Build `facter` for Ubuntu 16.04 ("Xenial"):
 
-    fab package_build:ubuntu16.04,facter
+    fab package_build:facter,ubuntu16.04
 
 Build `facter` for all configured distributions:
 
-    fab package_build:recipe=facter
-
-Build all recipes for Debian 7 ("Wheezy"):
-
-    fab package_build:debian7
+    fab package_build:facter
 
 For testing: The created package will not automatically upload and publish to your repositories unless you set the parameter `upload` to `True`:
 
