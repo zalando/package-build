@@ -3,12 +3,11 @@
 class Redis < FPM::Cookery::Recipe
   description 'An advanced key-value store'
 
-  v = '2.8.13'
-  name     'zalando-redis-server'
-  version  "2:#{v}"
-  revision 2
+  name     'redis-server'
+  version  '5.0.2'
+  revision '1'
   homepage 'http://redis.io/'
-  source   'https://github.com/antirez/redis', :with => :git, :tag => v
+  source   "http://download.redis.io/releases/redis-#{version}.tar.gz"
 
   section      'database'
   conflicts    'redis-server', 'redis-tools'
@@ -22,7 +21,7 @@ class Redis < FPM::Cookery::Recipe
     # Fix up default conf file to match our paths
     inline_replace "redis.conf" do |s|
       s.gsub! 'daemonize no', 'daemonize yes'
-      s.gsub! 'logfile stdout', 'logfile /var/log/redis/redis-server.log'
+      s.gsub! 'logfile ""', 'logfile "/var/log/redis/redis-server.log"'
       s.gsub! 'dir ./', 'dir /var/lib/redis/'
     end
   end
@@ -33,6 +32,6 @@ class Redis < FPM::Cookery::Recipe
     bin.install Dir["src/redis-*"].select{ |f| f =~ /redis-[^\.]+$/ }
 
     etc('redis').install %w(redis.conf sentinel.conf)
-    etc('init.d').install_p(workdir('redis-server.init.d'), 'zalando-redis-server')
+    etc('init.d').install_p(workdir('redis-server.init.d'), 'redis-server')
   end
 end
