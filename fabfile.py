@@ -88,7 +88,7 @@ def repo_rpm_init():
 @with_settings(hide('commands'))
 @task
 def repo_rpm_list(dist='centos6'):
-    ''' list repo's packages '''
+    ''' list a rpm repo's packages '''
 
     output = run('cd {0} && find {1} -type f -name "*rpm"'.format(env.repo_rpm_root, dist))
     for line in output.split('\n'):
@@ -101,7 +101,7 @@ def repo_rpm_list(dist='centos6'):
 @with_settings(hide('commands'), user='root')
 @task
 def repo_rpm_add(package, dist='centos6', component='base'):
-    '''Upload and add package to an apt repo, defaults to centos6'''
+    '''upload and add package to a rpm repo, defaults to centos6'''
 
     arch = 'x86_64'
     if any(map(lambda arch: arch in package, ['i386, i586, i686'])):
@@ -209,7 +209,7 @@ def republish(dist='ubuntu16.04', snapshot=False):
 @with_settings(hide('commands'))
 @task
 def repo_deb_list(dist='ubuntu16.04', snapshot=False):
-    ''' list repo's packages '''
+    ''' list an apt repo's packages '''
 
     if snapshot:
         last = get_last_snapshot(dist)
@@ -224,7 +224,7 @@ def repo_deb_list(dist='ubuntu16.04', snapshot=False):
 @with_settings(user='root')
 @task
 def repo_deb_add(package, dist='ubuntu16.04'):
-    '''Upload and add package to an apt repo, defaults to ubuntu16.04
+    '''upload and add package to an apt repo, defaults to ubuntu16.04
 
     Example:
     % fab repo_deb_add:myfoo.deb,dist=ubuntu16.04

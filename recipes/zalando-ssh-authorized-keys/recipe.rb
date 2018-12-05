@@ -6,8 +6,8 @@ class ZalandoSSHAuthorizedKeys < FPM::Cookery::Recipe
   GOPACKAGE = 'github.bus.zalan.do/nobody/ssh-authorized-keys'
 
   name      'ssh-authorized-keys'
-  version   '0.0.1'
-  revision  201609271645
+  version   '0.0.5'
+  revision  201801091616
 
   homepage      'https://github.bus.zalan.do/nobody/ssh-authorized-keys'
   source        'git@github.bus.zalan.do:nobody/ssh-authorized-keys.git', :with => :git
