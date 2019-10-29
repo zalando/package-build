@@ -1,0 +1,18 @@
+Description: fix manpage-has-errors-from-pod2man
+Origin: vendor
+Forwarded: https://rt.cpan.org/Public/Bug/Display.html?id=93893
+Author: Maximilian Gaß <mxey@cloudconnected.org>
+Reviewed-by: Jonathan Yu <jawnsy@cpan.org>
+Last-Update: 2011-04-10
+
+--- a/Krb5.pm
++++ b/Krb5.pm
+@@ -599,6 +599,8 @@
+ 
+ =back
+ 
++=back
++
+ =head1 AUTHOR
+ 
+ Jeff Horwitz (jeff@smashing.org)

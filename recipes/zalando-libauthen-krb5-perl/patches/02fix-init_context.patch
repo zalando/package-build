@@ -1,0 +1,55 @@
+Subject: init_context() should return context
+ Make init_context() really return the context as documented.  We also make it
+ safe to call init_context() several times in case one wants to access the
+ context object later.
+Origin: vendor
+Bug: http://rt.cpan.org/Public/Bug/Display.html?id=53952
+Forwarded: http://rt.cpan.org/Public/Bug/Display.html?id=53952
+From: Ansgar Burchardt <ansgar@43-1.org>
+Reviewed-by: gregor herrmann <gregoa@debian.org>
+Last-Update: 2011-04-10
+
+--- a/Krb5.xs
++++ b/Krb5.xs
+@@ -25,6 +25,7 @@
+ #define KRB5_DEFAULT_LIFE 60*60*10
+ 
+ typedef krb5_ccache		Authen__Krb5__Ccache;
++typedef krb5_context		Authen__Krb5__Context;
+ typedef krb5_principal		Authen__Krb5__Principal;
+ typedef krb5_auth_context	Authen__Krb5__AuthContext;
+ typedef krb5_rcache		Authen__Krb5__Rcache;
+@@ -121,14 +122,18 @@
+ 		SvIOK_on(ST(0));
+ 	}
+ 
+-void
++Authen::Krb5::Context
+ krb5_init_context()
+ 
+ 	CODE:
+-	if (context) croak("Authen::Krb5 already initialized");
+-	err = krb5_init_context(&context);
+-	if (err) XSRETURN_UNDEF;
+-	XSRETURN_YES;
++	if (!context) {
++		err = krb5_init_context(&context);
++		if (err) XSRETURN_UNDEF;
++	}
++	RETVAL = context;
++
++	OUTPUT:
++	RETVAL
+ 
+ void
+ krb5_free_context()
+--- a/typemap
++++ b/typemap
+@@ -1,6 +1,7 @@
+ TYPEMAP
+ 
+ Authen::Krb5::Ccache		T_PTROBJ_NU
++Authen::Krb5::Context		T_PTROBJ_NU
+ Authen::Krb5::Principal		T_PTROBJ_NU
+ Authen::Krb5::AuthContext	T_PTROBJ_NU
+ Authen::Krb5::Rcache		T_PTROBJ_NU
