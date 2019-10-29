@@ -371,6 +371,8 @@ def docker_run(dist=None, command=''):
 def package_build(recipe, dist=None, upload=False):
     ''' build package from recipe for dist '''
 
+    upload = prep_bool_arg(upload)
+
     if dist:
         dists = [dist]
     else:
