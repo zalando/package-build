@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:     redis-server
 # Required-Start:   $syslog $remote_fs
@@ -32,7 +32,7 @@ fi
 
 case "$1" in
   start)
-    echo -n "Starting $DESC: "
+    echo "Starting $DESC: "
     mkdir -p $RUNDIR
     for inst in $INSTANCES; do
         PIDFILE=$RUNDIR/redis-server.$inst.pid
@@ -42,21 +42,21 @@ case "$1" in
         chmod 755 $RUNDIR
         if start-stop-daemon --start --quiet --umask 007 --pidfile $PIDFILE --chuid redis:redis --exec $DAEMON -- $CONF
         then
-            echo "$NAME."
+            echo "$inst started"
         else
-            echo "failed"
+            echo "starting $inst failed"
         fi
     done
     ;;
   stop)
-    echo -n "Stopping $DESC: "
+    echo "Stopping $DESC: "
     for inst in  $INSTANCES; do
         PIDFILE=$RUNDIR/redis-server.$inst.pid
         if start-stop-daemon --stop --retry forever/QUIT/1 --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
         then
-            echo "$NAME."
+            echo "$inst stopped"
         else
-            echo "failed"
+            echo "stopping $inst failed"
         fi
         rm -f $PIDFILE
     done
@@ -68,14 +68,13 @@ case "$1" in
     ;;
 
   status)
-    echo -n "$DESC is "
     for inst in $INSTANCES; do
         PIDFILE=$RUNDIR/redis-server.$inst.pid
         if start-stop-daemon --stop --quiet --signal 0 --name ${NAME} --pidfile ${PIDFILE}
         then
-            echo "running"
+            echo "$DESC $inst is running"
         else
-            echo "not running"
+            echo "$DESC $inst is not running"
         fi
     done
     ;;
